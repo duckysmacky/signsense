@@ -1,1 +1,1 @@
-# mirea-project
+# SignScribe
