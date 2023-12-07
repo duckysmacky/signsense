@@ -1,9 +1,9 @@
-package app.scr.main;
+package app.src.main;
 
 public class Main {
     public static void main(String[] args) {
      
-        System.out.println("Grisha krutoy");
+        System.out.println("Hello world");
 
     }
 }
