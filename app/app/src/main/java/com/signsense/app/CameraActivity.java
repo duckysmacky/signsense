@@ -23,6 +23,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 public class CameraActivity extends AppCompatActivity {
+    private static final boolean AUTO_HIDE = true;
+    private static final int AUTO_HIDE_DELAY_MILLIS = 1000;
+
+
     ImageButton capturePhoto, toggleFlash, flipCamera;
     int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private PreviewView previewView;
@@ -68,6 +72,8 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     public void startCamera(int cameraFacing) { // Func to launch camera
         int aspectRatio = aspectRatio(previewView.getWidth(), previewView.getHeight()); // Set aspect ratio
