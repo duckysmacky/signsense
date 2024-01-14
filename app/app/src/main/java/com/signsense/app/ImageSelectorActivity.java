@@ -76,8 +76,8 @@ public class ImageSelectorActivity extends AppCompatActivity {
                 imageMat = new Mat();
                 Utils.bitmapToMat(imageBitmap, imageMat); // Convert our image for OpenCV usage (Mat)
 
-                Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2GRAY); // Use OpenCV image processing to convert to grayscale
-                Utils.matToBitmap(imageMat, imageBitmap); // Convert our image back from Mat to Bitmap
+//                Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2GRAY); // Use OpenCV image processing to convert to grayscale
+//                Utils.matToBitmap(imageMat, imageBitmap); // Convert our image back from Mat to Bitmap
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
