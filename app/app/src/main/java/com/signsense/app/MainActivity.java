@@ -24,4 +24,9 @@ public class MainActivity extends AppCompatActivity {
         Intent cameraActivity = new Intent(this, CameraActivity.class);
         startActivity(cameraActivity);
     }
+
+    public void switchImageSelector(View view) { // Launch Image selector
+        Intent imageSelectorActivity = new Intent(this, ImageSelectorActivity.class);
+        startActivity(imageSelectorActivity);
+    }
 }

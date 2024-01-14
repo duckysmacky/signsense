@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-@ExperimentalZeroShutterLag public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends AppCompatActivity {
 
     Queue<HashMap<String, File>> images = new LinkedList<>();
 
@@ -96,7 +96,7 @@ import java.util.concurrent.Executors;
                         .build();
 
                 ImageCapture imageCapture = new ImageCapture.Builder() // Init a new class for taking pictures and saving them
-                        .setCaptureMode(ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG) // Capture mode to the lowest latency
+                        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY) // Capture mode to the lowest latency
                         .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation()) // Make the final picture the same rotation as device
                         .build();
 
