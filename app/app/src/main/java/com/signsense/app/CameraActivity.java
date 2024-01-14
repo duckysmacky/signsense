@@ -126,7 +126,9 @@ import java.util.concurrent.Executors;
                     }
                 });
 
-            } catch (ExecutionException | InterruptedException e) {} // Oh yeah we did everything in try-catch because dumb phone go boom
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            } // Oh yeah we did everything in try-catch because dumb phone go boom
         }, ContextCompat.getMainExecutor(this)); // Set Executor (which will run the thread to handle all of the bullshit above) to this Activity
     }
 
