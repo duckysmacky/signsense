@@ -16,7 +16,6 @@ import org.opencv.core.Mat;
 import java.util.*;
 
 public class CameraActivity extends org.opencv.android.CameraActivity {
-
     private ImageButton capturePhoto, toggleFlash, flipCamera;
     private int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private CameraBridgeViewBase cameraView;
