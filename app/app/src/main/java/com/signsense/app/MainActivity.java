@@ -14,10 +14,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!OpenCVLoader.initDebug())
+        if (!OpenCVLoader.initDebug()) {
             Log.e("OpenCV", "Unable to load OpenCV!");
-        else
+        } else {
             Log.d("OpenCV", "OpenCV loaded Successfully!");
+        }
     }
 
     public void switchCamera(View view) { // Launches the camera part
