@@ -136,7 +136,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 greyFrame = inputFrame.gray();
                 rgbFrame = inputFrame.rgba();
 
-                if (imageInputSize == null) {
+                if (imageInputSize == null) { // Check if we already set the input size for the face detector, if not set it
                     imageInputSize = new Size(Math.round(rgbFrame.cols() / scaleOffset), Math.round(rgbFrame.rows() / scaleOffset));
                     faceDetector.setInputSize(imageInputSize);
                 }
@@ -146,7 +146,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
                 if (faceDetector != null) {
                     Mat faces = new Mat();
-                    faceDetector.detect(scaledFrame, faces); // Detects the face on the scaled frame and stores to face
+                    faceDetector.detect(scaledFrame, faces); // Detects the face on the scaled frame and stores to faces Mat
                     processFace(rgbFrame, faces);
                 }
 
