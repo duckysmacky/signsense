@@ -1,359 +1,367 @@
 package com.signsense.app;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
+import android.app.Activity;
+import android.hardware.Camera;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.exifinterface.media.ExifInterface;
-import com.google.mediapipe.formats.proto.LandmarkProto.Landmark;
-import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark;
-import com.google.mediapipe.solutioncore.CameraInput;
-import com.google.mediapipe.solutioncore.SolutionGlSurfaceView;
-import com.google.mediapipe.solutioncore.VideoInput;
-import com.google.mediapipe.solutions.hands.HandLandmark;
-import com.google.mediapipe.solutions.hands.Hands;
-import com.google.mediapipe.solutions.hands.HandsOptions;
-import com.google.mediapipe.solutions.hands.HandsResult;
+import android.view.View.OnTouchListener;
+import android.view.WindowManager;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.signsense.app.imageProcessing.ColorBlobDetector;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
 
-/** Main activity of MediaPipe Hands app. */
-public class HandsActivity extends AppCompatActivity {
-    private static final String TAG = "HandsActivity";
+public class HandsActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
 
-    private Hands hands;
-    // Run the pipeline and the model inference on GPU or CPU.
-    private static final boolean RUN_ON_GPU = true;
-
-    private enum InputSource {
-        UNKNOWN,
-        IMAGE,
-        VIDEO,
-        CAMERA,
+    static {
+        System.loadLibrary("opencv_java3");
     }
-    private InputSource inputSource = InputSource.UNKNOWN;
+    private static final String    TAG                 = "HandPose::MainActivity";
+    public static final int        JAVA_DETECTOR       = 0;
+    public static final int        NATIVE_DETECTOR     = 1;
 
-    // Image demo UI and image loader components.
-    private ActivityResultLauncher<Intent> imageGetter;
-    private HandsResultImageView imageView;
-    // Video demo UI and video loader components.
-    private VideoInput videoInput;
-    private ActivityResultLauncher<Intent> videoGetter;
-    // Live camera demo UI and camera components.
-    private CameraInput cameraInput;
+    private Mat                    mRgba;
+    private Mat                    mGray;
+    private Mat 					mIntermediateMat;
 
-    private SolutionGlSurfaceView<HandsResult> glSurfaceView;
+    private final int                    mDetectorType       = JAVA_DETECTOR;
 
+    private CustomSufaceView   mOpenCvCameraView;
+    private List<Size> mResolutionList;
+
+    private SeekBar minTresholdSeekbar = null;
+    private final SeekBar maxTresholdSeekbar = null;
+    private TextView minTresholdSeekbarText = null;
+    private TextView numberOfFingersText = null;
+
+    double iThreshold = 0;
+
+    private Scalar               	mBlobColorHsv;
+    private Scalar               	mBlobColorRgba;
+    private ColorBlobDetector    	mDetector;
+    private Mat                  	mSpectrum;
+    private boolean				mIsColorSelected = false;
+
+    private Size                 	SPECTRUM_SIZE;
+    private Scalar               	CONTOUR_COLOR;
+    private Scalar               	CONTOUR_COLOR_WHITE;
+
+    final Handler mHandler = new Handler();
+    int numberOfFingers = 0;
+
+    final Runnable mUpdateFingerCountResults = new Runnable() {
+        public void run() {
+            updateNumberOfFingers();
+        }
+    };
+
+    private final BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            if (status == LoaderCallbackInterface.SUCCESS) {
+                Log.i(TAG, "OpenCV loaded successfully");
+                mOpenCvCameraView.enableView();
+                mOpenCvCameraView.setOnTouchListener(MainActivity.this);
+                // 640x480
+            } else {
+                super.onManagerConnected(status);
+            }
+        }
+    };
+
+    /** Called when the activity is first created. */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "called onCreate");
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hands);
-        setupStaticImageDemoUiComponents();
-        setupVideoDemoUiComponents();
-        setupLiveDemoUiComponents();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (inputSource == InputSource.CAMERA) {
-            // Restarts the camera and the opengl surface rendering.
-            cameraInput = new CameraInput(this);
-            cameraInput.setNewFrameListener(textureFrame -> hands.send(textureFrame));
-            glSurfaceView.post(this::startCamera);
-            glSurfaceView.setVisibility(View.VISIBLE);
-        } else if (inputSource == InputSource.VIDEO) {
-            videoInput.resume();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        setContentView(R.layout.main_surface_view);
+        if (!OpenCVLoader.initDebug()) {
+            Log.e("Test","man");
+        }else{
         }
+
+        mOpenCvCameraView = findViewById(R.id.main_surface_view);
+        mOpenCvCameraView.setCvCameraViewListener(this);
+
+        minTresholdSeekbarText = findViewById(R.id.textView3);
+
+
+        numberOfFingersText = findViewById(R.id.numberOfFingers);
+
+        minTresholdSeekbar = findViewById(R.id.seekBar1);
+        minTresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+            int progressChanged = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                progressChanged = progress;
+                minTresholdSeekbarText.setText(String.valueOf(progressChanged));
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                minTresholdSeekbarText.setText(String.valueOf(progressChanged));
+            }
+        });
+        minTresholdSeekbar.setProgress(8700);
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
-        if (inputSource == InputSource.CAMERA) {
-            glSurfaceView.setVisibility(View.GONE);
-            cameraInput.close();
-        } else if (inputSource == InputSource.VIDEO) {
-            videoInput.pause();
+        if (mOpenCvCameraView != null){
+            mOpenCvCameraView.disableView();
         }
     }
 
-    private Bitmap downscaleBitmap(Bitmap originalBitmap) {
-        double aspectRatio = (double) originalBitmap.getWidth() / originalBitmap.getHeight();
-        int width = imageView.getWidth();
-        int height = imageView.getHeight();
-        if (((double) imageView.getWidth() / imageView.getHeight()) > aspectRatio) {
-            width = (int) (height * aspectRatio);
-        } else {
-            height = (int) (width / aspectRatio);
-        }
-        return Bitmap.createScaledBitmap(originalBitmap, width, height, false);
+    @Override
+    public void onResume() {
+        super.onResume();
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0, this, mLoaderCallback);
     }
 
-    private Bitmap rotateBitmap(Bitmap inputBitmap, InputStream imageData) throws IOException {
-        int orientation =
-                new ExifInterface(imageData)
-                        .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-        if (orientation == ExifInterface.ORIENTATION_NORMAL) {
-            return inputBitmap;
-        }
-        Matrix matrix = new Matrix();
-        switch (orientation) {
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                matrix.postRotate(90);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                matrix.postRotate(180);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                matrix.postRotate(270);
-                break;
-            default:
-                matrix.postRotate(0);
-        }
-        return Bitmap.createBitmap(
-                inputBitmap, 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight(), matrix, true);
+    public void onDestroy() {
+        super.onDestroy();
+        mOpenCvCameraView.disableView();
     }
 
-    /** Sets up the UI components for the static image demo. */
-    private void setupStaticImageDemoUiComponents() {
-        // The Intent to access gallery and read images as bitmap.
-        imageGetter =
-                registerForActivityResult(
-                        new ActivityResultContracts.StartActivityForResult(),
-                        result -> {
-                            Intent resultIntent = result.getData();
-                            if (resultIntent != null) {
-                                if (result.getResultCode() == RESULT_OK) {
-                                    Bitmap bitmap = null;
-                                    try {
-                                        bitmap =
-                                                downscaleBitmap(
-                                                        MediaStore.Images.Media.getBitmap(
-                                                                this.getContentResolver(), resultIntent.getData()));
-                                    } catch (IOException e) {
-                                        Log.e(TAG, "Bitmap reading error:" + e);
-                                    }
-                                    try {
-                                        InputStream imageData =
-                                                this.getContentResolver().openInputStream(resultIntent.getData());
-                                        bitmap = rotateBitmap(bitmap, imageData);
-                                    } catch (IOException e) {
-                                        Log.e(TAG, "Bitmap rotation error:" + e);
-                                    }
-                                    if (bitmap != null) {
-                                        hands.send(bitmap);
-                                    }
-                                }
-                            }
-                        });
-        Button loadImageButton = findViewById(R.id.button_load_picture);
-        loadImageButton.setOnClickListener(
-                v -> {
-                    if (inputSource != InputSource.IMAGE) {
-                        stopCurrentPipeline();
-                        setupStaticImageModePipeline();
-                    }
-                    // Reads images from gallery.
-                    Intent pickImageIntent = new Intent(Intent.ACTION_PICK);
-                    pickImageIntent.setDataAndType(MediaStore.Images.Media.INTERNAL_CONTENT_URI, "image/*");
-                    imageGetter.launch(pickImageIntent);
-                });
-        imageView = new HandsResultImageView(this);
+    public void onCameraViewStarted(int width, int height) {
+        mGray = new Mat();
+        mRgba = new Mat();
+        mIntermediateMat = new Mat();
+
+        /*
+        mResolutionList = mOpenCvCameraView.getResolutionList();
+        ListIterator<Size> resolutionItr = mResolutionList.listIterator();
+        while(resolutionItr.hasNext()) {
+            Size element = resolutionItr.next();
+            Log.i(TAG, "Resolution Option ["+Integer.valueOf(element.width).toString() + "x" + Integer.valueOf(element.height).toString()+"]");
+        }
+
+        Size resolution = mResolutionList.get(7);
+        mOpenCvCameraView.setResolution(resolution);
+        resolution = mOpenCvCameraView.getResolution();
+        String caption = "Resolution "+ Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
+        Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
+        */
+        Camera.Size resolution = mOpenCvCameraView.getResolution();
+        String caption = "Resolution "+ Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
+        Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
+
+        Camera.Parameters cParams = mOpenCvCameraView.getParameters();
+        cParams.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
+        mOpenCvCameraView.setParameters(cParams);
+        Toast.makeText(this, "Focus mode : "+cParams.getFocusMode(), Toast.LENGTH_SHORT).show();
+
+        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mDetector = new ColorBlobDetector();
+        mSpectrum = new Mat();
+        mBlobColorRgba = new Scalar(255);
+        mBlobColorHsv = new Scalar(255);
+        SPECTRUM_SIZE = new Size(200, 64);
+        CONTOUR_COLOR = new Scalar(255,0,0,255);
+        CONTOUR_COLOR_WHITE = new Scalar(255,255,255,255);
+
     }
 
-    /** Sets up core workflow for static image mode. */
-    private void setupStaticImageModePipeline() {
-        this.inputSource = InputSource.IMAGE;
-        // Initializes a new MediaPipe Hands solution instance in the static image mode.
-        hands =
-                new Hands(
-                        this,
-                        HandsOptions.builder()
-                                .setStaticImageMode(true)
-                                .setMaxNumHands(2)
-                                .setRunOnGpu(RUN_ON_GPU)
-                                .build());
-
-        // Connects MediaPipe Hands solution to the user-defined HandsResultImageView.
-        hands.setResultListener(
-                handsResult -> {
-                    logWristLandmark(handsResult, /*showPixelValues=*/ true);
-                    imageView.setHandsResult(handsResult);
-                    runOnUiThread(() -> imageView.update());
-                });
-        hands.setErrorListener((message, e) -> Log.e(TAG, "MediaPipe Hands error:" + message));
-
-        // Updates the preview layout.
-        FrameLayout frameLayout = findViewById(R.id.preview_display_layout);
-        frameLayout.removeAllViewsInLayout();
-        imageView.setImageDrawable(null);
-        frameLayout.addView(imageView);
-        imageView.setVisibility(View.VISIBLE);
+    public void onCameraViewStopped() {
+        mGray.release();
+        mRgba.release();
     }
 
-    /** Sets up the UI components for the video demo. */
-    private void setupVideoDemoUiComponents() {
-        // The Intent to access gallery and read a video file.
-        videoGetter =
-                registerForActivityResult(
-                        new ActivityResultContracts.StartActivityForResult(),
-                        result -> {
-                            Intent resultIntent = result.getData();
-                            if (resultIntent != null) {
-                                if (result.getResultCode() == RESULT_OK) {
-                                    glSurfaceView.post(
-                                            () ->
-                                                    videoInput.start(
-                                                            this,
-                                                            resultIntent.getData(),
-                                                            hands.getGlContext(),
-                                                            glSurfaceView.getWidth(),
-                                                            glSurfaceView.getHeight()));
-                                }
-                            }
-                        });
-        Button loadVideoButton = findViewById(R.id.button_load_video);
-        loadVideoButton.setOnClickListener(
-                v -> {
-                    stopCurrentPipeline();
-                    setupStreamingModePipeline(InputSource.VIDEO);
-                    // Reads video from gallery.
-                    Intent pickVideoIntent = new Intent(Intent.ACTION_PICK);
-                    pickVideoIntent.setDataAndType(MediaStore.Video.Media.INTERNAL_CONTENT_URI, "video/*");
-                    videoGetter.launch(pickVideoIntent);
-                });
+    public boolean onTouch(View v, MotionEvent event) {
+        int cols = mRgba.cols();
+        int rows = mRgba.rows();
+
+        int xOffset = (mOpenCvCameraView.getWidth() - cols) / 2;
+        int yOffset = (mOpenCvCameraView.getHeight() - rows) / 2;
+
+        int x = (int)event.getX() - xOffset;
+        int y = (int)event.getY() - yOffset;
+
+        Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
+
+        if ((x < 0) || (y < 0) || (x > cols) || (y > rows)) return false;
+
+        Rect touchedRect = new Rect();
+
+        touchedRect.x = (x>5) ? x-5 : 0;
+        touchedRect.y = (y>5) ? y-5 : 0;
+
+        touchedRect.width = (x+5 < cols) ? x + 5 - touchedRect.x : cols - touchedRect.x;
+        touchedRect.height = (y+5 < rows) ? y + 5 - touchedRect.y : rows - touchedRect.y;
+
+        Mat touchedRegionRgba = mRgba.submat(touchedRect);
+
+        Mat touchedRegionHsv = new Mat();
+        Imgproc.cvtColor(touchedRegionRgba, touchedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
+
+        // Calculate average color of touched region
+        mBlobColorHsv = Core.sumElems(touchedRegionHsv);
+        int pointCount = touchedRect.width*touchedRect.height;
+        for (int i = 0; i < mBlobColorHsv.val.length; i++)
+            mBlobColorHsv.val[i] /= pointCount;
+
+        mBlobColorRgba = converScalarHsv2Rgba(mBlobColorHsv);
+
+        Log.i(TAG, "Touched rgba color: (" + mBlobColorRgba.val[0] + ", " + mBlobColorRgba.val[1] +
+                ", " + mBlobColorRgba.val[2] + ", " + mBlobColorRgba.val[3] + ")");
+
+        mDetector.setHsvColor(mBlobColorHsv);
+
+        Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
+
+        mIsColorSelected = true;
+
+        touchedRegionRgba.release();
+        touchedRegionHsv.release();
+
+        return false; // don't need subsequent touch events
     }
 
-    /** Sets up the UI components for the live demo with camera input. */
-    private void setupLiveDemoUiComponents() {
-        Button startCameraButton = findViewById(R.id.button_start_camera);
-        startCameraButton.setOnClickListener(
-                v -> {
-                    if (inputSource == InputSource.CAMERA) {
-                        return;
-                    }
-                    stopCurrentPipeline();
-                    setupStreamingModePipeline(InputSource.CAMERA);
-                });
+    private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
+        Mat pointMatRgba = new Mat();
+        Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
+        Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
+
+        return new Scalar(pointMatRgba.get(0, 0));
     }
 
-    /** Sets up core workflow for streaming mode. */
-    private void setupStreamingModePipeline(InputSource inputSource) {
-        this.inputSource = inputSource;
-        // Initializes a new MediaPipe Hands solution instance in the streaming mode.
-        hands =
-                new Hands(
-                        this,
-                        HandsOptions.builder()
-                                .setStaticImageMode(false)
-                                .setMaxNumHands(2)
-                                .setRunOnGpu(RUN_ON_GPU)
-                                .build());
-        hands.setErrorListener((message, e) -> Log.e(TAG, "MediaPipe Hands error:" + message));
+    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+        mRgba = inputFrame.rgba();
+        mGray = inputFrame.gray();
 
-        if (inputSource == InputSource.CAMERA) {
-            cameraInput = new CameraInput(this);
-            cameraInput.setNewFrameListener(textureFrame -> hands.send(textureFrame));
-        } else if (inputSource == InputSource.VIDEO) {
-            videoInput = new VideoInput(this);
-            videoInput.setNewFrameListener(textureFrame -> hands.send(textureFrame));
+        iThreshold = minTresholdSeekbar.getProgress();
+
+        //Imgproc.blur(mRgba, mRgba, new Size(5,5));
+        Imgproc.GaussianBlur(mRgba, mRgba, new org.opencv.core.Size(3, 3), 1, 1);
+        //Imgproc.medianBlur(mRgba, mRgba, 3);
+
+        if (!mIsColorSelected) return mRgba;
+
+        List<MatOfPoint> contours = mDetector.getContours();
+        mDetector.process(mRgba);
+
+        Log.d(TAG, "Contours count: " + contours.size());
+
+        if (contours.size() <= 0) {
+            return mRgba;
         }
 
-        // Initializes a new Gl surface view with a user-defined HandsResultGlRenderer.
-        glSurfaceView =
-                new SolutionGlSurfaceView<>(this, hands.getGlContext(), hands.getGlMajorVersion());
-        glSurfaceView.setSolutionResultRenderer(new HandsResultGlRenderer());
-        glSurfaceView.setRenderInputImage(true);
-        hands.setResultListener(
-                handsResult -> {
-                    logWristLandmark(handsResult, /*showPixelValues=*/ false);
-                    glSurfaceView.setRenderData(handsResult);
-                    glSurfaceView.requestRender();
-                });
+        RotatedRect rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(0)	.toArray()));
 
-        // The runnable to start camera after the gl surface view is attached.
-        // For video input source, videoInput.start() will be called when the video uri is available.
-        if (inputSource == InputSource.CAMERA) {
-            glSurfaceView.post(this::startCamera);
+        double boundWidth = rect.size.width;
+        double boundHeight = rect.size.height;
+        int boundPos = 0;
+
+        for (int i = 1; i < contours.size(); i++) {
+            rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(i).toArray()));
+            if (rect.size.width * rect.size.height > boundWidth * boundHeight) {
+                boundWidth = rect.size.width;
+                boundHeight = rect.size.height;
+                boundPos = i;
+            }
         }
 
-        // Updates the preview layout.
-        FrameLayout frameLayout = findViewById(R.id.preview_display_layout);
-        imageView.setVisibility(View.GONE);
-        frameLayout.removeAllViewsInLayout();
-        frameLayout.addView(glSurfaceView);
-        glSurfaceView.setVisibility(View.VISIBLE);
-        frameLayout.requestLayout();
+        Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
+
+        Imgproc.rectangle( mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0 );
+
+
+        Log.d(TAG,
+                " Row start ["+
+                        (int) boundRect.tl().y + "] row end ["+
+                        (int) boundRect.br().y+"] Col start ["+
+                        (int) boundRect.tl().x+"] Col end ["+
+                        (int) boundRect.br().x+"]");
+
+        int rectHeightThresh = 0;
+        double a = boundRect.br().y - boundRect.tl().y;
+        a = a * 0.7;
+        a = boundRect.tl().y + a;
+
+        Log.d(TAG,
+                " A ["+a+"] br y - tl y = ["+(boundRect.br().y - boundRect.tl().y)+"]");
+
+        //Core.rectangle( mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR, 2, 8, 0 );
+        Imgproc.rectangle( mRgba, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR, 2, 8, 0 );
+
+        MatOfPoint2f pointMat = new MatOfPoint2f();
+        Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(boundPos).toArray()), pointMat, 3, true);
+        contours.set(boundPos, new MatOfPoint(pointMat.toArray()));
+
+        MatOfInt hull = new MatOfInt();
+        MatOfInt4 convexDefect = new MatOfInt4();
+        Imgproc.convexHull(new MatOfPoint(contours.get(boundPos).toArray()), hull);
+
+        if(hull.toArray().length < 3) return mRgba;
+
+        Imgproc.convexityDefects(new MatOfPoint(contours.get(boundPos)	.toArray()), hull, convexDefect);
+
+        List<MatOfPoint> hullPoints = new LinkedList<MatOfPoint>();
+        List<Point> listPo = new LinkedList<Point>();
+        for (int j = 0; j < hull.toList().size(); j++) {
+            listPo.add(contours.get(boundPos).toList().get(hull.toList().get(j)));
+        }
+
+        MatOfPoint e = new MatOfPoint();
+        e.fromList(listPo);
+        hullPoints.add(e);
+
+        List<MatOfPoint> defectPoints = new LinkedList<MatOfPoint>();
+        List<Point> listPoDefect = new LinkedList<Point>();
+        for (int j = 0; j < convexDefect.toList().size(); j = j+4) {
+            Point farPoint = contours.get(boundPos).toList().get(convexDefect.toList().get(j+2));
+            Integer depth = convexDefect.toList().get(j+3);
+            if(depth > iThreshold && farPoint.y < a){
+                listPoDefect.add(contours.get(boundPos).toList().get(convexDefect.toList().get(j+2)));
+            }
+            Log.d(TAG, "defects ["+j+"] " + convexDefect.toList().get(j+3));
+        }
+
+        MatOfPoint e2 = new MatOfPoint();
+        e2.fromList(listPo);
+        defectPoints.add(e2);
+
+        Log.d(TAG, "hull: " + hull.toList());
+        Log.d(TAG, "defects: " + convexDefect.toList());
+
+        Imgproc.drawContours(mRgba, hullPoints, -1, CONTOUR_COLOR, 3);
+
+        int defectsTotal = (int) convexDefect.total();
+        Log.d(TAG, "Defect total " + defectsTotal);
+
+        this.numberOfFingers = listPoDefect.size();
+        if(this.numberOfFingers > 5) this.numberOfFingers = 5;
+
+        mHandler.post(mUpdateFingerCountResults);
+
+        for(Point p : listPoDefect){
+            Imgproc.circle(mRgba, p, 6, new Scalar(255,0,255));
+        }
+
+        return mRgba;
     }
 
-    private void startCamera() {
-        cameraInput.start(
-                this,
-                hands.getGlContext(),
-                CameraInput.CameraFacing.FRONT,
-                glSurfaceView.getWidth(),
-                glSurfaceView.getHeight());
-    }
-
-    private void stopCurrentPipeline() {
-        if (cameraInput != null) {
-            cameraInput.setNewFrameListener(null);
-            cameraInput.close();
-        }
-        if (videoInput != null) {
-            videoInput.setNewFrameListener(null);
-            videoInput.close();
-        }
-        if (glSurfaceView != null) {
-            glSurfaceView.setVisibility(View.GONE);
-        }
-        if (hands != null) {
-            hands.close();
-        }
-    }
-
-    private void logWristLandmark(HandsResult result, boolean showPixelValues) {
-        if (result.multiHandLandmarks().isEmpty()) {
-            return;
-        }
-        NormalizedLandmark wristLandmark =
-                result.multiHandLandmarks().get(0).getLandmarkList().get(HandLandmark.WRIST);
-        // For Bitmaps, show the pixel values. For texture inputs, show the normalized coordinates.
-        if (showPixelValues) {
-            int width = result.inputBitmap().getWidth();
-            int height = result.inputBitmap().getHeight();
-            Log.i(
-                    TAG,
-                    String.format(
-                            "MediaPipe Hand wrist coordinates (pixel values): x=%f, y=%f",
-                            wristLandmark.getX() * width, wristLandmark.getY() * height));
-        } else {
-            Log.i(
-                    TAG,
-                    String.format(
-                            "MediaPipe Hand wrist normalized coordinates (value range: [0, 1]): x=%f, y=%f",
-                            wristLandmark.getX(), wristLandmark.getY()));
-        }
-        if (result.multiHandWorldLandmarks().isEmpty()) {
-            return;
-        }
-        Landmark wristWorldLandmark =
-                result.multiHandWorldLandmarks().get(0).getLandmarkList().get(HandLandmark.WRIST);
-        Log.i(
-                TAG,
-                String.format(
-                        "MediaPipe Hand wrist world coordinates (in meters with the origin at the hand's"
-                                + " approximate geometric center): x=%f m, y=%f m, z=%f m",
-                        wristWorldLandmark.getX(), wristWorldLandmark.getY(), wristWorldLandmark.getZ()));
+    public void updateNumberOfFingers(){
+        numberOfFingersText.setText(String.valueOf(this.numberOfFingers));
     }
 }

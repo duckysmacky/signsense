@@ -73,7 +73,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     protected List<? extends CameraBridgeViewBase> getCameraViewList() { // Returns our cameraView View (single one, in case we have many)
         return Collections.singletonList(cameraView);
     }
-
     // Enabling /  Disabling camera based on app state
     @Override
     protected void onResume() {
