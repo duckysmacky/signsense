@@ -3,14 +3,17 @@ package com.signsense.app;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
+import com.signsense.app.imageProcessing.ColorBlobDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
@@ -23,9 +26,27 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class CameraActivity extends org.opencv.android.CameraActivity {
+    private static final String TAG = "Hand Detection";
+    public static final int JAVA_DETECTOR = 0;
+    public static final int NATIVE_DETECTOR = 1;
+
+    private Scalar CONTOUR_COLOR = new Scalar(255,0,0,255);
+    private Scalar CONTOUR_COLOR_WHITE = new Scalar(255,255,255,255);
+    private final int mDetectorType = JAVA_DETECTOR;
+    private Scalar mBlobColorHsv;
+    private Scalar mBlobColorRgba;
+    private ColorBlobDetector mDetector;
+    private Mat mSpectrum;
+    private boolean mIsColorSelected = false;
+    private Size SPECTRUM_SIZE;
+    private SeekBar minTresholdSeekbar = null;
+    private final SeekBar maxTresholdSeekbar = null;
+    final Handler mHandler = new Handler();
+
     private ImageButton capturePhoto, toggleFlash, flipCamera;
 
     private int cameraFacing = CameraSelector.LENS_FACING_BACK;
@@ -92,6 +113,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
     private void startCamera() {
         cameraView.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
+            private int numberOfFingers = 0;
+
             @Override
             public void onCameraViewStarted(int width, int height) {
                 greyFrame = new Mat();
@@ -131,23 +154,121 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) { // On each new frame
-                // Getting frames as Mats from inputFrame
-                greyFrame = inputFrame.gray();
                 rgbFrame = inputFrame.rgba();
+                greyFrame = inputFrame.gray();
 
-                if (imageInputSize == null) { // Check if we already set the input size for the face detector, if not set it
-                    imageInputSize = new Size(Math.round(rgbFrame.cols() / scaleOffset), Math.round(rgbFrame.rows() / scaleOffset));
-                    faceDetector.setInputSize(imageInputSize);
+                double iThreshold = 0;
+
+                iThreshold = minTresholdSeekbar.getProgress();
+
+                //Imgproc.blur(rgbFrame, rgbFrame, new Size(5,5));
+                Imgproc.GaussianBlur(rgbFrame, rgbFrame, new org.opencv.core.Size(3, 3), 1, 1);
+                //Imgproc.medianBlur(rgbFrame, rgbFrame, 3);
+
+                if (!mIsColorSelected) return rgbFrame;
+
+                List<MatOfPoint> contours = mDetector.getContours();
+                mDetector.process(rgbFrame);
+
+                Log.d(TAG, "Contours count: " + contours.size());
+
+                if (contours.size() <= 0) {
+                    return rgbFrame;
                 }
 
-                Imgproc.cvtColor(rgbFrame, bgrFrame, Imgproc.COLOR_RGBA2BGR); // Converts RGB to BGR
-                Imgproc.resize(bgrFrame, scaledFrame, imageInputSize); // Resizes frame to mFaceDetector size
+                RotatedRect rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(0)	.toArray()));
 
-                if (faceDetector != null) {
-                    Mat faces = new Mat();
-                    faceDetector.detect(scaledFrame, faces); // Detects the face on the scaled frame and stores to faces Mat
-                    processFace(rgbFrame, faces);
+                double boundWidth = rect.size.width;
+                double boundHeight = rect.size.height;
+                int boundPos = 0;
+
+                for (int i = 1; i < contours.size(); i++) {
+                    rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(i).toArray()));
+                    if (rect.size.width * rect.size.height > boundWidth * boundHeight) {
+                        boundWidth = rect.size.width;
+                        boundHeight = rect.size.height;
+                        boundPos = i;
+                    }
                 }
+
+                Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
+
+                Imgproc.rectangle( rgbFrame, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0 );
+
+
+                Log.d(TAG,
+                        " Row start ["+
+                                (int) boundRect.tl().y + "] row end ["+
+                                (int) boundRect.br().y+"] Col start ["+
+                                (int) boundRect.tl().x+"] Col end ["+
+                                (int) boundRect.br().x+"]");
+
+                int rectHeightThresh = 0;
+                double a = boundRect.br().y - boundRect.tl().y;
+                a = a * 0.7;
+                a = boundRect.tl().y + a;
+
+                Log.d(TAG,
+                        " A ["+a+"] br y - tl y = ["+(boundRect.br().y - boundRect.tl().y)+"]");
+
+                //Core.rectangle( rgbFrame, boundRect.tl(), boundRect.br(), CONTOUR_COLOR, 2, 8, 0 );
+                Imgproc.rectangle( rgbFrame, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR, 2, 8, 0 );
+
+                MatOfPoint2f pointMat = new MatOfPoint2f();
+                Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(boundPos).toArray()), pointMat, 3, true);
+                contours.set(boundPos, new MatOfPoint(pointMat.toArray()));
+
+                MatOfInt hull = new MatOfInt();
+                MatOfInt4 convexDefect = new MatOfInt4();
+                Imgproc.convexHull(new MatOfPoint(contours.get(boundPos).toArray()), hull);
+
+                if(hull.toArray().length < 3) return rgbFrame;
+
+                Imgproc.convexityDefects(new MatOfPoint(contours.get(boundPos)	.toArray()), hull, convexDefect);
+
+                List<MatOfPoint> hullPoints = new LinkedList<MatOfPoint>();
+                List<Point> listPo = new LinkedList<Point>();
+                for (int j = 0; j < hull.toList().size(); j++) {
+                    listPo.add(contours.get(boundPos).toList().get(hull.toList().get(j)));
+                }
+
+                MatOfPoint e = new MatOfPoint();
+                e.fromList(listPo);
+                hullPoints.add(e);
+
+                List<MatOfPoint> defectPoints = new LinkedList<MatOfPoint>();
+                List<Point> listPoDefect = new LinkedList<Point>();
+                for (int j = 0; j < convexDefect.toList().size(); j = j+4) {
+                    Point farPoint = contours.get(boundPos).toList().get(convexDefect.toList().get(j+2));
+                    Integer depth = convexDefect.toList().get(j+3);
+                    if(depth > iThreshold && farPoint.y < a){
+                        listPoDefect.add(contours.get(boundPos).toList().get(convexDefect.toList().get(j+2)));
+                    }
+                    Log.d(TAG, "defects ["+j+"] " + convexDefect.toList().get(j+3));
+                }
+
+                MatOfPoint e2 = new MatOfPoint();
+                e2.fromList(listPo);
+                defectPoints.add(e2);
+
+                Log.d(TAG, "hull: " + hull.toList());
+                Log.d(TAG, "defects: " + convexDefect.toList());
+
+                Imgproc.drawContours(rgbFrame, hullPoints, -1, CONTOUR_COLOR, 3);
+
+                int defectsTotal = (int) convexDefect.total();
+                Log.d(TAG, "Defect total " + defectsTotal);
+
+                this.numberOfFingers = listPoDefect.size();
+                if (this.numberOfFingers > 5) {
+                    this.numberOfFingers = 5;
+                }
+
+                for(Point p : listPoDefect){
+                    Imgproc.circle(rgbFrame, p, 6, new Scalar(255,0,255));
+                }
+
+                return rgbFrame;
 
 //                cascadeClassifier.detectMultiScale(greyFrame, rects, 1.1, 2);
 
@@ -163,8 +284,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 //
 //                    face.release();
 //                }
-
-                return rgbFrame;
             }
         });
 

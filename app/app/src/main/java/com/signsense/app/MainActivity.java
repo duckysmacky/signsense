@@ -30,9 +30,4 @@ public class MainActivity extends AppCompatActivity {
         Intent imageSelectorActivity = new Intent(this, ImageSelectorActivity.class);
         startActivity(imageSelectorActivity);
     }
-
-    public void switchHands(View view) { // Launch Image selector
-        Intent handsActivity = new Intent(this, HandsActivity.class);
-        startActivity(handsActivity);
-    }
 }
