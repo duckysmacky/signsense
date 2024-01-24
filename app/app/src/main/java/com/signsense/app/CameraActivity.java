@@ -3,16 +3,15 @@ package com.signsense.app;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.SeekBar;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
+import com.signsense.app.OpenCV.CameraBridgeViewBase2;
 import com.signsense.app.imageProcessing.ColorBlobDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
@@ -20,7 +19,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
-import org.opencv.objdetect.FaceDetectorYN;
+//import org.opencv.objdetect.FaceDetectorYN;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,22 +29,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class CameraActivity extends org.opencv.android.CameraActivity {
-    private static final String TAG = "Hand Detection";
+    private static final String TAG = "Hand-Detection";
     public static final int JAVA_DETECTOR = 0;
     public static final int NATIVE_DETECTOR = 1;
-
     private Scalar CONTOUR_COLOR = new Scalar(255,0,0,255);
     private Scalar CONTOUR_COLOR_WHITE = new Scalar(255,255,255,255);
     private final int mDetectorType = JAVA_DETECTOR;
-    private Scalar mBlobColorHsv;
-    private Scalar mBlobColorRgba;
+
     private ColorBlobDetector mDetector;
-    private Mat mSpectrum;
-    private boolean mIsColorSelected = false;
-    private Size SPECTRUM_SIZE;
-    private SeekBar minTresholdSeekbar = null;
-    private final SeekBar maxTresholdSeekbar = null;
-    final Handler mHandler = new Handler();
 
     private ImageButton capturePhoto, toggleFlash, flipCamera;
 
@@ -54,7 +45,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
     private MatOfByte modelBuffer;
     private MatOfByte configBuffer;
-    private FaceDetectorYN faceDetector;
+    //private FaceDetectorYN faceDetector;
     private Size imageInputSize = null;
     private CascadeClassifier cascadeClassifier;
 
@@ -91,7 +82,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     }
 
     @Override
-    protected List<? extends CameraBridgeViewBase> getCameraViewList() { // Returns our cameraView View (single one, in case we have many)
+    protected List<CameraBridgeViewBase> getCameraViewList() { // Returns our cameraView View (single one, in case we have many)
         return Collections.singletonList(cameraView);
     }
     // Enabling /  Disabling camera based on app state
@@ -112,7 +103,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     }
 
     private void startCamera() {
-        cameraView.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
+        cameraView.setCvCameraViewListener(new CameraBridgeViewBase2.CvCameraViewListener2() {
             private int numberOfFingers = 0;
 
             @Override
@@ -122,6 +113,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 bgrFrame = new Mat();
                 scaledFrame = new Mat();
                 rects = new MatOfRect();
+                mDetector = new ColorBlobDetector();
             }
 
             @Override
@@ -131,6 +123,11 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 bgrFrame.release();
                 scaledFrame.release();
                 rects.release();
+            }
+
+            @Override
+            public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+                return null;
             }
 
             public void processFace(Mat rgba, Mat faces) {
@@ -153,30 +150,21 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             }
 
             @Override
-            public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) { // On each new frame
+            public Mat onCameraFrame(CameraBridgeViewBase2.CvCameraViewFrame inputFrame) { // On each new frame
                 rgbFrame = inputFrame.rgba();
                 greyFrame = inputFrame.gray();
-
-                double iThreshold = 0;
-
-                iThreshold = minTresholdSeekbar.getProgress();
 
                 //Imgproc.blur(rgbFrame, rgbFrame, new Size(5,5));
                 Imgproc.GaussianBlur(rgbFrame, rgbFrame, new org.opencv.core.Size(3, 3), 1, 1);
                 //Imgproc.medianBlur(rgbFrame, rgbFrame, 3);
 
-                if (!mIsColorSelected) return rgbFrame;
-
-                List<MatOfPoint> contours = mDetector.getContours();
                 mDetector.process(rgbFrame);
+                List<MatOfPoint> contours = mDetector.getContours();
 
-                Log.d(TAG, "Contours count: " + contours.size());
+                if (contours.size() <= 0) return rgbFrame;
+                Log.e(TAG, "No contours!");
 
-                if (contours.size() <= 0) {
-                    return rgbFrame;
-                }
-
-                RotatedRect rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(0)	.toArray()));
+                RotatedRect rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(0).toArray()));
 
                 double boundWidth = rect.size.width;
                 double boundHeight = rect.size.height;
@@ -193,26 +181,15 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
                 Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
 
-                Imgproc.rectangle( rgbFrame, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0 );
-
-
-                Log.d(TAG,
-                        " Row start ["+
-                                (int) boundRect.tl().y + "] row end ["+
-                                (int) boundRect.br().y+"] Col start ["+
-                                (int) boundRect.tl().x+"] Col end ["+
-                                (int) boundRect.br().x+"]");
+                Imgproc.rectangle(rgbFrame, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0 );
 
                 int rectHeightThresh = 0;
                 double a = boundRect.br().y - boundRect.tl().y;
-                a = a * 0.7;
-                a = boundRect.tl().y + a;
-
-                Log.d(TAG,
-                        " A ["+a+"] br y - tl y = ["+(boundRect.br().y - boundRect.tl().y)+"]");
+                a *= 0.7;
+                a += boundRect.tl().y;
 
                 //Core.rectangle( rgbFrame, boundRect.tl(), boundRect.br(), CONTOUR_COLOR, 2, 8, 0 );
-                Imgproc.rectangle( rgbFrame, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR, 2, 8, 0 );
+                Imgproc.rectangle(rgbFrame, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR, 2, 8, 0 );
 
                 MatOfPoint2f pointMat = new MatOfPoint2f();
                 Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(boundPos).toArray()), pointMat, 3, true);
@@ -241,7 +218,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 for (int j = 0; j < convexDefect.toList().size(); j = j+4) {
                     Point farPoint = contours.get(boundPos).toList().get(convexDefect.toList().get(j+2));
                     Integer depth = convexDefect.toList().get(j+3);
-                    if(depth > iThreshold && farPoint.y < a){
+                    if(farPoint.y < a){
                         listPoDefect.add(contours.get(boundPos).toList().get(convexDefect.toList().get(j+2)));
                     }
                     Log.d(TAG, "defects ["+j+"] " + convexDefect.toList().get(j+3));
@@ -305,15 +282,15 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 modelBuffer = new MatOfByte(buffer); // Pass our bytes to ModelBuffer
                 configBuffer = new MatOfByte();
 
-                faceDetector = FaceDetectorYN.create("onnx", modelBuffer, configBuffer, new Size(320, 320));
+                //faceDetector = FaceDetectorYN.create("onnx", modelBuffer, configBuffer, new Size(320, 320));
                 // Initiating a FaceDetector based on ONNX model
 
-                if (faceDetector == null) {
-                    Log.e("OpenCV", "Failed to create FaceDetectorYN!");
-                    (Toast.makeText(this, "Failed to create FaceDetectorYN!", Toast.LENGTH_LONG)).show();
-                } else {
-                    Log.i("OpenCV", "FaceDetectorYN initialized successfully!");
-                }
+//                if (faceDetector == null) {
+//                    Log.e("OpenCV", "Failed to create FaceDetectorYN!");
+//                    (Toast.makeText(this, "Failed to create FaceDetectorYN!", Toast.LENGTH_LONG)).show();
+//                } else {
+//                    Log.i("OpenCV", "FaceDetectorYN initialized successfully!");
+//                }
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
