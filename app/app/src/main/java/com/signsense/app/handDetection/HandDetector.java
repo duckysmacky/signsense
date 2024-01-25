@@ -3,12 +3,16 @@ package com.signsense.app.handDetection;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+import androidx.camera.core.impl.utils.ContextUtil;
+import androidx.core.content.ContentProviderCompat;
 import com.google.mediapipe.framework.image.BitmapImageBuilder;
 import com.google.mediapipe.framework.image.MPImage;
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark;
 import com.google.mediapipe.tasks.core.BaseOptions;
+import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult;
+import com.signsense.app.CameraActivity;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
@@ -28,7 +32,7 @@ public class HandDetector {
     private float detectionCon = 0.5f;
     private float trackCon = 0.5f;
     private List<Integer> tipIds = new ArrayList<>();
-    //private Context context;
+    private Context context = null;
 
     private MPImage image;
 
@@ -38,7 +42,8 @@ public class HandDetector {
 
 
 
-    public HandDetector(/*boolean mode, int maxHands, int modelComplexity, float detectionCon, float trackCon*/) {
+    public HandDetector(Context context/*, boolean mode, int maxHands, int modelComplexity, float detectionCon, float trackCon*/) {
+        this.context = context.getApplicationContext();
 //        this.mode = mode;
 //        this.maxHands = maxHands;
 //        this.modelComplexity = modelComplexity;
@@ -58,8 +63,9 @@ public class HandDetector {
         }
 
         // Setting up the HandLandmarker
-        handLandmarker = createFromOptions(this, HandLandmarkerOptions.builder()
+        handLandmarker = createFromOptions(this.context, HandLandmarkerOptions.builder()
                 .setBaseOptions(baseOptions)
+                .setRunningMode(RunningMode.IMAGE)
                 .setNumHands(maxHands)
                 .setMinHandDetectionConfidence(detectionCon)
                 .setMinTrackingConfidence(trackCon)
@@ -68,7 +74,7 @@ public class HandDetector {
     }
 
     public List<Float> findHands(Mat frame, boolean draw) {
-        int timestampMs = 1;
+        int timestampMs = 1000;
 
         // Converting OpenCV Mat to Bitmap to Mediapipe MPImage
         Bitmap bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888);
@@ -76,7 +82,7 @@ public class HandDetector {
         image = new BitmapImageBuilder(bitmap).build();
 
         // Detecting hand
-        result = handLandmarker.detectForVideo(image, timestampMs);
+        result = handLandmarker.detect(image);
         List<Float> landmarks = new ArrayList<>();
 
         // Adding tip coordinates to list of landmark

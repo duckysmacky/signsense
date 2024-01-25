@@ -40,7 +40,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         toggleFlash = findViewById(R.id.button_toggleFlash);
         flipCamera = findViewById(R.id.button_flipCamera);
 
-        handDetector = new HandDetector();
+        handDetector = new HandDetector(getApplicationContext());
 
         askPermissions();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
