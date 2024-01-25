@@ -8,11 +8,11 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import com.signsense.app.handDetection.HandDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
-import org.opencv.objdetect.FaceDetectorYN;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,14 +25,11 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     private static final String TAG = "Camera"; // Tag for debug log
 
     private ImageButton toggleFlash, flipCamera;
-
     private CameraBridgeViewBase cameraView;
-
-    private FaceDetectorYN faceDetector;
 
     private Mat greyFrame, rgbFrame, bgrFrame, scaledFrame;
 
-    private float scaleOffset = 2f; // Offset for scaling, for some reason we need to divide / multiply a lot of things by it, so it renders correctly
+    private HandDetector handDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +39,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         cameraView = findViewById(R.id.cameraView);
         toggleFlash = findViewById(R.id.button_toggleFlash);
         flipCamera = findViewById(R.id.button_flipCamera);
+
+        handDetector = new HandDetector();
 
         askPermissions();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -90,6 +89,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) { // On each new frame
                 rgbFrame = inputFrame.rgba();
                 greyFrame = inputFrame.gray();
+
+                handDetector.findHands(rgbFrame, true);
 
                 return rgbFrame;
             }
