@@ -1,6 +1,20 @@
 import cv2
 import mediapipe as mp
 import math
+import torch
+
+class SignLanguageNet(torch.nn.Module):
+    def __init__(self, in_features, hidden_layer1, hidden_layer2, out_features):
+        super().__init__()
+        self.fc1 = torch.nn.Linear(in_features, hidden_layer1)
+        self.fc2 = torch.nn.Linear(hidden_layer1, hidden_layer2)
+        self.fc3 = torch.nn.Linear(hidden_layer2, out_features)
+    
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.fc2(x)
+        x = self.fc3(x)
+        return x
 
 class handDetector():
 	def __init__(self, mode=False, maxHands=1, modelComplexity=1, detectionCon=0.5, trackCon=0.5):
@@ -18,11 +32,22 @@ class handDetector():
 	def findHands(self, img, draw=True):
 		imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 		self.results = self.hands.process(imgRGB)
+		lmlist = []
 		if self.results.multi_hand_landmarks:
 			for handLms in self.results.multi_hand_landmarks:
+				lmlist.append(handLms.landmark[4].x)
+				lmlist.append(handLms.landmark[4].y)
+				lmlist.append(handLms.landmark[8].x)
+				lmlist.append(handLms.landmark[8].y)
+				lmlist.append(handLms.landmark[12].x)
+				lmlist.append(handLms.landmark[12].y)
+				lmlist.append(handLms.landmark[16].x)
+				lmlist.append(handLms.landmark[16].y)
+				lmlist.append(handLms.landmark[20].x)
+				lmlist.append(handLms.landmark[20].y)
 				if draw:
 					self.mpDraw.draw_landmarks(img, handLms, self.mpHands.HAND_CONNECTIONS)
-		return img
+		return img, lmlist
 
 	def findPosition(self, img, handNo=0, draw=True):
 		xList = []
@@ -45,6 +70,7 @@ class handDetector():
 
 			if draw:
 				cv2.rectangle(img, (bbox[0]-20, bbox[1]-20), (bbox[2]+20, bbox[3]+20), (0, 255, 0), 2)
+			print(self.results.multi_hand_landmarks)
 		return self.lmList, bbox
 
 	def findDistance(self, p1, p2, img, draw=True):
@@ -61,28 +87,17 @@ class handDetector():
 		length = math.hypot(x2-x1, y2-y1)
 		return length, img, [x1, y1, x2, y2, cx, cy]
 
-	def fingersUp(self):
-		fingers = []
-		
-		# Thumb
-		if self.lmList[self.tipIds[0]][1] < self.lmList[self.tipIds[0]-1][1]:
-			fingers.append(1)
-		else:
-			fingers.append(0)
-
-		# 4 Fingers
-		for id in range(1,5):
-			if self.lmList[self.tipIds[id]][2] < self.lmList[self.tipIds[id]-2][2]:
-				fingers.append(1)
-			else:
-				fingers.append(0)
-		return fingers
-
 def main():
+	model = torch.load("model.pt")
 	detector = handDetector()
+	cap = cv2.VideoCapture(0)
 	while True:
-		img = cv2.imread("./alg/test.jpg")
-		img = detector.findHands(img)
+		_, img = cap.read()
+		img, tips = detector.findHands(img)
+
+		if tips:
+			res = model(torch.tensor(tips)).flatten().tolist()
+			print(res.index(max(res))) # this doesnt actually give a correct result i just needed to print something
 
 		cv2.imshow("Image", img)
 		cv2.waitKey(1)
