@@ -2,9 +2,14 @@ package com.signsense.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
+<<<<<<< HEAD
 import androidx.camera.core.ExperimentalZeroShutterLag;
+=======
+import org.opencv.android.OpenCVLoader;
+>>>>>>> devapp-opencv
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,10 +17,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!OpenCVLoader.initLocal()) {
+            Log.e("OpenCV", "Unable to load OpenCV!");
+        } else {
+            Log.d("OpenCV", "OpenCV loaded Successfully!");
+        }
     }
 
     public void switchCamera(View view) { // Launches the camera part
         Intent cameraActivity = new Intent(this, CameraActivity.class);
         startActivity(cameraActivity);
+    }
+
+    public void switchImageSelector(View view) { // Launch Image selector
+        Intent imageSelectorActivity = new Intent(this, ImageSelectorActivity.class);
+        startActivity(imageSelectorActivity);
     }
 }

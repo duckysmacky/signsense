@@ -2,181 +2,154 @@ package com.signsense.app;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.view.View;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import androidx.camera.core.*;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
-import com.google.common.util.concurrent.ListenableFuture;
+import androidx.camera.core.ImageCapture;
 import org.jetbrains.annotations.NotNull;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.Size;
+import org.opencv.objdetect.FaceDetectorYN;
 
-import java.io.File;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 
-public class CameraActivity extends AppCompatActivity {
 
-    Queue<HashMap<String, File>> images = new LinkedList<>();
+public class CameraActivity extends org.opencv.android.CameraActivity {
+    private static final String TAG = "Hand-Detection"; // Tag for debug log
 
-    ImageButton capturePhoto, toggleFlash, flipCamera;
-    int cameraFacing = CameraSelector.LENS_FACING_BACK;
-    private PreviewView previewView;
-    private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult( // Makes a variable so we can ask permissions with it when we need it
-            new ActivityResultContracts.RequestPermission(), // Requests permission to grant permissions 💀
-            new ActivityResultCallback<Boolean>() { // Check for callback -> if got positive reply, start the camera
-                @Override
-                public void onActivityResult(Boolean result) {
-                    if (result) {
-                        startCamera(cameraFacing);
-                    }
-                }
-            }
-    );
+    private ImageButton capturePhoto, toggleFlash, flipCamera;
+
+    private CameraBridgeViewBase cameraView;
+
+    private MatOfByte modelBuffer;
+    private MatOfByte configBuffer;
+    private FaceDetectorYN faceDetector;
+
+    private Mat greyFrame, rgbFrame, bgrFrame, scaledFrame;
+
+    private float scaleOffset = 2f; // Offset for scaling, for some reason we need to div / mult a lot of things by it so it renders correctly
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-        // Assign views
-        previewView = findViewById(R.id.cameraPreview);
-        capturePhoto = findViewById(R.id.button_capturePhoto);
+        cameraView = findViewById(R.id.cameraView);
         toggleFlash = findViewById(R.id.button_toggleFlash);
         flipCamera = findViewById(R.id.button_flipCamera);
 
-        // Check for CAMERA permission in this Activity -> if doesn't have, ask for permission, else start camera
-        if (ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            activityResultLauncher.launch(Manifest.permission.CAMERA); // Ask for permission
-        } else {
-            startCamera(cameraFacing);
-        }
+        askPermissions();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        flipCamera.setOnClickListener(new View.OnClickListener() { // Check for clicks and rotates camera accordingly
+        startCamera();
+    }
+
+    @Override
+    protected List<CameraBridgeViewBase> getCameraViewList() { // Returns our cameraView View (single one, in case we have many)
+        return Collections.singletonList(cameraView);
+    }
+    // Enabling /  Disabling camera based on app state
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cameraView.enableView();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cameraView.disableView();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cameraView.disableView();
+    }
+
+    private void startCamera() {
+        cameraView.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
+
             @Override
-            public void onClick(View view) {
-                if (cameraFacing == CameraSelector.LENS_FACING_BACK) {
-                    cameraFacing = CameraSelector.LENS_FACING_FRONT;
-                } else {
-                    cameraFacing = CameraSelector.LENS_FACING_BACK;
-                }
-                startCamera(cameraFacing);
+            public void onCameraViewStarted(int width, int height) {
+                greyFrame = new Mat();
+                rgbFrame = new Mat();
+            }
+
+            @Override
+            public void onCameraViewStopped() {
+                greyFrame.release();
+                rgbFrame.release();
+            }
+
+            @Override
+            public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) { // On each new frame
+                rgbFrame = inputFrame.rgba();
+                greyFrame = inputFrame.gray();
+
+                return rgbFrame;
             }
         });
-    }
 
-    public void startCamera(int cameraFacing) { // Func to launch camera
-        int aspectRatio = aspectRatio(previewView.getWidth(), previewView.getHeight()); // Set aspect ratio
+        if (OpenCVLoader.initDebug()) {
+            cameraView.enableView();
 
-        // Init a Future to add listeners to and chain them
-        // This Future is Listenable (for listeners) and initialized by the ProcessCameraProvider, with this Activity as a base for the camera
-        // CameraProvider is basically a skeleton to build upon to set up our camera
-        ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-
-        cameraProviderFuture.addListener(() -> { // Adding a listener into an empty lambda
             try {
-                ProcessCameraProvider cameraProvider = (ProcessCameraProvider) cameraProviderFuture.get();
-                // Getting the Camera Provider back from Future (idk why not 💀)
+                InputStream is = getResources().openRawResource(R.raw.face_detection_yunet_2023mar); // Get the model
 
-                Preview preview = new Preview.Builder() // Init a new class to show camera picture (aka what user sees)
-                        .setTargetAspectRatio(aspectRatio) // Setting aspect rotation for preview
-                        .build();
+                // 1. We create a byte array (size of how many bytes we can read from file) as our buffer for read data from the model file
+                // 2. We create bytesRead which will store how many bytes were actually read when we call the read() method on our InputStream object
+                // 3. We use the read() method on our InputStream object to read data from the model file into our byte array
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                int bytesRead = is.read(buffer);
+                is.close();
 
-                CameraSelector cameraSelector = new CameraSelector.Builder() // Init a new class to select our camera as input (I guess? 😴)
-                        .requireLensFacing(cameraFacing) // Making sure the camera faces the right way
-                        .build();
+                modelBuffer = new MatOfByte(buffer); // Pass our bytes to ModelBuffer
+                configBuffer = new MatOfByte();
 
-                ImageCapture imageCapture = new ImageCapture.Builder() // Init a new class for taking pictures and saving them
-                        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY) // Capture mode to the lowest latency
-                        .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation()) // Make the final picture the same rotation as device
-                        .build();
+                faceDetector = FaceDetectorYN.create("onnx", modelBuffer, configBuffer, new Size(320, 320));
+                //Initiating a FaceDetector based on ONNX model
 
-                cameraProvider.unbindAll(); // Closes every currently opened camera, so we can assign new value to it
+                if (faceDetector == null) {
+                    Log.e("OpenCV", "Failed to create FaceDetectorYN!");
+                    (Toast.makeText(this, "Failed to create FaceDetectorYN!", Toast.LENGTH_LONG)).show();
+                } else {
+                    Log.i("OpenCV", "FaceDetectorYN initialized successfully!");
+                }
 
-                preview.setSurfaceProvider(previewView.getSurfaceProvider()); // Set surface (place where the preview will be shown)
-
-                Camera camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture); // Finally comes the Camera 🎉🎉
-                // Init a new Camera using CameraProvider we set up earlier: binding it to the current Activity and adding all the previously created camera parts
-
-                capturePhoto.setOnClickListener(new View.OnClickListener() { // Click listener to take pics
-                    @Override
-                    public void onClick(View view) {
-                        // Requesting permission -> if doesn't have it - ask for it, if does have it - take a picture
-                        if (ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                            activityResultLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                        } else {
-                            takePicture(imageCapture); // Calls a func to take pic with set up ImageCapture
-                        }
-                    }
-                });
-
-                toggleFlash.setOnClickListener(new View.OnClickListener() { // Click listener for flash
-                    @Override
-                    public void onClick(View view) {
-                        setFlashIcon(camera); // Calls a func to change flash for current Camera
-                    }
-                });
-
-            } catch (ExecutionException | InterruptedException e) {} // Oh yeah we did everything in try-catch because dumb phone go boom
-        }, ContextCompat.getMainExecutor(this)); // Set Executor (which will run the thread to handle all of the bullshit above) to this Activity
-    }
-
-    public void takePicture(ImageCapture imageCapture) { // Taking pictures
-        // Init a new file which will save to device's external files directory with name of current time (and .jpg extention)
-        final File file = new File(getExternalFilesDir(null), System.currentTimeMillis() + ".jpg");
-
-        // Configure ImageCapture's File Output to be the file we declated above
-        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
-
-        // This is some intergalactic shit that I don't get, but we run takePicture func on our Image Capture with Output Options,
-        // Executor (which runs some kind of CachedThreadPool🤓) and init a new Callback when we save the image
-        imageCapture.takePicture(outputFileOptions, Executors.newCachedThreadPool(),
-                new ImageCapture.OnImageSavedCallback() {
-                    @Override
-                    public void onImageSaved(@NonNull @NotNull ImageCapture.OutputFileResults outputFileResults) {
-                        Toast.makeText(CameraActivity.this, "Image saved at: " + file.getPath(), Toast.LENGTH_SHORT).show();
-
-                        Uri imageUri = outputFileResults.getSavedUri();
-
-                        startCamera(cameraFacing);
-                    }
-                    @Override
-                    public void onError(@NonNull @NotNull ImageCaptureException exception) { // If any error occurs
-                        Toast.makeText(CameraActivity.this, "Failed to save: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                        // haha looser your pic didnt save
-                        startCamera(cameraFacing);
-                    }
-                });
-    }
-
-    private void setFlashIcon(Camera camera) { // Toggling flash idk at this point im so done
-        if (camera.getCameraInfo().hasFlashUnit()) { // Check for flash on camera
-            if (camera.getCameraInfo().getTorchState().getValue() == 0) { // If off, turn on, blah blah blah you know the deal
-                camera.getCameraControl().enableTorch(true);
-                toggleFlash.setImageResource(R.drawable.baseline_flash_off_24);
-            } else {
-                camera.getCameraControl().enableTorch(false);
-                toggleFlash.setImageResource(R.drawable.baseline_flash_on_24);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("OpenCV", "Failed to ONNX model from resources! Exception thrown: " + e);
+                (Toast.makeText(this, "Failed to ONNX model from resources!", Toast.LENGTH_LONG)).show();
+                return;
             }
-        } else { // who tf doesnt have flash on their camera 💀💀
-            Toast.makeText(CameraActivity.this, "Flash is not currently available", Toast.LENGTH_SHORT).show(); // nah but really
         }
     }
 
-    private int aspectRatio(int width, int height) {
-        double previewRatio = (double) Math.max(width, height) / Math.min(width, height);
-        if (Math.abs(previewRatio - 4.0 / 3.0) <= Math.abs(previewRatio - 16.0 / 9.0)) { // Don't ask me what it does 💀
-            return AspectRatio.RATIO_4_3;
+    // Permission asking
+    private void askPermissions() {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, 103);
         }
-        return AspectRatio.RATIO_16_9;
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 103 && grantResults.length > 0) { // Check if the code is for askPermissions and availability to grant is there
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) { // If we haven't already granted this permission ask for it again
+                askPermissions();
+            }
+        }
     }
 }

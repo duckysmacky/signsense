@@ -21,8 +21,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <androidx.camera.view.PreviewView
-            android:id="@+id/cameraPreview"
+        <org.opencv.android.JavaCameraView
+            android:id="@+id/cameraView"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -31,52 +31,36 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/button_flipCamera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/label_flip_button"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:scaleType="fitCenter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_toggleFlash"
-            app:srcCompat="@drawable/round_flip_camera_android_24"
-            app:tint="#fff" />
+                android:id="@+id/button_flipCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/label_flip_button"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_toggleFlash"
+                app:srcCompat="@drawable/round_flip_camera_android_24"
+                app:tint="#fff" android:visibility="invisible"/>
 
         <ImageButton
-            android:id="@+id/button_toggleFlash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/label_flash_button"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:scaleType="fitCenter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/baseline_flash_on_24"
-            app:tint="#fff" />
-
-        <ImageButton
-            android:id="@+id/button_capturePhoto"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Capture Photo"
-            android:scaleType="fitCenter"
-            android:src="@drawable/round_camera_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:tint="#fff" />
+                android:id="@+id/button_toggleFlash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/label_flash_button"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_flash_on_24"
+                app:tint="#fff" android:visibility="invisible"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -102,7 +86,7 @@
             android:fontFamily="@font/roboto_mono_bold"
             android:text="Sample sign translation"
             android:textAlignment="center"
-            android:textColor="@android:color/system_accent2_900"
+            android:textColor="@android:color/black"
             android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
