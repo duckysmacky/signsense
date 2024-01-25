@@ -5,11 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
-<<<<<<< HEAD
-import androidx.camera.core.ExperimentalZeroShutterLag;
-=======
 import org.opencv.android.OpenCVLoader;
->>>>>>> devapp-opencv
 
 public class MainActivity extends AppCompatActivity {
 

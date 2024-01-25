@@ -8,13 +8,10 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.camera.core.ImageCapture;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.Size;
 import org.opencv.objdetect.FaceDetectorYN;
 
 import java.io.FileNotFoundException;
@@ -25,19 +22,17 @@ import java.util.List;
 
 
 public class CameraActivity extends org.opencv.android.CameraActivity {
-    private static final String TAG = "Hand-Detection"; // Tag for debug log
+    private static final String TAG = "Camera"; // Tag for debug log
 
-    private ImageButton capturePhoto, toggleFlash, flipCamera;
+    private ImageButton toggleFlash, flipCamera;
 
     private CameraBridgeViewBase cameraView;
 
-    private MatOfByte modelBuffer;
-    private MatOfByte configBuffer;
     private FaceDetectorYN faceDetector;
 
     private Mat greyFrame, rgbFrame, bgrFrame, scaledFrame;
 
-    private float scaleOffset = 2f; // Offset for scaling, for some reason we need to div / mult a lot of things by it so it renders correctly
+    private float scaleOffset = 2f; // Offset for scaling, for some reason we need to divide / multiply a lot of things by it, so it renders correctly
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +53,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     protected List<CameraBridgeViewBase> getCameraViewList() { // Returns our cameraView View (single one, in case we have many)
         return Collections.singletonList(cameraView);
     }
-    // Enabling /  Disabling camera based on app state
+
+    // Enabling / Disabling camera based on app state
     @Override
     protected void onResume() {
         super.onResume();
@@ -113,26 +109,12 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 int bytesRead = is.read(buffer);
                 is.close();
 
-                modelBuffer = new MatOfByte(buffer); // Pass our bytes to ModelBuffer
-                configBuffer = new MatOfByte();
-
-                faceDetector = FaceDetectorYN.create("onnx", modelBuffer, configBuffer, new Size(320, 320));
-                //Initiating a FaceDetector based on ONNX model
-
-                if (faceDetector == null) {
-                    Log.e("OpenCV", "Failed to create FaceDetectorYN!");
-                    (Toast.makeText(this, "Failed to create FaceDetectorYN!", Toast.LENGTH_LONG)).show();
-                } else {
-                    Log.i("OpenCV", "FaceDetectorYN initialized successfully!");
-                }
-
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e("OpenCV", "Failed to ONNX model from resources! Exception thrown: " + e);
+                Log.e(TAG, "Failed to ONNX model from resources! Exception thrown: " + e);
                 (Toast.makeText(this, "Failed to ONNX model from resources!", Toast.LENGTH_LONG)).show();
-                return;
             }
         }
     }
@@ -143,6 +125,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 103);
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
