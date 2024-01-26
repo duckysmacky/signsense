@@ -3,8 +3,6 @@ package com.signsense.app.handDetection;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
-import androidx.camera.core.impl.utils.ContextUtil;
-import androidx.core.content.ContentProviderCompat;
 import com.google.mediapipe.framework.image.BitmapImageBuilder;
 import com.google.mediapipe.framework.image.MPImage;
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark;
@@ -12,7 +10,6 @@ import com.google.mediapipe.tasks.core.BaseOptions;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult;
-import com.signsense.app.CameraActivity;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
@@ -56,13 +53,10 @@ public class HandDetector {
         }
 
         // Loading model
-        try {
-            baseOptions = BaseOptions.builder().setModelAssetPath("hand_landmarker.task").build();
-        } catch (Exception e) {
-            Log.e(TAG, "Error loading Hand Detector Model");
-        }
+        baseOptions = BaseOptions.builder().setModelAssetPath("hand_landmarker.task").build();
+        Log.i(TAG, "Successfully loaded Hand Detector Model " + baseOptions.toString());
 
-        // Setting up the HandLandmarker
+        // Setting up the Hand Landmarker
         handLandmarker = createFromOptions(this.context, HandLandmarkerOptions.builder()
                 .setBaseOptions(baseOptions)
                 .setRunningMode(RunningMode.IMAGE)
@@ -84,11 +78,12 @@ public class HandDetector {
         // Detecting hand
         result = handLandmarker.detect(image);
         List<Float> landmarks = new ArrayList<>();
+        Log.i(TAG, result.toString());
 
         // Adding tip coordinates to list of landmark
         if (result.landmarks().size() > 0) {
             for (List<NormalizedLandmark> landmark : result.landmarks()) {
-                for (int tipId : tipIds) { // Getting every tipID's X and Y
+                for (int tipId : tipIds) { // Getting X and Y for every tip
                     landmarks.add(landmark.get(tipId).x());
                     landmarks.add(landmark.get(tipId).y());
                 }
