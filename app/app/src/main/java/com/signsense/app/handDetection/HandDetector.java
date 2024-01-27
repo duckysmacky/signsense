@@ -2,11 +2,13 @@ package com.signsense.app.handDetection;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.SystemClock;
 import android.util.Log;
 import com.google.mediapipe.framework.image.BitmapImageBuilder;
 import com.google.mediapipe.framework.image.MPImage;
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark;
 import com.google.mediapipe.tasks.core.BaseOptions;
+import com.google.mediapipe.tasks.core.Delegate;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult;
@@ -53,7 +55,10 @@ public class HandDetector {
         }
 
         // Loading model
-        baseOptions = BaseOptions.builder().setModelAssetPath("hand_landmarker.task").build();
+        baseOptions = BaseOptions.builder()
+                .setModelAssetPath("hand_landmarker.task")
+                .setDelegate(Delegate.GPU) // ALL I HAD TO DO IS TO SET IT TO GPU AND NOW IT WORKS ASGAOGYHOAHGOA
+                .build();
         Log.i(TAG, "Successfully loaded Hand Detector Model " + baseOptions.toString());
 
         // Setting up the Hand Landmarker
@@ -63,21 +68,25 @@ public class HandDetector {
                 .setNumHands(maxHands)
                 .setMinHandDetectionConfidence(detectionCon)
                 .setMinTrackingConfidence(trackCon)
+                .setMinHandPresenceConfidence(0.5f)
                 .build()
         );
     }
 
-    public List<Float> findHands(Mat frame, boolean draw) {
-        int timestampMs = 1000;
+
+
+    public List<Float> findHands(Bitmap bitmap, boolean draw) {
+        long timestampMs = SystemClock.uptimeMillis();
 
         // Converting OpenCV Mat to Bitmap to Mediapipe MPImage
-        Bitmap bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(frame, bitmap);
+//        Bitmap bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888);
+//        Utils.matToBitmap(frame, bitmap);
         image = new BitmapImageBuilder(bitmap).build();
 
         // Detecting hand
         result = handLandmarker.detect(image);
         List<Float> landmarks = new ArrayList<>();
+        Log.i(TAG, handLandmarker.toString());
         Log.i(TAG, result.toString());
 
         // Adding tip coordinates to list of landmark

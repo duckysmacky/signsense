@@ -2,6 +2,7 @@ package com.signsense.app;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -12,6 +13,7 @@ import com.signsense.app.handDetection.HandDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
 import java.io.FileNotFoundException;
@@ -90,7 +92,10 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 rgbFrame = inputFrame.rgba();
                 greyFrame = inputFrame.gray();
 
-                handDetector.findHands(rgbFrame, true);
+                Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(rgbFrame, bitmap);
+
+                handDetector.findHands(bitmap, true);
 
                 return rgbFrame;
             }

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker;
 import com.signsense.app.handDetection.HandDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.Utils;
@@ -83,7 +84,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
 //                Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2GRAY); // Use OpenCV image processing to convert to grayscale
 //                Utils.matToBitmap(imageMat, imageBitmap); // Convert our image back from Mat to Bitmap
 
-                handDetector.findHands(imageMat, true);
+                handDetector.findHands(imageBitmap, true);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -98,7 +99,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
             imageMat = new Mat();
             Utils.bitmapToMat(imageBitmap, imageMat); // Convert our image for OpenCV usage (Mat)
 
-            handDetector.findHands(imageMat, true);
+            handDetector.findHands(imageBitmap, true);
         }
     }
 
