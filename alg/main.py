@@ -88,7 +88,7 @@ class handDetector():
 		return length, img, [x1, y1, x2, y2, cx, cy]
 
 def main():
-	model = torch.load("model.pt")
+	model = torch.load("./alg/model.pt")
 	detector = handDetector()
 	cap = cv2.VideoCapture(0)
 	while True:
@@ -96,8 +96,8 @@ def main():
 		img, tips = detector.findHands(img)
 
 		if tips:
-			res = model(torch.tensor(tips)).flatten().tolist()
-			print(res.index(max(res))) # this doesnt actually give a correct result i just needed to print something
+			res = model(torch.tensor(tips))
+			print(res.argmax())
 
 		cv2.imshow("Image", img)
 		cv2.waitKey(1)
