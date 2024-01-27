@@ -75,16 +75,11 @@ public class ImageSelectorActivity extends AppCompatActivity {
             // We also pass our selected image's data as URI (the same way we can store CameraX photos in CameraActivity)
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+
+                Utils.matToBitmap(handDetector.findHands(imageBitmap, true), imageBitmap);
+
                 photoPreview.setImageBitmap(imageBitmap); // Show image on screen
                 Log.i("Success", "Set new photo preview");
-
-                imageMat = new Mat();
-                Utils.bitmapToMat(imageBitmap, imageMat); // Convert our image for OpenCV usage (Mat)
-
-//                Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2GRAY); // Use OpenCV image processing to convert to grayscale
-//                Utils.matToBitmap(imageMat, imageBitmap); // Convert our image back from Mat to Bitmap
-
-                handDetector.findHands(imageBitmap, true);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

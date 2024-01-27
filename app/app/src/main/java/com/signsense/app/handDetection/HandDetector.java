@@ -14,6 +14,9 @@ import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,15 +76,15 @@ public class HandDetector {
         );
     }
 
-
-
-    public List<Float> findHands(Bitmap bitmap, boolean draw) {
+    public Mat findHands(Bitmap bitmap, boolean draw) {
         long timestampMs = SystemClock.uptimeMillis();
 
         // Converting OpenCV Mat to Bitmap to Mediapipe MPImage
 //        Bitmap bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888);
 //        Utils.matToBitmap(frame, bitmap);
         image = new BitmapImageBuilder(bitmap).build();
+        Mat frame = new Mat();
+        Utils.bitmapToMat(bitmap, frame);
 
         // Detecting hand
         result = handLandmarker.detect(image);
@@ -93,16 +96,27 @@ public class HandDetector {
         if (result.landmarks().size() > 0) {
             for (List<NormalizedLandmark> landmark : result.landmarks()) {
                 for (int tipId : tipIds) { // Getting X and Y for every tip
-                    landmarks.add(landmark.get(tipId).x());
-                    landmarks.add(landmark.get(tipId).y());
-                }
-                if (draw) {
-                    Log.i(TAG, "Draw Hand");
+                    float x = landmark.get(tipId).x();
+                    float y = landmark.get(tipId).y();
+                    landmarks.add(x);
+                    landmarks.add(y);
+                    if (draw) {
+                        // Drawing circles at the fingertips by finding coordinates via multiplication
+                        // E.g. we have 200 pixels wide screen and the fingertip X is 0.54, so we draw x at 200 * 0.54 = 108
+                        Imgproc.circle(
+                                frame,
+                                new Point(frame.width() * x, frame.height() * y),
+                                5, new Scalar(255, 0, 0, 255),
+                                10
+                        );
+                    }
                 }
             }
         }
 
         Log.i(TAG, landmarks.toString());
-        return landmarks;
+
+
+        return frame;
     }
 }

@@ -95,9 +95,9 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
                 Utils.matToBitmap(rgbFrame, bitmap);
 
-                handDetector.findHands(bitmap, true);
+                Mat newFrame = handDetector.findHands(bitmap, true);
 
-                return rgbFrame;
+                return newFrame;
             }
         });
 
