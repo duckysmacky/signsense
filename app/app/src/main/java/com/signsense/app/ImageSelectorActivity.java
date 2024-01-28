@@ -10,12 +10,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker;
 import com.signsense.app.handDetection.HandDetector;
+import com.signsense.app.handDetection.ImageAnalyser;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -23,14 +24,19 @@ import org.opencv.core.Mat;
 import java.io.IOException;
 
 public class ImageSelectorActivity extends AppCompatActivity {
-    Button selectPhoto, openCamera;
-    ImageView photoPreview;
-    Bitmap imageBitmap;
-    Mat imageMat; // OpenCV datatype for image processing
+    private static final String TAG = "ImageSelector"; // Tag for debug log
     int SELECTPHOTO_CODE = 100;
     int OPENCAMERA_CODE = 101;
 
+    private Button selectPhoto, openCamera;
+    private ImageView photoPreview;
+    private TextView resultText;
+
+    private Bitmap imageBitmap;
+    private Mat imageMat; // OpenCV datatype for image processing
+
     private HandDetector handDetector;
+    private ImageAnalyser imageAnalyser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +46,10 @@ public class ImageSelectorActivity extends AppCompatActivity {
         selectPhoto = findViewById(R.id.button_selectPhoto);
         openCamera = findViewById(R.id.button_openCamera);
         photoPreview = findViewById(R.id.photoPreview);
+        resultText = findViewById(R.id.text_selectorResult);
 
-        handDetector = new HandDetector(getApplicationContext());
+        //handDetector = new HandDetector(getApplicationContext(), 2, 0.5f, 0.5f);
+        imageAnalyser = new ImageAnalyser();
 
         askPermissions();
 
@@ -76,7 +84,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
 
-                Utils.matToBitmap(handDetector.findHands(imageBitmap, true), imageBitmap);
+                resultText.setText(imageAnalyser.analyse(imageBitmap));
 
                 photoPreview.setImageBitmap(imageBitmap); // Show image on screen
                 Log.i("Success", "Set new photo preview");
@@ -87,14 +95,15 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
         // Camera
         if (requestCode == OPENCAMERA_CODE && data != null) { // Check for the corresponding code and if user took a picture
-            imageBitmap = (Bitmap) data.getExtras().get("data"); // Get the data part of our photo and typecast it to Bitmap
-            photoPreview.setImageBitmap(imageBitmap); // Show image on screen
-            Log.i("Success", "Set new photo preview");
+            imageBitmap = (Bitmap) data.getExtras().get("data"); // Get the data part of our photo
 
             imageMat = new Mat();
             Utils.bitmapToMat(imageBitmap, imageMat); // Convert our image for OpenCV usage (Mat)
 
-            handDetector.findHands(imageBitmap, true);
+            resultText.setText(imageAnalyser.analyse(imageBitmap));
+
+            photoPreview.setImageBitmap(imageBitmap); // Show image on screen
+            Log.i("Success", "Set new photo preview");
         }
     }
 

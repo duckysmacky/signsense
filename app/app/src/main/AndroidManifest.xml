@@ -16,11 +16,6 @@
             android:theme="@style/Theme.SignSense"
             tools:targetApi="31">
         <activity
-                android:name=".HandsActivity"
-                android:exported="false"
-                android:label="Hand Detection"
-                android:parentActivityName=".MainActivity"/>
-        <activity
                 android:name=".ImageSelectorActivity"
                 android:exported="false"
                 android:label="Image Selector"

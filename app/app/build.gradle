@@ -22,12 +22,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     buildFeatures {
         viewBinding true
+    }
+    
+    packagingOptions {
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
     }
 }
 
@@ -57,4 +66,8 @@ dependencies {
 
     // Mediapipe
     implementation 'com.google.mediapipe:tasks-vision:latest.release'
+
+    // PyTorch
+    implementation 'org.pytorch:pytorch_android:2.1.0'
+    implementation 'org.pytorch:pytorch_android_torchvision:2.1.0'
 }

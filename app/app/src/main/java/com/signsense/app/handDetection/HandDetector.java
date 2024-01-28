@@ -27,13 +27,13 @@ import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.cr
 public class HandDetector {
     private static final String TAG = "HandDetector";
 
-    private boolean mode = false;
-    private boolean runOnGPU = false;
-    private int maxHands = 1;
-    private int modelComplexity = 1;
-    private float detectionCon = 0.5f;
-    private float trackCon = 0.5f;
+    private int maxHands;
+    private float detectionCon;
+    private float trackCon;
+
+    List<Float> landmarks = new ArrayList<>();
     private List<Integer> tipIds = new ArrayList<>();
+
     private Context context = null;
 
     private MPImage image;
@@ -42,15 +42,11 @@ public class HandDetector {
     private HandLandmarker handLandmarker;
     private HandLandmarkerResult result;
 
-
-
-    public HandDetector(Context context/*, boolean mode, int maxHands, int modelComplexity, float detectionCon, float trackCon*/) {
+    public HandDetector(Context context, int maxHands, float detectionCon, float trackCon) {
         this.context = context.getApplicationContext();
-//        this.mode = mode;
-//        this.maxHands = maxHands;
-//        this.modelComplexity = modelComplexity;
-//        this.detectionCon = detectionCon;
-//        this.trackCon = trackCon;
+        this.maxHands = maxHands;
+        this.detectionCon = detectionCon;
+        this.trackCon = trackCon;
 
         // Fingertip IDs (from nodes)
         for (int i = 4; i <= 20; i += 4) {
@@ -60,7 +56,7 @@ public class HandDetector {
         // Loading model
         baseOptions = BaseOptions.builder()
                 .setModelAssetPath("hand_landmarker.task")
-                .setDelegate(Delegate.GPU) // ALL I HAD TO DO IS TO SET IT TO GPU AND NOW IT WORKS ASGAOGYHOAHGOA
+                .setDelegate(Delegate.GPU) // ALL I HAD TO DO IS TO SET IT TO FUCKING GPU MODE AND NOW IT WORKS ASGAOGYHOAHGOA
                 .build();
         Log.i(TAG, "Successfully loaded Hand Detector Model " + baseOptions.toString());
 
@@ -79,18 +75,12 @@ public class HandDetector {
     public Mat findHands(Bitmap bitmap, boolean draw) {
         long timestampMs = SystemClock.uptimeMillis();
 
-        // Converting OpenCV Mat to Bitmap to Mediapipe MPImage
-//        Bitmap bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888);
-//        Utils.matToBitmap(frame, bitmap);
         image = new BitmapImageBuilder(bitmap).build();
         Mat frame = new Mat();
         Utils.bitmapToMat(bitmap, frame);
 
         // Detecting hand
         result = handLandmarker.detect(image);
-        List<Float> landmarks = new ArrayList<>();
-        Log.i(TAG, handLandmarker.toString());
-        Log.i(TAG, result.toString());
 
         // Adding tip coordinates to list of landmark
         if (result.landmarks().size() > 0) {
@@ -114,8 +104,8 @@ public class HandDetector {
             }
         }
 
+        Log.i(TAG, result.toString());
         Log.i(TAG, landmarks.toString());
-
 
         return frame;
     }
