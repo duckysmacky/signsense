@@ -1,5 +1,6 @@
 package com.signsense.app.handDetection;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import org.pytorch.IValue;
@@ -8,16 +9,22 @@ import org.pytorch.Module;
 import org.pytorch.Tensor;
 import org.pytorch.torchvision.TensorImageUtils;
 
+import java.io.*;
+
 public class ImageAnalyser {
     private static final String TAG = "ImageAnalyser"; // Tag for debug log
     private Module module;
 
-    public ImageAnalyser() {
+    private Context context;
+
+    public ImageAnalyser(Context context) {
+        Log.i(TAG, "Initialising Image Analyser");
+        this.context = context.getApplicationContext();
         // Loading model
         try {
-            module = Module.load("file:///android_asset/image_model.pt");
+            module = Module.load(assetFilePath(context, "image_model.pt"));
         } catch (Exception e) {
-            Log.e(TAG, "Error reading assets", e);
+            Log.e(TAG, "Error loading model");
         }
     }
 
@@ -49,5 +56,25 @@ public class ImageAnalyser {
         String resultText = ImageClasses.IMAGENET_CLASSES[maxScoreIdx];
 
         return resultText;
+    }
+
+    // Function for reading asset files because the default way is kinda broken
+    public static String assetFilePath(Context context, String assetName) throws IOException {
+        File file = new File(context.getFilesDir(), assetName);
+        if (file.exists() && file.length() > 0) {
+            return file.getAbsolutePath();
+        }
+
+        try (InputStream is = context.getAssets().open(assetName)) {
+            try (OutputStream os = new FileOutputStream(file)) {
+                byte[] buffer = new byte[4 * 1024];
+                int read;
+                while ((read = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, read);
+                }
+                os.flush();
+            }
+            return file.getAbsolutePath();
+        }
     }
 }

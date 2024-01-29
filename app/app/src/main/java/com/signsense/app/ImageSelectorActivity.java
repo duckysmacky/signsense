@@ -49,7 +49,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
         resultText = findViewById(R.id.text_selectorResult);
 
         //handDetector = new HandDetector(getApplicationContext(), 2, 0.5f, 0.5f);
-        imageAnalyser = new ImageAnalyser();
+        imageAnalyser = new ImageAnalyser(getApplicationContext());
 
         askPermissions();
 
@@ -100,7 +100,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
             imageMat = new Mat();
             Utils.bitmapToMat(imageBitmap, imageMat); // Convert our image for OpenCV usage (Mat)
 
-            resultText.setText(imageAnalyser.analyse(imageBitmap));
+            //resultText.setText(imageAnalyser.analyse(imageBitmap));
 
             photoPreview.setImageBitmap(imageBitmap); // Show image on screen
             Log.i("Success", "Set new photo preview");
