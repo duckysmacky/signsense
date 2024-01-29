@@ -1,4 +1,4 @@
-package com.signsense.app.handDetection;
+package com.signsense.app.analysis;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -32,7 +32,7 @@ public class HandDetector {
     private float trackCon;
 
     List<Float> landmarks = new ArrayList<>();
-    private List<Integer> tipIds = new ArrayList<>();
+    private int[] tipIds = new int[]{4, 8, 12, 16, 20}; // IDs for fingertips
 
     private Context context = null;
 
@@ -47,11 +47,6 @@ public class HandDetector {
         this.maxHands = maxHands;
         this.detectionCon = detectionCon;
         this.trackCon = trackCon;
-
-        // Fingertip IDs (from nodes)
-        for (int i = 4; i <= 20; i += 4) {
-            tipIds.add(i);
-        }
 
         // Loading model
         baseOptions = BaseOptions.builder()
@@ -108,5 +103,9 @@ public class HandDetector {
         Log.i(TAG, landmarks.toString());
 
         return frame;
+    }
+
+    public List<Float> getLandmarks() {
+        return landmarks;
     }
 }

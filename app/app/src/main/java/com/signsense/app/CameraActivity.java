@@ -4,21 +4,18 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
-import com.signsense.app.handDetection.HandDetector;
+import com.signsense.app.analysis.HandAnalyser;
+import com.signsense.app.analysis.HandDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,10 +25,12 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
     private ImageButton toggleFlash, flipCamera;
     private CameraBridgeViewBase cameraView;
+    private TextView translationText;
 
     private Mat greyFrame, rgbFrame;
 
     private HandDetector handDetector;
+    private HandAnalyser handAnalyser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +40,10 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         cameraView = findViewById(R.id.cameraView);
         toggleFlash = findViewById(R.id.button_toggleFlash);
         flipCamera = findViewById(R.id.button_flipCamera);
+        translationText = findViewById(R.id.text_signTranslation);
 
         handDetector = new HandDetector(getApplicationContext(), 2, 0.5f, 0.5f);
+        handAnalyser = new HandAnalyser(getApplicationContext());
 
         askPermissions();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -96,6 +97,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 Utils.matToBitmap(rgbFrame, bitmap);
 
                 Mat newFrame = handDetector.findHands(bitmap, true);
+                translationText.setText(handAnalyser.analyseHand(handDetector.getLandmarks()));
 
                 return newFrame;
             }
@@ -103,25 +105,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
         if (OpenCVLoader.initDebug()) {
             cameraView.enableView();
-
-            try {
-                InputStream is = getResources().openRawResource(R.raw.face_detection_yunet_2023mar); // Get the model
-
-                // 1. We create a byte array (size of how many bytes we can read from file) as our buffer for read data from the model file
-                // 2. We create bytesRead which will store how many bytes were actually read when we call the read() method on our InputStream object
-                // 3. We use the read() method on our InputStream object to read data from the model file into our byte array
-                int size = is.available();
-                byte[] buffer = new byte[size];
-                int bytesRead = is.read(buffer);
-                is.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Failed to ONNX model from resources! Exception thrown: " + e);
-                (Toast.makeText(this, "Failed to ONNX model from resources!", Toast.LENGTH_LONG)).show();
-            }
         }
     }
 

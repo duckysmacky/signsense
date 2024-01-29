@@ -1,4 +1,4 @@
-package com.signsense.app.handDetection;
+package com.signsense.app.analysis;
 
 public class ImageClasses {
     // A Java Class containing all possible image results

@@ -1,4 +1,4 @@
-package com.signsense.app.handDetection;
+package com.signsense.app.analysis;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,13 +13,13 @@ import java.io.*;
 
 public class ImageAnalyser {
     private static final String TAG = "ImageAnalyser"; // Tag for debug log
+    private final Context context;
     private Module module;
-
-    private Context context;
 
     public ImageAnalyser(Context context) {
         Log.i(TAG, "Initialising Image Analyser");
         this.context = context.getApplicationContext();
+
         // Loading model
         try {
             module = Module.load(assetFilePath(context, "image_model.pt"));
@@ -53,6 +53,7 @@ public class ImageAnalyser {
             }
         }
 
+        // Gets the name of the detected object by the highest score
         String resultText = ImageClasses.IMAGENET_CLASSES[maxScoreIdx];
 
         return resultText;
