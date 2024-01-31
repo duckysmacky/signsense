@@ -15,4 +15,5 @@
 
     <string name="title_activity_main" translatable="false">MainActivity</string>
     <string name="title_activity_translator" translatable="false">TranslatorActivity</string>
+    <string name="desc_signsense_logo">SignSense Wide Logo</string>
 </resources>

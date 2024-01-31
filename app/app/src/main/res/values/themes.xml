@@ -13,12 +13,15 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
     <style name="Theme.SignSense.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="Theme.SignSense.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
     <style name="Theme.SignSense.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
     <style name="Theme.SignSense.Fullscreen" parent="Theme.SignSense">
         <item name="android:actionBarStyle">@style/Widget.Theme.SignSense.ActionBar.Fullscreen</item>
         <item name="android:windowActionBarOverlay">true</item>
@@ -29,4 +32,5 @@
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
         <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
+
 </resources>
