@@ -18,6 +18,7 @@
 
     <color name="bg">#FFFEFEFE</color>
     <color name="primary">#CCD0CF</color>
+    <color name="primary_bg">#D6DEDC</color>
     <color name="primary_accent">#9BA8AB</color>
     <color name="secondary">#11212D</color>
     <color name="secondary_accent">#253745</color>

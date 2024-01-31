@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
+    android:background="@color/primary_bg"
     tools:context=".MainActivity">
 
     <ImageView
@@ -15,11 +15,11 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:scaleType="centerCrop"
-        android:tint="@color/darken"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/signsense_text_wide_trans" />
+        app:srcCompat="@drawable/signsense_text_wide_trans"
+        app:tint="@color/darken" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_switchButtons"
@@ -27,7 +27,7 @@
         android:layout_height="250dp"
         android:elevation="5dp"
         android:foregroundGravity="center"
-        app:cardBackgroundColor="@color/primary"
+        app:cardBackgroundColor="@color/primary_accent"
         app:cardCornerRadius="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
