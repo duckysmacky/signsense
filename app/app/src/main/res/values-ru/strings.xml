@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SignSense</string>
+    <string name="desc_flash_button">Вспышка</string>
+    <string name="desc_flip_button">Перевернуть камеру</string>
+    <string name="desc_openCamera_button">Открыть камеру</string>
+    <string name="desc_openSelector_button">Открыть медия</string>
+    <string name="desc_openInfo_button">Открыть информацию</string>
+    <string name="desc_openSettings_button">Открыть настройки</string>
+    <string name="label_openCamera_button">Переводчик</string>
+    <string name="label_openSelector_button">Выбор медия</string>
+    <string name="label_openInfo_button">Информация</string>
+    <string name="label_openSettings_button">Настройки</string>
+</resources>

@@ -30,4 +30,5 @@ public class MainActivity extends AppCompatActivity {
         Intent imageSelectorActivity = new Intent(this, ImageSelectorActivity.class);
         startActivity(imageSelectorActivity);
     }
+
 }

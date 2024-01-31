@@ -43,7 +43,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         translationText = findViewById(R.id.text_signTranslation);
 
         handDetector = new HandDetector(getApplicationContext(), 2, 0.5f, 0.5f);
-        handAnalyser = new HandAnalyser(getApplicationContext());
+        //TODO: fix hand analyser model
+        //handAnalyser = new HandAnalyser(getApplicationContext());
 
         askPermissions();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -97,7 +98,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 Utils.matToBitmap(rgbFrame, bitmap);
 
                 Mat newFrame = handDetector.findHands(bitmap, true);
-                translationText.setText(handAnalyser.analyseHand(handDetector.getLandmarks()));
+                //translationText.setText(handAnalyser.analyseHand(handDetector.getLandmarks()));
 
                 return newFrame;
             }
