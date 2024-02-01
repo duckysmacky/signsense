@@ -34,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
     public void switchImageSelector(View view) { // Launch Image selector
         Intent activity = new Intent(this, ImageSelectorActivity.class);
         startActivity(activity);
+
+        /*
+        TODO:
+         - Make video (media) selector instead of photo selector
+         */
     }
 
     public void switchSettings(View view) { // Launch Settings
@@ -45,5 +50,13 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         TextView appThemeText = (TextView) findViewById(R.id.text_appTheme);
         appThemeText.setText("Theme: " + preferences.getString("theme", ""));
+
+        /*
+        TODO:
+         - Add app settings
+         - Add model settings
+         - Change main activity to fragment (for settings loading)
+         - Add russian localisation
+         */
     }
 }

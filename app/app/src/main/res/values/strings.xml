@@ -30,16 +30,27 @@
     <!-- App Preferences -->
     <string name="pref_app_theme">App Theme</string>
     <array name="pref_app_theme_titles">
-        <item>Sync with device</item>
-        <item>Light Mode</item>
-        <item>Dark Mode</item>
+        <item name="pref_app_theme_titles_sync">Sync with device</item>
+        <item name="pref_app_theme_titles_light">Light Mode</item>
+        <item name="pref_app_theme_titles_dark">Dark Mode</item>
     </array>
     <array name="pref_app_theme_values">
         <item>sync</item>
         <item>light</item>
         <item>dark</item>
     </array>
+
     <string name="pref_app_language">App Language</string>
+    <array name="pref_app_language_titles">
+        <item name="pref_app_language_titles_default">Device Default</item>
+        <item>English</item>
+        <item>Russian (Русский)</item>
+    </array>
+    <array name="pref_app_language_values">
+        <item>default</item>
+        <item>english</item>
+        <item>russian</item>
+    </array>
 
     <!-- Translator Preferences -->
     <string name="pref_translator_draw">Visualize</string>
