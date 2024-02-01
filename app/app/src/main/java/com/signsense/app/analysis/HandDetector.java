@@ -27,14 +27,8 @@ import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.cr
 public class HandDetector {
     private static final String TAG = "HandDetector";
 
-    private int maxHands;
-    private float detectionCon;
-    private float trackCon;
-
-    List<Float> landmarks = new ArrayList<>();
-    private int[] tipIds = new int[]{4, 8, 12, 16, 20}; // IDs for fingertips
-
-    private Context context = null;
+    private List<Float> landmarks = new ArrayList<>();
+    private final int[] tipIds = new int[]{4, 8, 12, 16, 20}; // IDs for fingertips
 
     private MPImage image;
 
@@ -42,11 +36,8 @@ public class HandDetector {
     private HandLandmarker handLandmarker;
     private HandLandmarkerResult result;
 
-    public HandDetector(Context context, int maxHands, float detectionCon, float trackCon) {
-        this.context = context.getApplicationContext();
-        this.maxHands = maxHands;
-        this.detectionCon = detectionCon;
-        this.trackCon = trackCon;
+    public HandDetector(Context appContext, int maxHands, float detectionCon, float trackCon) {
+        Context context = appContext.getApplicationContext();
 
         // Loading model
         baseOptions = BaseOptions.builder()
@@ -56,7 +47,7 @@ public class HandDetector {
         Log.i(TAG, "Successfully loaded Hand Detector Model " + baseOptions.toString());
 
         // Setting up the Hand Landmarker
-        handLandmarker = createFromOptions(this.context, HandLandmarkerOptions.builder()
+        handLandmarker = createFromOptions(context, HandLandmarkerOptions.builder()
                 .setBaseOptions(baseOptions)
                 .setRunningMode(RunningMode.IMAGE)
                 .setNumHands(maxHands)
@@ -69,6 +60,7 @@ public class HandDetector {
 
     public Mat findHands(Bitmap bitmap, boolean draw) {
         long timestampMs = SystemClock.uptimeMillis();
+        landmarks = new ArrayList<>();
 
         image = new BitmapImageBuilder(bitmap).build();
         Mat frame = new Mat();
@@ -91,15 +83,14 @@ public class HandDetector {
                         Imgproc.circle(
                                 frame,
                                 new Point(frame.width() * x, frame.height() * y),
-                                5, new Scalar(255, 0, 0, 255),
+                                5,
+                                new Scalar(255, 0, 0, 255),
                                 10
                         );
                     }
                 }
             }
         }
-
-        Log.i(TAG, result.toString());
         Log.i(TAG, landmarks.toString());
 
         return frame;

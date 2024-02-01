@@ -3,15 +3,19 @@ package com.signsense.app;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.signsense.app.analysis.HandAnalyser;
 import com.signsense.app.analysis.HandDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -24,13 +28,18 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     private static final String TAG = "Camera"; // Tag for debug log
 
     private ImageButton toggleFlash, flipCamera;
-    private CameraBridgeViewBase cameraView;
+    private JavaCameraView cameraView;
     private TextView translationText;
 
     private Mat greyFrame, rgbFrame;
 
     private HandDetector handDetector;
     private HandAnalyser handAnalyser;
+
+    private Camera mCamera;
+    private Camera.Parameters parameters;
+    private CameraManager camManager;
+    private boolean flashlight = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,14 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
         askPermissions();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        toggleFlash.setOnClickListener(view -> {
+            if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+                toggleFlashlight();
+            } else {
+                Toast.makeText(this, "Flashlight is not available", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         startCamera();
     }
@@ -104,9 +121,18 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             }
         });
 
-        if (OpenCVLoader.initDebug()) {
+        if (OpenCVLoader.initLocal()) {
             cameraView.enableView();
         }
+    }
+
+    private void toggleFlashlight() {
+        if (flashlight) {
+            cameraView.turnOffTheFlash();
+        } else {
+            cameraView.turnOnTheFlash();
+        }
+        flashlight = !flashlight;
     }
 
     // Permission asking

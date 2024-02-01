@@ -8,18 +8,18 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/image_logo_widetext"
-        android:layout_width="400dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/signsense_text_wide_trans"
-        app:tint="@color/darken" />
+            android:id="@+id/image_logo_widetext"
+            android:layout_width="400dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/signsense_text_wide_trans"
+            app:tint="@color/darken"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_switchButtons"

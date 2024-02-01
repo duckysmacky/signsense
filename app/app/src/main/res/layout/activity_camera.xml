@@ -10,92 +10,103 @@
         tools:context=".CameraActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_camera"
-        android:layout_width="match_parent"
-        android:layout_height="525dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <org.opencv.android.JavaCameraView
-            android:id="@+id/cameraView"
+            android:id="@+id/layout_camera"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="475dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            android:background="@color/primary_accent">
+
+        <ImageButton
+                android:id="@+id/button_toggleFlash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/desc_flash_button"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/baseline_flash_on_24"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:elevation="50dp"
+                android:translationZ="10dp"
+                android:tint="@color/white"
+                android:layout_alignParentEnd="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintHorizontal_bias="1.0"
+                tools:ignore="UseAppTint"/>
 
         <ImageButton
                 android:id="@+id/button_flipCamera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/desc_flip_button"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
                 android:scaleType="fitCenter"
+                android:src="@drawable/round_flip_camera_android_24"
+                android:layout_marginEnd="16dp"
+                android:tint="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/button_toggleFlash"
-                app:srcCompat="@drawable/round_flip_camera_android_24"
-                app:tint="#fff" android:visibility="invisible"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintHorizontal_bias="1.0"
+                tools:ignore="UseAppTint"/>
 
-        <ImageButton
-                android:id="@+id/button_toggleFlash"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/desc_flash_button"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:scaleType="fitCenter"
+        <org.opencv.android.JavaCameraView
+                android:id="@+id/cameraView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/baseline_flash_on_24"
-                app:tint="#fff" android:visibility="invisible"/>
+                android:layout_marginBottom="8dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/primary_accent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_camera">
-
-        <TextView
-            android:id="@+id/text_signTranslation"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/roboto_mono_bold"
-            android:text="Sample sign translation"
-            android:textAlignment="center"
-            android:textColor="@color/secondary_accent"
-            android:textSize="22sp"
-            android:textStyle="bold"
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.07999998" />
+            app:layout_constraintTop_toBottomOf="@+id/layout_camera" android:background="@color/primary_accent">
+
+        <TextView
+                android:id="@+id/text_signTranslation"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Sample sign translation"
+                android:textAlignment="center"
+                android:textColor="@color/button_text_color"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.07999998" android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" android:background="@color/highlight"
+                android:fontFamily="sans-serif-black"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
