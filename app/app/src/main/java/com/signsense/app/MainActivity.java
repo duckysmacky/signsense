@@ -32,12 +32,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void switchImageSelector(View view) { // Launch Image selector
-        Intent activity = new Intent(this, ImageSelectorActivity.class);
+        Intent activity = new Intent(this, VideoActivity.class);
         startActivity(activity);
 
         /*
         TODO:
          - Make video (media) selector instead of photo selector
+         - Make separate function to detect hands on video
          */
     }
 
