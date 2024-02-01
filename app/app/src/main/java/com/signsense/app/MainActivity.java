@@ -1,10 +1,13 @@
 package com.signsense.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 import org.opencv.android.OpenCVLoader;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,16 +22,28 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d("OpenCV", "OpenCV loaded Successfully!");
         }
+
+        loadSettings();
     }
 
     public void switchCamera(View view) { // Launches the camera part
-        Intent cameraActivity = new Intent(this, CameraActivity.class);
-        startActivity(cameraActivity);
+        Intent activity = new Intent(this, CameraActivity.class);
+        startActivity(activity);
     }
 
     public void switchImageSelector(View view) { // Launch Image selector
-        Intent imageSelectorActivity = new Intent(this, ImageSelectorActivity.class);
-        startActivity(imageSelectorActivity);
+        Intent activity = new Intent(this, ImageSelectorActivity.class);
+        startActivity(activity);
     }
 
+    public void switchSettings(View view) { // Launch Settings
+        Intent activity = new Intent(this, SettingsActivity.class);
+        startActivity(activity);
+    }
+
+    private void loadSettings() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        TextView appThemeText = (TextView) findViewById(R.id.text_appTheme);
+        appThemeText.setText("Theme: " + preferences.getString("theme", ""));
+    }
 }
