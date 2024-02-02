@@ -1,13 +1,17 @@
 package com.signsense.app;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
+import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("OpenCV", "OpenCV loaded Successfully!");
         }
 
+        askPermissions();
         loadSettings();
     }
 
@@ -37,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
         /*
         TODO:
-         - Make video (media) selector instead of photo selector
          - Make separate function to detect hands on video
          */
     }
@@ -59,5 +63,22 @@ public class MainActivity extends AppCompatActivity {
          - Change main activity to fragment (for settings loading)
          - Add russian localisation
          */
+    }
+
+    // Permission asking
+    private void askPermissions() {
+        if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, 103);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 103 && grantResults.length > 0) { // Check if the code is for askPermissions and availability to grant is there
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) { // If we haven't already granted this permission ask for it again
+                askPermissions();
+            }
+        }
     }
 }

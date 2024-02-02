@@ -2,6 +2,8 @@ package com.signsense.app.analysis;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.util.Log;
 import com.google.mediapipe.framework.image.BitmapImageBuilder;
@@ -18,6 +20,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,17 +30,19 @@ import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.cr
 public class HandDetector {
     private static final String TAG = "HandDetector";
 
-    private List<Float> landmarks = new ArrayList<>();
     private final int[] tipIds = new int[]{4, 8, 12, 16, 20}; // IDs for fingertips
 
     private MPImage image;
 
     private BaseOptions baseOptions;
     private HandLandmarker handLandmarker;
-    private HandLandmarkerResult result;
+    private Context appContext;
 
-    public HandDetector(Context appContext, int maxHands, float detectionCon, float trackCon) {
-        Context context = appContext.getApplicationContext();
+    private boolean draw;
+
+    public HandDetector(Context context, RunningMode mode, boolean draw, int maxHands, float detectionCon, float trackCon, float presenceCon) {
+        appContext = context.getApplicationContext();
+        this.draw = draw;
 
         // Loading model
         baseOptions = BaseOptions.builder()
@@ -47,27 +52,26 @@ public class HandDetector {
         Log.i(TAG, "Successfully loaded Hand Detector Model " + baseOptions.toString());
 
         // Setting up the Hand Landmarker
-        handLandmarker = createFromOptions(context, HandLandmarkerOptions.builder()
+        handLandmarker = createFromOptions(appContext, HandLandmarkerOptions.builder()
                 .setBaseOptions(baseOptions)
-                .setRunningMode(RunningMode.IMAGE)
+                .setRunningMode(mode)
                 .setNumHands(maxHands)
                 .setMinHandDetectionConfidence(detectionCon)
                 .setMinTrackingConfidence(trackCon)
-                .setMinHandPresenceConfidence(0.5f)
+                .setMinHandPresenceConfidence(presenceCon)
                 .build()
         );
     }
 
-    public Mat findHands(Bitmap bitmap, boolean draw) {
-        long timestampMs = SystemClock.uptimeMillis();
-        landmarks = new ArrayList<>();
+    public List<Float> detectFrame(Bitmap bitmap) {
+        List<Float> landmarks = new ArrayList<>();
 
         image = new BitmapImageBuilder(bitmap).build();
         Mat frame = new Mat();
         Utils.bitmapToMat(bitmap, frame);
 
         // Detecting hand
-        result = handLandmarker.detect(image);
+        HandLandmarkerResult result = handLandmarker.detect(image);
 
         // Adding tip coordinates to list of landmark
         if (result.landmarks().size() > 0) {
@@ -93,10 +97,65 @@ public class HandDetector {
         }
         Log.i(TAG, landmarks.toString());
 
-        return frame;
+        return landmarks;
     }
 
-    public List<Float> getLandmarks() {
-        return landmarks;
+    public List<List<Float>> detectVideo(Uri videoUri, long interval) throws IOException {
+        List<List<Float>> landmarksList = new ArrayList<>();
+        List<Float> landmarks = new ArrayList<>();
+
+        // Setup retriever to get video data
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(appContext, videoUri);
+
+        // Set video length and start time
+        long videoLength = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        long startTime = SystemClock.uptimeMillis();
+
+        // Get the size of the video from the first frame
+        Bitmap frame = retriever.getFrameAtTime(0);
+        int width = frame.getWidth();
+        int height = frame.getHeight();
+
+        // Get the total frames we need to analyse based on interval (in ms) between them
+        List<List<Float>> results = new ArrayList<>();
+        int totalFrames = (int) (videoLength / interval);
+
+        // Loop through each frame and add result to results list
+        for (int i = 0; i < totalFrames; i++) {
+            long timeStamp = i * interval;
+            frame = retriever.getFrameAtTime(timeStamp, MediaMetadataRetriever.OPTION_CLOSEST);
+
+            //Convert frame to ARGB_8888 (required by damn mediapipe)
+            Bitmap aFrame = frame.copy(Bitmap.Config.ARGB_8888, false);
+
+            // Convert ARGB_8888 frame to MPImage
+            MPImage image = new BitmapImageBuilder(aFrame).build();
+
+            HandLandmarkerResult result = handLandmarker.detectForVideo(image, timeStamp);
+
+            // Adding tip coordinates to list of landmark
+            if (result.landmarks().size() > 0) {
+                for (List<NormalizedLandmark> landmark : result.landmarks()) {
+                    for (int tipId : tipIds) { // Getting X and Y for every tip
+                        float x = landmark.get(tipId).x();
+                        float y = landmark.get(tipId).y();
+                        landmarks.add(x);
+                        landmarks.add(y);
+                    }
+                }
+            }
+
+            Log.i(TAG, landmarks.toString());
+
+            // Add to the list of results
+            landmarksList.add(landmarks);
+        }
+
+        retriever.release();
+
+        Log.i(TAG, landmarksList.toString());
+
+        return landmarksList;
     }
 }

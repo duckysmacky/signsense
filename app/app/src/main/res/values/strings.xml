@@ -5,21 +5,22 @@
     <string name="desc_flash_button">Toggle Flash</string>
     <string name="desc_flip_button">Flip Camera</string>
     <string name="desc_openCamera_button">Open Camera</string>
-    <string name="desc_openSelector_button">Open Selector</string>
+    <string name="desc_openSelector_button">Open Video Selector</string>
     <string name="desc_openInfo_button">Open Information</string>
     <string name="desc_openSettings_button">Open Settings</string>
-    <string name="desc_signsense_logo">SignSense Wide Logo</string>\\\\\\\\\\\\
+    <string name="desc_signsense_logo">SignSense Wide Logo</string>
 
     <!-- Button Labels -->
     <string name="label_openCamera_button">Translator</string>
-    <string name="label_openSelector_button">Media Selector</string>
+    <string name="label_openVideo_button">Video Selector</string>
     <string name="label_openInfo_button">Info</string>
     <string name="label_openSettings_button">Settings</string>
+    <string name="lavel_selectVideo_button">Select Video</string>
 
     <!-- Activity and Fragment Titles -->
     <string name="title_activity_main">Main Menu</string>
     <string name="title_activity_translator">Translator</string>
-    <string name="title_activity_media">Media Selector</string>
+    <string name="title_activity_video">Video Selector</string>
     <string name="title_activity_info">Information</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -60,4 +61,6 @@
     <string name="pref_translator_language">Translation Language</string>
     <string name="pref_translator_language_desc">Sign language to translate</string>
 
+    <!-- Other -->
+    <string name="placeholder_translation">Sign translation here</string>
 </resources>

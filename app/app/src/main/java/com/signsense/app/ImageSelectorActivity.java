@@ -56,7 +56,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
         selectPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent fileExplorer = new Intent(Intent.ACTION_GET_CONTENT); // Create new intent for selecting files (content)
+                Intent fileExplorer = new Intent(Intent.ACTION_PICK); // Create new intent for selecting files (content)
                 fileExplorer.setType("image/*"); // Set type to get images
                 startActivityForResult(fileExplorer, SELECTPHOTO_CODE);
             }

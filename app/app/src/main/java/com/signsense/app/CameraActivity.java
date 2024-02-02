@@ -1,6 +1,5 @@
 package com.signsense.app;
 
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
@@ -10,10 +9,9 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
+import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.signsense.app.analysis.HandAnalyser;
 import com.signsense.app.analysis.HandDetector;
-import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
@@ -49,13 +47,21 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         cameraView = findViewById(R.id.cameraView);
         toggleFlash = findViewById(R.id.button_toggleFlash);
         flipCamera = findViewById(R.id.button_flipCamera);
-        translationText = findViewById(R.id.text_signTranslation);
+        translationText = findViewById(R.id.text_cameraTranslation);
 
-        handDetector = new HandDetector(getApplicationContext(), 2, 0.5f, 0.5f);
+        // Setup hand detection for frame (image) mode
+        handDetector = new HandDetector(
+                getApplicationContext(),
+                RunningMode.IMAGE,
+                true,
+                2,
+                0.5f,
+                0.5f,
+                0.5f
+        );
         //TODO: fix hand analyser model
         //handAnalyser = new HandAnalyser(getApplicationContext());
 
-        askPermissions();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         toggleFlash.setOnClickListener(view -> {
@@ -114,10 +120,10 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
                 Utils.matToBitmap(rgbFrame, bitmap);
 
-                Mat newFrame = handDetector.findHands(bitmap, true);
+                handDetector.detectFrame(bitmap);
                 //translationText.setText(handAnalyser.analyseHand(handDetector.getLandmarks()));
 
-                return newFrame;
+                return rgbFrame;
             }
         });
 
@@ -133,22 +139,5 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             cameraView.turnOnTheFlash();
         }
         flashlight = !flashlight;
-    }
-
-    // Permission asking
-    private void askPermissions() {
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, 103);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 103 && grantResults.length > 0) { // Check if the code is for askPermissions and availability to grant is there
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) { // If we haven't already granted this permission ask for it again
-                askPermissions();
-            }
-        }
     }
 }
