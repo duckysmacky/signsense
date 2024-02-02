@@ -39,11 +39,6 @@ public class MainActivity extends AppCompatActivity {
     public void switchImageSelector(View view) { // Launch Image selector
         Intent activity = new Intent(this, VideoActivity.class);
         startActivity(activity);
-
-        /*
-        TODO:
-         - Make separate function to detect hands on video
-         */
     }
 
     public void switchSettings(View view) { // Launch Settings
@@ -58,10 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         /*
         TODO:
-         - Add app settings
-         - Add model settings
          - Change main activity to fragment (for settings loading)
-         - Add russian localisation
+         - Load from settings to app
          */
     }
 

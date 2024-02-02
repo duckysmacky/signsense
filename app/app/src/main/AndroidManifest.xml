@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SignSense"
+        android:theme="@style/Theme.SignSense.NoActionBar"
         tools:targetApi="31">
         <activity
             android:name=".VideoActivity"

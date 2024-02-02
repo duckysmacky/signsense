@@ -44,13 +44,13 @@
     <string name="pref_app_language">App Language</string>
     <array name="pref_app_language_titles">
         <item name="pref_app_language_titles_default">Device Default</item>
-        <item>English</item>
         <item>Russian (Русский)</item>
+        <item>English</item>
     </array>
     <array name="pref_app_language_values">
         <item>default</item>
-        <item>english</item>
-        <item>russian</item>
+        <item>ru</item>
+        <item>en</item>
     </array>
 
     <!-- Translator Preferences -->
@@ -61,13 +61,16 @@
         <item>English</item>
     </array>
     <array name="pref_translator_language_values">
-        <item>russian</item>
-        <item>english</item>
+        <item>ru</item>
+        <item>en</item>
     </array>
     <string name="pref_translator_draw">Visualize</string>
     <string name="pref_translator_draw_desc">Draw dots on fingertips</string>
     <string name="pref_translator_hands">Hands</string>
     <string name="pref_translator_hands_desc">Amount of max hands to be detected</string>
+    <string name="pref_translator_detectionCon">Detection Confidence</string>
+    <string name="pref_translator_trackCon">Tracking Confidence</string>
+    <string name="pref_translator_presenseCon">Presence Confidence</string>
 
     <!-- Other -->
     <string name="placeholder_translation">Sign translation here</string>
