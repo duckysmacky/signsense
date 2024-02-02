@@ -54,12 +54,20 @@
     </array>
 
     <!-- Translator Preferences -->
+    <string name="pref_translator_language">Translation Language</string>
+    <string name="pref_translator_language_desc">Sign language to translate</string>
+    <array name="pref_translator_language_titles">
+        <item>Russian (Русский)</item>
+        <item>English</item>
+    </array>
+    <array name="pref_translator_language_values">
+        <item>russian</item>
+        <item>english</item>
+    </array>
     <string name="pref_translator_draw">Visualize</string>
     <string name="pref_translator_draw_desc">Draw dots on fingertips</string>
     <string name="pref_translator_hands">Hands</string>
     <string name="pref_translator_hands_desc">Amount of max hands to be detected</string>
-    <string name="pref_translator_language">Translation Language</string>
-    <string name="pref_translator_language_desc">Sign language to translate</string>
 
     <!-- Other -->
     <string name="placeholder_translation">Sign translation here</string>

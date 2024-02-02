@@ -5,13 +5,32 @@
             app:title="@string/pref_header_app">
 
         <ListPreference
-                android:key="theme"
                 android:defaultValue="sync"
                 android:title="@string/pref_app_theme"
                 android:entries="@array/pref_app_theme_titles"
                 android:entryValues="@array/pref_app_theme_values"
+                android:key="theme"
+                app:useSimpleSummaryProvider="true"/>
+        <ListPreference
+                android:defaultValue="default"
+                android:title="@string/pref_app_language"
+                android:entries="@array/pref_app_language_titles"
+                android:entryValues="@array/pref_app_language_values"
+                android:key="appLanguage"
                 app:useSimpleSummaryProvider="true"/>
 
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="Preference category">
+
+        <ListPreference
+                android:defaultValue="russian"
+                android:title="@string/pref_translator_language"
+                android:entries="@array/pref_translator_language_titles"
+                android:entryValues="@array/pref_translator_language_values"
+                android:key="translatorLanguage"
+                app:useSimpleSummaryProvider="true"
+                app:summary="@string/pref_translator_language_desc"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
