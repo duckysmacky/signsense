@@ -94,8 +94,9 @@ public class HandDetector {
                     }
                 }
             }
+
+            Log.i(TAG, landmarks.toString());
         }
-        Log.i(TAG, landmarks.toString());
 
         return landmarks;
     }
@@ -144,9 +145,9 @@ public class HandDetector {
                         landmarks.add(y);
                     }
                 }
-            }
 
-            Log.i(TAG, landmarks.toString());
+                Log.i(TAG, landmarks.toString());
+            }
 
             // Add to the list of results
             landmarksList.add(landmarks);

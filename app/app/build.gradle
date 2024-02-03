@@ -69,6 +69,5 @@ dependencies {
     implementation 'com.google.mediapipe:tasks-vision:latest.release'
 
     // PyTorch
-    implementation 'org.pytorch:pytorch_android:2.1.0'
-    implementation 'org.pytorch:pytorch_android_torchvision:2.1.0'
+    implementation 'org.pytorch:pytorch_android_lite:latest.release'
 }

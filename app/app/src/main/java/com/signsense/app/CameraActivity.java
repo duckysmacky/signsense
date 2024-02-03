@@ -1,5 +1,6 @@
 package com.signsense.app;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
@@ -51,7 +52,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(
-                getApplicationContext(),
+                this,
                 RunningMode.IMAGE,
                 true,
                 2,
@@ -59,8 +60,9 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 0.5f,
                 0.5f
         );
+
         //TODO: fix hand analyser model
-        //handAnalyser = new HandAnalyser(getApplicationContext());
+        handAnalyser = new HandAnalyser(getApplicationContext());
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -120,8 +122,9 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
                 Utils.matToBitmap(rgbFrame, bitmap);
 
-                handDetector.detectFrame(bitmap);
-                //translationText.setText(handAnalyser.analyseHand(handDetector.getLandmarks()));
+                List<Float> landmarks = handDetector.detectFrame(bitmap);
+                handAnalyser.analyseHand(landmarks);
+
 
                 return rgbFrame;
             }
