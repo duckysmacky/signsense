@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.util.Log;
 import androidx.preference.PreferenceManager;
 import com.google.mediapipe.framework.image.BitmapImageBuilder;
@@ -16,7 +15,6 @@ import com.google.mediapipe.tasks.core.Delegate;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult;
-import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -34,33 +32,29 @@ public class HandDetector {
 
     private final int[] tipIds = new int[]{4, 8, 12, 16, 20}; // IDs for fingertips
 
-    private MPImage image;
-
-    private BaseOptions baseOptions;
     private HandLandmarker handLandmarker;
     private Context appContext;
-
     private boolean draw;
-    private int maxHands;
-    private float detectionCon;
-    private float trackingCon;
-    private float presenceCon;
 
     public HandDetector(Context context, RunningMode mode) {
         this.appContext = context.getApplicationContext();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
+        // Loading from settings
         this.draw = preferences.getBoolean("draw", false);
-        this.maxHands = preferences.getInt("maxHands", 2);
-        this.detectionCon = (float) preferences.getInt("detectionCon", 50) / 100;
-        this.trackingCon = (float) preferences.getInt("trackingCon", 50) / 100;
-        this.presenceCon = (float) preferences.getInt("presenceCon", 50) / 100;
+        int maxHands = preferences.getInt("maxHands", 2);
+        float detectionCon = (float) preferences.getInt("detectionCon", 50) / 100;
+        float trackingCon = (float) preferences.getInt("trackingCon", 50) / 100;
+        float presenceCon = (float) preferences.getInt("presenceCon", 50) / 100;
 
         // Loading model
-        baseOptions = BaseOptions.builder()
+        // ALL I HAD TO DO IS TO SET IT TO FUCKING GPU MODE AND NOW IT WORKS ASGAOGYHOAHGOA
+        BaseOptions baseOptions = BaseOptions.builder()
                 .setModelAssetPath("hand_landmarker.task")
                 .setDelegate(Delegate.GPU) // ALL I HAD TO DO IS TO SET IT TO FUCKING GPU MODE AND NOW IT WORKS ASGAOGYHOAHGOA
                 .build();
+
+        // Logs
         Log.i(TAG, "Successfully loaded Hand Detector Model");
         Log.i(TAG, "Hand Detector Configuration:");
         Log.i(TAG, "Draw: " + draw);
@@ -84,9 +78,7 @@ public class HandDetector {
     public List<Float> detectFrame(Bitmap bitmap) {
         List<Float> landmarks = new ArrayList<>();
 
-        image = new BitmapImageBuilder(bitmap).build();
-        Mat frame = new Mat();
-        Utils.bitmapToMat(bitmap, frame);
+        MPImage image = new BitmapImageBuilder(bitmap).build();
 
         // Detecting hand
         HandLandmarkerResult result = handLandmarker.detect(image);
@@ -117,12 +109,6 @@ public class HandDetector {
 
         // Set video length and start time
         long videoLength = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        long startTime = SystemClock.uptimeMillis();
-
-        // Get the size of the video from the first frame
-        Bitmap frame = retriever.getFrameAtTime(0);
-        int width = frame.getWidth();
-        int height = frame.getHeight();
 
         // Get the total frames we need to analyse based on interval (in ms) between them
         List<List<Float>> results = new ArrayList<>();
@@ -131,7 +117,7 @@ public class HandDetector {
         // Loop through each frame and add result to results list
         for (int i = 0; i < totalFrames; i++) {
             long timeStamp = i * interval;
-            frame = retriever.getFrameAtTime(timeStamp, MediaMetadataRetriever.OPTION_CLOSEST);
+            Bitmap frame = retriever.getFrameAtTime(timeStamp, MediaMetadataRetriever.OPTION_CLOSEST);
 
             //Convert frame to ARGB_8888 (required by damn mediapipe)
             Bitmap aFrame = frame.copy(Bitmap.Config.ARGB_8888, false);

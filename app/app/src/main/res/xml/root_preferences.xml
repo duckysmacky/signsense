@@ -46,10 +46,10 @@
             app:min="1"
             app:showSeekBarValue="true" />
         <SeekBarPreference
-            android:title="@string/pref_translator_detectionCon"
             android:defaultValue="50"
             android:key="detectionCon"
             android:max="100"
+            android:title="@string/pref_translator_detectionCon"
             app:min="1"
             app:showSeekBarValue="true" />
         <SeekBarPreference

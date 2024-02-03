@@ -10,70 +10,69 @@
         tools:context=".CameraActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_camera"
-            android:layout_width="0dp"
-            android:layout_height="475dp"
+        android:id="@+id/layout_camera"
+        android:layout_width="0dp"
+        android:layout_height="450dp"
+        android:background="@color/primary_accent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageButton
+            android:id="@+id/button_toggleFlash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/desc_flash_button"
+            android:elevation="50dp"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/baseline_flash_on_24"
+            android:tint="@color/white"
+            android:translationZ="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:background="@color/primary_accent">
+            tools:ignore="UseAppTint" />
 
         <ImageButton
-                android:id="@+id/button_toggleFlash"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/desc_flash_button"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/baseline_flash_on_24"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:elevation="50dp"
-                android:translationZ="10dp"
-                android:tint="@color/white"
-                android:layout_alignParentEnd="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                app:layout_constraintHorizontal_bias="1.0"
-                tools:ignore="UseAppTint"/>
-
-        <ImageButton
-                android:id="@+id/button_flipCamera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/desc_flip_button"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/round_flip_camera_android_24"
-                android:layout_marginEnd="16dp"
-                android:tint="@color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_toggleFlash"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                app:layout_constraintHorizontal_bias="1.0"
-                tools:ignore="UseAppTint"/>
+            android:id="@+id/button_flipCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/desc_flip_button"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/round_flip_camera_android_24"
+            android:tint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_toggleFlash"
+            app:layout_constraintVertical_bias="0.0"
+            tools:ignore="UseAppTint" />
 
         <org.opencv.android.JavaCameraView
-                android:id="@+id/cameraView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-        />
+            android:id="@+id/cameraView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.cardview.widget.CardView
@@ -101,14 +100,120 @@
                     app:cardCornerRadius="10dp"
                     app:cardBackgroundColor="@color/highlight" app:layout_constraintTop_toTopOf="parent"
                     android:layout_marginTop="8dp" android:layout_marginBottom="8dp">
-                <TextView
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text_camera_translation_class_header"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" android:id="@+id/text_cameraTranslation"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
-                        android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:textAlignment="center"
-                        android:textStyle="bold" android:textColor="@color/button_text_color" android:textSize="18sp"
-                        android:text="@string/placeholder_translation"/>
+                        android:text="@string/translation_header"
+                        android:textAlignment="center"
+                        android:textColor="@color/button_text_color"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/text_camera_translation_class_header"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:text="@string/translation_class_header"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/text_camera_translation_class_value"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:text="@string/translation_class_placeholder"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/text_camera_translation_letter_header"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:text="@string/translation_letter_header"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/text_camera_translation_letter_value"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:text="@string/translation_letter_placeholder"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/text_camera_translation_word_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/translation_word_placeholder"
+                            android:textAlignment="center"
+                            android:textColor="@color/button_text_color"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

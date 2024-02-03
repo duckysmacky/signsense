@@ -1,6 +1,5 @@
 package com.signsense.app;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
@@ -48,7 +47,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         cameraView = findViewById(R.id.cameraView);
         toggleFlash = findViewById(R.id.button_toggleFlash);
         flipCamera = findViewById(R.id.button_flipCamera);
-        translationText = findViewById(R.id.text_cameraTranslation);
+        translationText = findViewById(R.id.text_video_translation_header);
 
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(this, RunningMode.IMAGE);

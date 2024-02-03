@@ -64,14 +64,20 @@
         <item>ru</item>
         <item>en</item>
     </array>
-    <string name="pref_translator_draw">Visualize</string>
+    <string name="pref_translator_draw">Visualization</string>
     <string name="pref_translator_draw_desc">Draw dots on fingertips</string>
     <string name="pref_translator_hands">Hands</string>
     <string name="pref_translator_hands_desc">Amount of max hands to be detected</string>
-    <string name="pref_translator_detectionCon">Detection Confidence</string>
-    <string name="pref_translator_trackCon">Tracking Confidence</string>
-    <string name="pref_translator_presenseCon">Presence Confidence</string>
+    <string name="pref_translator_detectionCon" translatable="false">Detection Confidence %</string>
+    <string name="pref_translator_trackCon" translatable="false">Tracking Confidence %</string>
+    <string name="pref_translator_presenseCon" translatable="false">Presence Confidence %</string>
 
-    <!-- Other -->
-    <string name="placeholder_translation">Sign translation here</string>
+    <!-- Translation -->
+    <string name="translation_header">Translation</string>
+    <string name="translation_class_header">Sign Class:</string>
+    <string name="translation_class_placeholder">[class]</string>
+    <string name="translation_letter_header">Letter:</string>
+    <string name="translation_letter_placeholder">[letter]</string>
+    <string name="translation_word_header">Word:</string>
+    <string name="translation_word_placeholder">[translated word]</string>
 </resources>

@@ -9,17 +9,17 @@
     tools:context=".VideoActivity">
 
     <VideoView
-            android:id="@+id/view_videoView"
-            android:layout_width="wrap_content"
-            android:layout_height="450dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"/>
+        android:id="@+id/view_videoView"
+        android:layout_width="wrap_content"
+        android:layout_height="400dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.cardview.widget.CardView
             android:layout_width="0dp"
@@ -39,34 +39,159 @@
                 android:layout_height="match_parent">
 
             <Button
-                    android:id="@+id/button_selectVideo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lavel_selectVideo_button"
-                    android:backgroundTint="@color/highlight"
-                    android:drawableLeft="@drawable/ic_menu_slideshow"
-                    android:drawablePadding="2dp"
-                    android:drawableTint="@color/button_text_color"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="8dp" app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.0" android:textColor="@color/button_text_color"/>
+                android:id="@+id/button_selectVideo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:backgroundTint="@color/highlight"
+                android:drawableLeft="@drawable/ic_menu_slideshow"
+                android:drawablePadding="2dp"
+                android:drawableTint="@color/button_text_color"
+                android:text="@string/lavel_selectVideo_button"
+                android:textColor="@color/button_text_color"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
             <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp" app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button_selectVideo"
-                    app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="16dp" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp" app:cardCornerRadius="10dp"
-                    app:cardBackgroundColor="@color/highlight">
-                <TextView
-                        android:text="@string/placeholder_translation"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="@color/highlight"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_selectVideo">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text_video_translation_header"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" android:id="@+id/text_cameraTranslation"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
-                        android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:textAlignment="center"
-                        android:textStyle="bold" android:textColor="@color/button_text_color" android:textSize="18sp"/>
+                        android:text="@string/translation_header"
+                        android:textAlignment="center"
+                        android:textColor="@color/button_text_color"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/text_video_translation_class_header"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_weight="1"
+                                android:text="@string/translation_class_header"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/text_video_translation_class_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_weight="1"
+                                android:text="@string/translation_class_placeholder"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/text_video_translation_letter_header"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_weight="1"
+                                android:text="@string/translation_letter_header"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/text_video_translation_letter_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_weight="1"
+                                android:text="@string/translation_letter_placeholder"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/text_video_translation_word_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/translation_word_placeholder"
+                            android:textAlignment="center"
+                            android:textColor="@color/button_text_color"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

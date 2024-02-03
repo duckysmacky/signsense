@@ -3,7 +3,7 @@
     <string name="desc_flash_button">Вспышка</string>
     <string name="desc_flip_button">Перевернуть камеру</string>
     <string name="desc_openCamera_button">Открыть камеру</string>
-    <string name="desc_openSelector_button">Открыть медия</string>
+    <string name="desc_openSelector_button">Открыть выбор видео</string>
     <string name="desc_openInfo_button">Открыть информацию</string>
     <string name="desc_openSettings_button">Открыть настройки</string>
     <string name="desc_signsense_logo">Логотип</string>
@@ -11,5 +11,27 @@
     <string name="label_openVideo_button">Выбор видео</string>
     <string name="label_openInfo_button">Информация</string>
     <string name="label_openSettings_button">Настройки</string>
-    <string name="lavel_selectVideo_button">Выбор выбор</string>
+    <string name="lavel_selectVideo_button">Выбрать видео</string>
+    <string name="title_activity_main">Главное меню</string>
+    <string name="title_activity_translator">Переводчик</string>
+    <string name="title_activity_video">Выбор видео</string>
+    <string name="title_activity_info">Информация</string>
+    <string name="title_activity_settings">Настройки</string>
+    <string name="pref_header_app">Приложение</string>
+    <string name="pref_header_translator">Переводчик</string>
+    <string name="pref_app_theme">Тема приложения</string>
+    <string name="pref_app_language">Язык приложения</string>
+    <string name="pref_translator_language">Язык перевода</string>
+    <string name="pref_translator_language_desc">С какого языка переводить жесты</string>
+    <string name="pref_translator_draw">Визуализация</string>
+    <string name="pref_translator_draw_desc">Отображение точек на кончиках палцев</string>
+    <string name="pref_translator_hands">Количество рук</string>
+    <string name="pref_translator_hands_desc">Количество рук для обнаружения</string>
+    <string name="translation_header">Перевод</string>
+    <string name="translation_class_placeholder">[класс]</string>
+    <string name="translation_letter_placeholder">[буква]</string>
+    <string name="translation_word_placeholder">[переведенное слово]</string>
+    <string name="translation_class_header">Класс жеста:</string>
+    <string name="translation_letter_header">Буква:</string>
+    <string name="translation_word_header">Слово:</string>
 </resources>
