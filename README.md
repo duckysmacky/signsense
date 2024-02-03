@@ -1,3 +1,2 @@
 # SignSense
-
-A work in progress app which recognizes and translates sign language
+## Android app which translates sign language to English / Russian
