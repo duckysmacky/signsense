@@ -40,15 +40,7 @@ public class VideoActivity extends AppCompatActivity {
         }));
 
         // Setup hand detector for video mode
-        handDetector = new HandDetector(
-                getApplicationContext(),
-                RunningMode.VIDEO,
-                true,
-                2,
-                0.5f,
-                0.5f,
-                0.5f
-        );
+        handDetector = new HandDetector(getApplicationContext(), RunningMode.VIDEO);
 
         selectVideo.setOnClickListener(view -> {
             // On click, open new window for selecting videos

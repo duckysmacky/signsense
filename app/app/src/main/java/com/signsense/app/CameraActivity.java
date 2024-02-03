@@ -51,18 +51,10 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         translationText = findViewById(R.id.text_cameraTranslation);
 
         // Setup hand detection for frame (image) mode
-        handDetector = new HandDetector(
-                this,
-                RunningMode.IMAGE,
-                true,
-                2,
-                0.5f,
-                0.5f,
-                0.5f
-        );
+        handDetector = new HandDetector(this, RunningMode.IMAGE);
 
         //TODO: fix hand analyser model
-        handAnalyser = new HandAnalyser(getApplicationContext());
+        //handAnalyser = new HandAnalyser(getApplicationContext());
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -123,10 +115,9 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 Utils.matToBitmap(rgbFrame, bitmap);
 
                 List<Float> landmarks = handDetector.detectFrame(bitmap);
-                handAnalyser.analyseHand(landmarks);
+                //handAnalyser.analyseHand(landmarks);
 
-
-                return rgbFrame;
+                return handDetector.drawHand(rgbFrame, landmarks);
             }
         });
 

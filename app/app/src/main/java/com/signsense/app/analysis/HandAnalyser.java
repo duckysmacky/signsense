@@ -23,7 +23,7 @@ public class HandAnalyser {
 
         // Loading model
         try {
-            module = LiteModuleLoader.load(assetFilePath(appContext, "class_model_lite.pt"));
+            module = LiteModuleLoader.load(assetFilePath(appContext, "image_model.pt"));
             Log.i(TAG, "Loaded model");
         } catch (Exception e) {
             Log.e(TAG, "Error loading model");

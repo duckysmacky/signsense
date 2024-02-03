@@ -1,11 +1,13 @@
 package com.signsense.app.analysis;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.util.Log;
+import androidx.preference.PreferenceManager;
 import com.google.mediapipe.framework.image.BitmapImageBuilder;
 import com.google.mediapipe.framework.image.MPImage;
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark;
@@ -39,17 +41,33 @@ public class HandDetector {
     private Context appContext;
 
     private boolean draw;
+    private int maxHands;
+    private float detectionCon;
+    private float trackingCon;
+    private float presenceCon;
 
-    public HandDetector(Context context, RunningMode mode, boolean draw, int maxHands, float detectionCon, float trackCon, float presenceCon) {
-        appContext = context.getApplicationContext();
-        this.draw = draw;
+    public HandDetector(Context context, RunningMode mode) {
+        this.appContext = context.getApplicationContext();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        this.draw = preferences.getBoolean("draw", false);
+        this.maxHands = preferences.getInt("maxHands", 2);
+        this.detectionCon = (float) preferences.getInt("detectionCon", 50) / 100;
+        this.trackingCon = (float) preferences.getInt("trackingCon", 50) / 100;
+        this.presenceCon = (float) preferences.getInt("presenceCon", 50) / 100;
 
         // Loading model
         baseOptions = BaseOptions.builder()
                 .setModelAssetPath("hand_landmarker.task")
                 .setDelegate(Delegate.GPU) // ALL I HAD TO DO IS TO SET IT TO FUCKING GPU MODE AND NOW IT WORKS ASGAOGYHOAHGOA
                 .build();
-        Log.i(TAG, "Successfully loaded Hand Detector Model " + baseOptions.toString());
+        Log.i(TAG, "Successfully loaded Hand Detector Model");
+        Log.i(TAG, "Hand Detector Configuration:");
+        Log.i(TAG, "Draw: " + draw);
+        Log.i(TAG, "Max Hands: " + maxHands);
+        Log.i(TAG, "Detection Confidence: " + detectionCon);
+        Log.i(TAG, "Tracking Confidence: " + trackingCon);
+        Log.i(TAG, "Presence Confidence: " + presenceCon);
 
         // Setting up the Hand Landmarker
         handLandmarker = createFromOptions(appContext, HandLandmarkerOptions.builder()
@@ -57,7 +75,7 @@ public class HandDetector {
                 .setRunningMode(mode)
                 .setNumHands(maxHands)
                 .setMinHandDetectionConfidence(detectionCon)
-                .setMinTrackingConfidence(trackCon)
+                .setMinTrackingConfidence(trackingCon)
                 .setMinHandPresenceConfidence(presenceCon)
                 .build()
         );
@@ -81,20 +99,8 @@ public class HandDetector {
                     float y = landmark.get(tipId).y();
                     landmarks.add(x);
                     landmarks.add(y);
-                    if (draw) {
-                        // Drawing circles at the fingertips by finding coordinates via multiplication
-                        // E.g. we have 200 pixels wide screen and the fingertip X is 0.54, so we draw x at 200 * 0.54 = 108
-                        Imgproc.circle(
-                                frame,
-                                new Point(frame.width() * x, frame.height() * y),
-                                5,
-                                new Scalar(255, 0, 0, 255),
-                                10
-                        );
-                    }
                 }
             }
-
             Log.i(TAG, landmarks.toString());
         }
 
@@ -158,5 +164,28 @@ public class HandDetector {
         Log.i(TAG, landmarksList.toString());
 
         return landmarksList;
+    }
+
+    public Mat drawHand(Mat frame, List<Float> landmarks) {
+        if (!draw) {
+            return frame;
+        }
+
+        for (int i = 0; i < landmarks.size() - 1; i += 2) {
+            float x = landmarks.get(i);
+            float y = landmarks.get(i + 1);
+
+            // Drawing circles at the fingertips by finding coordinates via multiplication
+            // E.g. we have 200 pixels wide screen and the fingertip X is 0.54, so we draw x at 200 * 0.54 = 108
+            Imgproc.circle(
+                    frame,
+                    new Point(frame.width() * x, frame.height() * y),
+                    5,
+                    new Scalar(255, 0, 0, 255),
+                    10
+            );
+        }
+
+        return frame;
     }
 }

@@ -41,28 +41,28 @@
             android:title="@string/pref_translator_hands"
             android:summary="@string/pref_translator_hands_desc"
             android:defaultValue="2"
-            android:key="hands"
+            android:key="maxHands"
             android:max="2"
             app:min="1"
             app:showSeekBarValue="true" />
         <SeekBarPreference
             android:title="@string/pref_translator_detectionCon"
             android:defaultValue="50"
-            android:key="hands"
+            android:key="detectionCon"
             android:max="100"
             app:min="1"
             app:showSeekBarValue="true" />
         <SeekBarPreference
             android:title="@string/pref_translator_trackCon"
             android:defaultValue="50"
-            android:key="hands"
+            android:key="trackingCon"
             android:max="100"
             app:min="1"
             app:showSeekBarValue="true" />
         <SeekBarPreference
             android:title="@string/pref_translator_presenseCon"
             android:defaultValue="50"
-            android:key="hands"
+            android:key="presenceCon"
             android:max="100"
             app:min="1"
             app:showSeekBarValue="true" />
