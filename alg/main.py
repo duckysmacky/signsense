@@ -88,11 +88,12 @@ class handDetector():
 		return length, img, [x1, y1, x2, y2, cx, cy]
 
 def main():
-	model = torch.load("./alg/model.pt")
+	model = torch.load("./alg/modelpart1.pt")
 	detector = handDetector()
 	cap = cv2.VideoCapture(0)
 	while True:
 		_, img = cap.read()
+		img = cv2.flip(img, 1)
 		img, tips = detector.findHands(img)
 
 		if tips:
