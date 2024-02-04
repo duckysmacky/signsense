@@ -47,14 +47,13 @@ public class HandDetector {
         float trackingCon = (float) preferences.getInt("trackingCon", 50) / 100;
         float presenceCon = (float) preferences.getInt("presenceCon", 50) / 100;
 
-        // Loading model
-        // ALL I HAD TO DO IS TO SET IT TO FUCKING GPU MODE AND NOW IT WORKS ASGAOGYHOAHGOA
+        // Loading hand detection model
         BaseOptions baseOptions = BaseOptions.builder()
                 .setModelAssetPath("hand_landmarker.task")
-                .setDelegate(Delegate.GPU) // ALL I HAD TO DO IS TO SET IT TO FUCKING GPU MODE AND NOW IT WORKS ASGAOGYHOAHGOA
+                .setDelegate(Delegate.GPU) // ALL I HAD TO DO IS TO SET IT TO FUCKING GPU MODE AND NOW IT WORKS
                 .build();
 
-        // Logs
+        // Logs information about the hand detector config
         Log.i(TAG, "Successfully loaded Hand Detector Model");
         Log.i(TAG, "Hand Detector Configuration:");
         Log.i(TAG, "Draw: " + draw);
@@ -75,18 +74,20 @@ public class HandDetector {
         );
     }
 
+    // Function for detecting hand when using live camera (frame by frame)
     public List<Float> detectFrame(Bitmap bitmap) {
         List<Float> landmarks = new ArrayList<>();
 
+        // Convert bitmap (frame) to MPImage
         MPImage image = new BitmapImageBuilder(bitmap).build();
 
         // Detecting hand
         HandLandmarkerResult result = handLandmarker.detect(image);
 
-        // Adding tip coordinates to list of landmark
+        // Adding tip x and y coordinates to list of landmarks
         if (result.landmarks().size() > 0) {
             for (List<NormalizedLandmark> landmark : result.landmarks()) {
-                for (int tipId : tipIds) { // Getting X and Y for every tip
+                for (int tipId : tipIds) { // Getting x and y for every tip
                     float x = landmark.get(tipId).x();
                     float y = landmark.get(tipId).y();
                     landmarks.add(x);
@@ -99,6 +100,7 @@ public class HandDetector {
         return landmarks;
     }
 
+    // Function for detecting hand when the video is uploaded (breaks it down into multiple frames)
     public List<List<Float>> detectVideo(Uri videoUri, long interval) throws IOException {
         List<List<Float>> landmarksList = new ArrayList<>();
         List<Float> landmarks = new ArrayList<>();

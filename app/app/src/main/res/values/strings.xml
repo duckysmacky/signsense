@@ -44,7 +44,7 @@
     <string name="pref_app_language">App Language</string>
     <array name="pref_app_language_titles">
         <item name="pref_app_language_titles_default">Device Default</item>
-        <item>Russian (Русский)</item>
+        <item>Русский</item>
         <item>English</item>
     </array>
     <array name="pref_app_language_values">
@@ -57,8 +57,8 @@
     <string name="pref_translator_language">Translation Language</string>
     <string name="pref_translator_language_desc">Sign language to translate</string>
     <array name="pref_translator_language_titles">
-        <item>Russian (Русский)</item>
-        <item>English</item>
+        <item>Русский</item>
+        <item>English (WIP)</item>
     </array>
     <array name="pref_translator_language_values">
         <item>ru</item>

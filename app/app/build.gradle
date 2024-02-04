@@ -48,7 +48,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
-    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.preference:preference:1.2.1'
 
     testImplementation 'junit:junit:4.13.2'
 
@@ -70,4 +70,5 @@ dependencies {
 
     // PyTorch
     implementation 'org.pytorch:pytorch_android_lite:latest.release'
+    implementation 'com.facebook.fbjni:fbjni-java-only:latest.release'
 }

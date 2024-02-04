@@ -108,7 +108,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/text_camera_translation_class_header"
+                        android:id="@+id/text_camera_translation_header"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"

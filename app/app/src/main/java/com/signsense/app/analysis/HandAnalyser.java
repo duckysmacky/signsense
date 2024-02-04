@@ -8,6 +8,9 @@ import org.pytorch.Module;
 import org.pytorch.Tensor;
 
 import java.io.*;
+import java.nio.FloatBuffer;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 
 public class HandAnalyser {
@@ -21,25 +24,34 @@ public class HandAnalyser {
         Log.i(TAG, "Initialising Hand Analyser");
         appContext = context.getApplicationContext();
 
-        // Loading model
+        // Loading model from .pt file (must be optimised for mobile + lite)
         try {
-            module = LiteModuleLoader.load(assetFilePath(appContext, "image_model.pt"));
-            Log.i(TAG, "Loaded model");
+            module = LiteModuleLoader.loadModuleFromAsset(
+                    appContext.getAssets(),
+                    "class_model_lite.pt"
+            );
         } catch (Exception e) {
-            Log.e(TAG, "Error loading model");
+            Log.e(TAG, "Error loading model!");
         }
+        Log.i(TAG, "Loaded hand classification model!");
     }
 
-    public String analyseHand(List<Float> landmarks) {
-        String resultText = "";
+    public int analyseHand(List<Float> landmarks) {
+        int signId = 0;
         if (landmarks.size() > 0) {
             Log.i(TAG, "Analysing hand wth landmarks: \n" + landmarks);
 
-            // Converting List of float to primitive list of double
-            double[] landmarkList = landmarks.stream().mapToDouble(i -> i).toArray();
+            // Converting list of float (landmarks) to array (input data)
+            float[] data = new float[landmarks.size()];
+            int j = 0;
+            for (Float f : landmarks) { data[j++] = 1 - f; }
 
-            // Setting the input for model
-            Tensor inputTensor = Tensor.fromBlob(landmarkList, new long[]{1, landmarks.size()});
+            // Setting the size for tensor (one dimension, with length of data)
+            long[] size = new long[]{1, data.length};
+
+            // Creating the input tensor with data and size
+            // Take in an array of float of x and y, 1-dimensional
+            Tensor inputTensor = Tensor.fromBlob(data, size);
 
             // Running the model
             Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
@@ -56,39 +68,11 @@ public class HandAnalyser {
                     maxScoreIdx = i;
                 }
             }
+            signId = maxScoreIdx + 1;
 
-            // Gets the name of the detected object by the highest score
-            resultText = ImageClasses.IMAGENET_CLASSES[maxScoreIdx];
-
-            Log.i(TAG, "SIGN CLASS: " + resultText);
+            Log.d(TAG, "SIGN CLASS: " + signId);
         }
 
-        return resultText;
-    }
-
-    // Function for reading asset files because the default way is kinda broken
-    public static String assetFilePath(Context context, String assetName) throws IOException {
-        Log.i(TAG, "Accessing model file");
-        File file = new File(context.getFilesDir(), assetName);
-
-//        if (file.exists() && file.length() > 0) {
-//            return file.getAbsolutePath();
-//        }
-        return file.getPath();
-
-//        try (InputStream is = context.getAssets().open(assetName)) {
-//            try (OutputStream os = Files.newOutputStream(file.toPath())) {
-//                byte[] buffer = new byte[4 * 1024];
-//                int read;
-//
-//                while ((read = is.read(buffer)) != -1) {
-//                    os.write(buffer, 0, read);
-//                }
-//
-//                os.flush();
-//            }
-//
-//            return file.getAbsolutePath();
-//        }
+        return signId;
     }
 }
