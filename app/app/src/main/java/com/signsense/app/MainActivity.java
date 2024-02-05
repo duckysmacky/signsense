@@ -4,15 +4,18 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,14 +51,32 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadSettings() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        TextView appThemeText = (TextView) findViewById(R.id.text_appTheme);
-        appThemeText.setText("Theme: " + preferences.getString("theme", ""));
 
-        /*
-        TODO:
-         - Change main activity to fragment (for settings loading)
-         - Load from settings to app
-         */
+        String appTheme = preferences.getString("theme", "");
+        String appLanguage = preferences.getString("appLanguage", "");
+
+        switch (appTheme) {
+            case "sync":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+        }
+
+        setLanguage(appLanguage);
+    }
+
+    private void setLanguage(String language) {
+        Locale locale = new Locale(language);
+        Resources resources = this.getResources();
+
+        Locale.setDefault(locale);
+        resources.getConfiguration().setLocale(locale);
+        resources.updateConfiguration(resources.getConfiguration(), resources.getDisplayMetrics());
     }
 
     // Permission asking
