@@ -23,7 +23,8 @@ public class HandAnalyser {
         try {
             module = LiteModuleLoader.loadModuleFromAsset(
                     appContext.getAssets(),
-                    "class_model_lite.pt");
+                    "class_model_lite.pt"
+            );
         } catch (Exception e) { Log.e(TAG, "Error loading model!"); }
     }
     public int analyseHand(List<Float> landmarks) {

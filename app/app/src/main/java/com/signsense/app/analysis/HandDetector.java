@@ -30,7 +30,7 @@ import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.cr
 public class HandDetector {
     private static final String TAG = "HandDetector";
 
-    private final int[] tipIds = new int[]{4, 8, 12, 16, 20}; // IDs for fingertips
+    private final int[] landmarkIds = new int[21]; // IDs for fingertips
 
     private HandLandmarker handLandmarker;
     private Context appContext;
@@ -39,6 +39,8 @@ public class HandDetector {
     public HandDetector(Context context, RunningMode mode) {
         this.appContext = context.getApplicationContext();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        // Добавление айди нужных точек пальцев (от 0 до 20)
+        for (int i = 0; i < landmarkIds.length; i++) { landmarkIds[i] = i; }
         // Загруза данных из пользовательских настроек
         this.draw = preferences.getBoolean("draw", false);
         int maxHands = preferences.getInt("maxHands", 2);
@@ -48,7 +50,7 @@ public class HandDetector {
         // Загрузка модели по нахождению рук
         BaseOptions baseOptions = BaseOptions.builder()
                 .setModelAssetPath("hand_landmarker.task")
-                .setDelegate(Delegate.GPU)
+                .setDelegate(Delegate.GPU) // Работает на GPU (Видеокарте)
                 .build();
         // Настройка Hand Landmarker
         handLandmarker = createFromOptions(appContext, HandLandmarkerOptions.builder()
@@ -61,7 +63,6 @@ public class HandDetector {
                 .build()
         );
     }
-
     // Покадровый анализ картинки с задней камеры телефона
     public List<Float> detectFrame(Bitmap bitmap) {
         List<Float> landmarks = new ArrayList<>();
@@ -69,17 +70,15 @@ public class HandDetector {
         MPImage image = new BitmapImageBuilder(bitmap).build();
         // Находим руку на кадре
         HandLandmarkerResult result = handLandmarker.detect(image);
-        // Добавляем X и Y кончиков пальцев в общий массив
+        // Добавляем X и Y точек пальцев в общий массив
         if (result.landmarks().size() > 0) {
             for (List<NormalizedLandmark> landmark : result.landmarks()) {
-                for (int tipId : tipIds) { // Получаем координаты для каждого кончика
-                    float x = landmark.get(tipId).x();
-                    float y = landmark.get(tipId).y();
-                    landmarks.add(x);
-                    landmarks.add(y);
+                for (int id : landmarkIds) { // Получаем координаты для каждой точки (от 0 до 20)
+                    landmarks.add(landmark.get(id).x());
+                    landmarks.add(landmark.get(id).y());
                 }
             }
-            Log.i(TAG, landmarks.toString());
+            Log.i(TAG, landmarks.toString()); // Вывод координат в окно откладки
         }
         // Возвращаем полученные координаты
         return landmarks;
@@ -117,9 +116,9 @@ public class HandDetector {
             // Adding tip coordinates to list of landmark
             if (result.landmarks().size() > 0) {
                 for (List<NormalizedLandmark> landmark : result.landmarks()) {
-                    for (int tipId : tipIds) { // Getting X and Y for every tip
-                        float x = landmark.get(tipId).x();
-                        float y = landmark.get(tipId).y();
+                    for (int id : landmarkIds) { // Getting X and Y for every tip
+                        float x = landmark.get(id).x();
+                        float y = landmark.get(id).y();
                         landmarks.add(x);
                         landmarks.add(y);
                     }
