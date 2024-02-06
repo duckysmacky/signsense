@@ -1,6 +1,8 @@
 package com.signsense.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -9,10 +11,13 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.signsense.app.analysis.HandDetector;
 
 import java.io.IOException;
+import java.util.Locale;
 
 public class VideoActivity extends AppCompatActivity {
     private static final String TAG = "VideoActivity";
@@ -48,6 +53,8 @@ public class VideoActivity extends AppCompatActivity {
             selectVideo.setType("video/*");
             startActivityForResult(selectVideo, CODE_VIDEO);
         });
+
+        loadSettings();
     }
 
     @Override
@@ -66,5 +73,31 @@ public class VideoActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void loadSettings() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String appTheme = preferences.getString("theme", "");
+        String appLanguage = preferences.getString("appLanguage", "");
+
+        switch (appTheme) {
+            case "sync":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+        }
+
+        Locale locale = new Locale(appLanguage);
+        Resources resources = this.getResources();
+
+        Locale.setDefault(locale);
+        resources.getConfiguration().setLocale(locale);
+        resources.updateConfiguration(resources.getConfiguration(), resources.getDisplayMetrics());
     }
 }

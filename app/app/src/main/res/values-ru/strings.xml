@@ -28,10 +28,11 @@
     <string name="pref_translator_hands">Количество рук</string>
     <string name="pref_translator_hands_desc">Количество рук для обнаружения</string>
     <string name="translation_header">Перевод</string>
-    <string name="translation_class_placeholder">[класс]</string>
     <string name="translation_letter_placeholder">[буква]</string>
     <string name="translation_word_placeholder">[переведенное слово]</string>
-    <string name="translation_class_header">Класс жеста:</string>
     <string name="translation_letter_header">Буква:</string>
     <string name="translation_word_header">Слово:</string>
+    <string name="translation_lastwords_header">Недавние слова:</string>
+    <string name="translation_lastwords_value">[недавно переведенные слова]</string>
+    <string name="app_desc">Приложение по переводу с дактиля на разговорный язык</string>
 </resources>

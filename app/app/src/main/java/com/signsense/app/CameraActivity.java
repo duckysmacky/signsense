@@ -1,6 +1,8 @@
 package com.signsense.app;
 
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraManager;
@@ -9,6 +11,8 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.signsense.app.analysis.HandAnalyser;
 import com.signsense.app.analysis.HandDetector;
@@ -20,6 +24,7 @@ import org.opencv.core.Mat;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 
 public class CameraActivity extends org.opencv.android.CameraActivity {
@@ -64,6 +69,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             }
         });
 
+        loadSettings();
         startCamera();
     }
 
@@ -132,5 +138,31 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             cameraView.turnOnTheFlash();
         }
         flashlight = !flashlight;
+    }
+
+    private void loadSettings() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String appTheme = preferences.getString("theme", "");
+        String appLanguage = preferences.getString("appLanguage", "");
+
+        switch (appTheme) {
+            case "sync":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+        }
+
+        Locale locale = new Locale(appLanguage);
+        Resources resources = this.getResources();
+
+        Locale.setDefault(locale);
+        resources.getConfiguration().setLocale(locale);
+        resources.updateConfiguration(resources.getConfiguration(), resources.getDisplayMetrics());
     }
 }

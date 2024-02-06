@@ -67,11 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        //setLanguage(appLanguage);
-    }
-
-    private void setLanguage(String language) {
-        Locale locale = new Locale(language);
+        Locale locale = new Locale(appLanguage);
         Resources resources = this.getResources();
 
         Locale.setDefault(locale);

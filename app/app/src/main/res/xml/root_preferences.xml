@@ -12,13 +12,13 @@
                 android:entryValues="@array/pref_app_theme_values"
                 android:key="theme"
                 app:useSimpleSummaryProvider="true"/>
-<!--        <ListPreference-->
-<!--                android:defaultValue="default"-->
-<!--                android:title="@string/pref_app_language"-->
-<!--                android:entries="@array/pref_app_language_titles"-->
-<!--                android:entryValues="@array/pref_app_language_values"-->
-<!--                android:key="appLanguage"-->
-<!--                app:useSimpleSummaryProvider="true"/>-->
+        <ListPreference
+                android:defaultValue="default"
+                android:title="@string/pref_app_language"
+                android:entries="@array/pref_app_language_titles"
+                android:entryValues="@array/pref_app_language_values"
+                android:key="appLanguage"
+                app:useSimpleSummaryProvider="true"/>
 
     </PreferenceCategory>
     <PreferenceCategory

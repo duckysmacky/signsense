@@ -1,5 +1,7 @@
 <resources>
+    <!-- General -->
     <string name="app_name" translatable="false">SignSense</string>
+    <string name="app_desc">A dactyl to spoken language translation app</string>
 
     <!-- Item descriptions -->
     <string name="desc_flash_button">Toggle Flash</string>
@@ -80,5 +82,5 @@
     <string name="translation_word_placeholder">[translated word]</string>
 
     <string name="translation_lastwords_header">Recent Words:</string>
-    <string name="translation_lastwords_value">[recent translated word]</string>
+    <string name="translation_lastwords_value">[recently translated words]</string>
 </resources>
