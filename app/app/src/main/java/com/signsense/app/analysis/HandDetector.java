@@ -39,30 +39,18 @@ public class HandDetector {
     public HandDetector(Context context, RunningMode mode) {
         this.appContext = context.getApplicationContext();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-
-        // Loading from settings
+        // Загруза данных из пользовательских настроек
         this.draw = preferences.getBoolean("draw", false);
         int maxHands = preferences.getInt("maxHands", 2);
         float detectionCon = (float) preferences.getInt("detectionCon", 50) / 100;
         float trackingCon = (float) preferences.getInt("trackingCon", 50) / 100;
         float presenceCon = (float) preferences.getInt("presenceCon", 50) / 100;
-
-        // Loading hand detection model
+        // Загрузка модели по нахождению рук
         BaseOptions baseOptions = BaseOptions.builder()
                 .setModelAssetPath("hand_landmarker.task")
-                .setDelegate(Delegate.GPU) // ALL I HAD TO DO IS TO SET IT TO FUCKING GPU MODE AND NOW IT WORKS
+                .setDelegate(Delegate.GPU)
                 .build();
-
-        // Logs information about the hand detector config
-        Log.i(TAG, "Successfully loaded Hand Detector Model");
-        Log.i(TAG, "Hand Detector Configuration:");
-        Log.i(TAG, "Draw: " + draw);
-        Log.i(TAG, "Max Hands: " + maxHands);
-        Log.i(TAG, "Detection Confidence: " + detectionCon);
-        Log.i(TAG, "Tracking Confidence: " + trackingCon);
-        Log.i(TAG, "Presence Confidence: " + presenceCon);
-
-        // Setting up the Hand Landmarker
+        // Настройка Hand Landmarker
         handLandmarker = createFromOptions(appContext, HandLandmarkerOptions.builder()
                 .setBaseOptions(baseOptions)
                 .setRunningMode(mode)
@@ -74,20 +62,17 @@ public class HandDetector {
         );
     }
 
-    // Function for detecting hand when using live camera (frame by frame)
+    // Покадровый анализ картинки с задней камеры телефона
     public List<Float> detectFrame(Bitmap bitmap) {
         List<Float> landmarks = new ArrayList<>();
-
-        // Convert bitmap (frame) to MPImage
+        // Конвертируем Bitmap с камеры в MPImage для последующих манипуляций
         MPImage image = new BitmapImageBuilder(bitmap).build();
-
-        // Detecting hand
+        // Находим руку на кадре
         HandLandmarkerResult result = handLandmarker.detect(image);
-
-        // Adding tip x and y coordinates to list of landmarks
+        // Добавляем X и Y кончиков пальцев в общий массив
         if (result.landmarks().size() > 0) {
             for (List<NormalizedLandmark> landmark : result.landmarks()) {
-                for (int tipId : tipIds) { // Getting x and y for every tip
+                for (int tipId : tipIds) { // Получаем координаты для каждого кончика
                     float x = landmark.get(tipId).x();
                     float y = landmark.get(tipId).y();
                     landmarks.add(x);
@@ -96,7 +81,7 @@ public class HandDetector {
             }
             Log.i(TAG, landmarks.toString());
         }
-
+        // Возвращаем полученные координаты
         return landmarks;
     }
 

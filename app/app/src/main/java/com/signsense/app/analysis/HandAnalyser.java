@@ -19,43 +19,29 @@ public class HandAnalyser {
     public HandAnalyser(Context context) {
         Log.i(TAG, "Initialising Hand Analyser");
         appContext = context.getApplicationContext();
-
-        // Loading model from .pt file (must be optimised for mobile + lite)
+        // Импорт оптимизированной модели из ресурсов приложения
         try {
             module = LiteModuleLoader.loadModuleFromAsset(
                     appContext.getAssets(),
-                    "class_model_lite.pt"
-            );
-        } catch (Exception e) {
-            Log.e(TAG, "Error loading model!");
-        }
-        Log.i(TAG, "Loaded hand classification model!");
+                    "class_model_lite.pt");
+        } catch (Exception e) { Log.e(TAG, "Error loading model!"); }
     }
-
     public int analyseHand(List<Float> landmarks) {
         int signId = 0;
         if (landmarks.size() > 0) {
-            Log.i(TAG, "Analysing hand wth landmarks: \n" + landmarks);
-
-            // Converting list of float (landmarks) to array (input data)
+            // Перевод из List<Float> в float[] для создания тенсора
             float[] data = new float[landmarks.size()];
             int j = 0;
             for (Float f : landmarks) { data[j++] = 1 - f; }
-
-            // Setting the size for tensor (one dimension, with length of data)
+            // Задаем размер для тенсора (одномерный, с длинной координат)
             long[] size = new long[]{1, data.length};
-
-            // Creating the input tensor with data and size
-            // Take in an array of float of x and y, 1-dimensional
+            // Создаем вводный тенсор с данными и размером
             Tensor inputTensor = Tensor.fromBlob(data, size);
-
-            // Running the model
+            // Запуск модели
             Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
-
-            // Getting tensor scores
+            // Получение результата в баллах
             float[] scores = outputTensor.getDataAsFloatArray();
-
-            // Searching for the index with maximum score
+            // Ищем результат с максимальным баллом (схожесть симбола) - это и есть жест
             float maxScore = -Float.MAX_VALUE;
             int maxScoreIdx = -1;
             for (int i = 0; i < scores.length; i++) {
@@ -64,9 +50,9 @@ public class HandAnalyser {
                     maxScoreIdx = i;
                 }
             }
+            // Получаем айди жеста
             signId = maxScoreIdx + 1;
-
-            Log.d(TAG, "SIGN CLASS: " + signId);
+            Log.d(TAG, "SIGN ID: " + signId);
         }
 
         return signId;
