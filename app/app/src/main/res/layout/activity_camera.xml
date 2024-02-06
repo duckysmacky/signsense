@@ -133,38 +133,6 @@
                             android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/text_camera_translation_class_header"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginBottom="8dp"
-                                android:text="@string/translation_class_header"
-                                android:textAlignment="center"
-                                android:textColor="@color/button_text_color"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/text_camera_translation_class_value"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginEnd="8dp"
-                                android:text="@string/translation_class_placeholder"
-                                android:textAlignment="center"
-                                android:textColor="@color/button_text_color"
-                                android:textSize="18sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
                                 android:id="@+id/text_camera_translation_letter_header"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -189,29 +157,62 @@
                                 android:textSize="18sp" />
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/text_camera_translation_word_header"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:text="@string/translation_word_header"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/text_camera_translation_word_value"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:text="@string/translation_word_placeholder"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+
                     </LinearLayout>
 
-                    <LinearLayout
+                    <ScrollView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent">
 
-                        <TextView
-                            android:id="@+id/text_camera_translation_word_value"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:text="@string/translation_word_placeholder"
-                            android:textAlignment="center"
-                            android:textColor="@color/button_text_color"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/text_camera_translation_lastwords_value"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:text="@string/translation_lastwords_value"
+                                android:textAlignment="center"
+                                android:textColor="@color/button_text_color"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+                    </ScrollView>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

@@ -72,10 +72,13 @@
 
     <!-- Translation -->
     <string name="translation_header">Translation</string>
-    <string name="translation_class_header">Sign Class:</string>
-    <string name="translation_class_placeholder">[class]</string>
+
     <string name="translation_letter_header">Letter:</string>
     <string name="translation_letter_placeholder">[letter]</string>
+
     <string name="translation_word_header">Word:</string>
     <string name="translation_word_placeholder">[translated word]</string>
+
+    <string name="translation_lastwords_header">Recent Words:</string>
+    <string name="translation_lastwords_value">[recent translated word]</string>
 </resources>

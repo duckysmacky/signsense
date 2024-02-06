@@ -30,7 +30,7 @@ import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.cr
 public class HandDetector {
     private static final String TAG = "HandDetector";
 
-    private final int[] tipIds = new int[]{4, 8, 12, 16, 20}; // IDs for fingertips
+    private final int[] landmarkIds = new int[21]; // IDs for finger landmarks
 
     private HandLandmarker handLandmarker;
     private Context appContext;
@@ -39,6 +39,9 @@ public class HandDetector {
     public HandDetector(Context context, RunningMode mode) {
         this.appContext = context.getApplicationContext();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        // Assign Ids for landmarks from 0 to 20
+        for (int i = 0; i < landmarkIds.length; i++) { landmarkIds[i] = i; }
 
         // Loading from settings
         this.draw = preferences.getBoolean("draw", false);
@@ -87,9 +90,9 @@ public class HandDetector {
         // Adding tip x and y coordinates to list of landmarks
         if (result.landmarks().size() > 0) {
             for (List<NormalizedLandmark> landmark : result.landmarks()) {
-                for (int tipId : tipIds) { // Getting x and y for every tip
-                    float x = landmark.get(tipId).x();
-                    float y = landmark.get(tipId).y();
+                for (int id : landmarkIds) { // Getting x and y for every tip
+                    float x = landmark.get(id).x();
+                    float y = landmark.get(id).y();
                     landmarks.add(x);
                     landmarks.add(y);
                 }
@@ -132,9 +135,9 @@ public class HandDetector {
             // Adding tip coordinates to list of landmark
             if (result.landmarks().size() > 0) {
                 for (List<NormalizedLandmark> landmark : result.landmarks()) {
-                    for (int tipId : tipIds) { // Getting X and Y for every tip
-                        float x = landmark.get(tipId).x();
-                        float y = landmark.get(tipId).y();
+                    for (int id : landmarkIds) { // Getting X and Y for every tip
+                        float x = landmark.get(id).x();
+                        float y = landmark.get(id).y();
                         landmarks.add(x);
                         landmarks.add(y);
                     }
@@ -169,7 +172,7 @@ public class HandDetector {
                     frame,
                     new Point(frame.width() * x, frame.height() * y),
                     5,
-                    new Scalar(255, 0, 0, 255),
+                    new Scalar(0, 255, 0, 255),
                     10
             );
         }

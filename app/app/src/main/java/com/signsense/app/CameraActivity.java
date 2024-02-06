@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -48,9 +47,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         cameraView = findViewById(R.id.cameraView);
         toggleFlash = findViewById(R.id.button_toggleFlash);
         flipCamera = findViewById(R.id.button_flipCamera);
-
-        signClass = findViewById(R.id.text_camera_translation_class_value);
-        translationText = findViewById(R.id.text_camera_translation_header);
 
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(this, RunningMode.IMAGE);
@@ -118,7 +114,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
                 List<Float> landmarks = handDetector.detectFrame(bitmap);
 
-                signClass.setText(String.valueOf(handAnalyser.analyseHand(landmarks)));
+                //signClass.setText(String.valueOf(handAnalyser.analyseHand(landmarks)));
 
                 return handDetector.drawHand(rgbFrame, landmarks);
             }
