@@ -61,7 +61,7 @@ public class VideoActivity extends AppCompatActivity {
             videoView.start();
 
             try {
-                handDetector.detectVideo(videoUri, 1000);
+                handDetector.detectVideo(videoUri, 500);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

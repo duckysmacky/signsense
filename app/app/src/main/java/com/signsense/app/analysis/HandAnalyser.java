@@ -7,10 +7,6 @@ import org.pytorch.LiteModuleLoader;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
 
-import java.io.*;
-import java.nio.FloatBuffer;
-import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 
 public class HandAnalyser {

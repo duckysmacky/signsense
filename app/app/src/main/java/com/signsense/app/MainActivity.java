@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        setLanguage(appLanguage);
+        //setLanguage(appLanguage);
     }
 
     private void setLanguage(String language) {
