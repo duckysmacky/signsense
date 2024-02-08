@@ -3,6 +3,47 @@
     <string name="app_name" translatable="false">SignSense</string>
     <string name="app_desc">A dactyl to spoken language translation app</string>
 
+    <!-- Information -->
+    <string name="info_header">Information</string>
+    <string name="info_general">
+        Signsense is a translator app developed by two high school students
+        for translating sign language (dactyl) to spoken language
+    </string>
+
+    <string name="info_nav_header">App navigation</string>
+    <string name="info_nav">
+        1. Camera translator - real-time hand recognition, analysis and translation.\n
+        2. Video selector - translation of prerecorded videos via upload.\n
+        3. Settings - set up app to your liking and configure hand detection options.\n
+    </string>
+
+    <string name="info_guide_header">How to use the app</string>
+    <string name="info_guide_camera">
+        When using camera to translate, make sure to stand about 1 meter from the person for proper hand tracking and
+        have signer\'s hands visible within the frame, else the app will not be able to properly track hands. In case
+        of situations with low light levels, use the backlight function (press lighting icon to toggle).\n
+        After aiming the camera at the person, who is communicating via dactyl, the app will immediately start to find
+        and track hands. Once the hand sign will be recognised, it will be shown in the "letter" window and will be
+        added to the queue of "translated word" window.\n
+        Once the app will recognise a break between the showing of different signs, it will mark the word as completed,
+        clear the "translated word" window and add the word to the bottom of the screen, which shows all recently
+        translated words. Upon closing translator add words will be cleared.
+    </string>
+    <string name="info_guide_video">
+        The video selector works by uploading any video from the gallery in order for it to be translated (if the video
+        has usage of sign language in it). Like in the camera translator, the translated letters and words
+        (experimental for video selector) will show below the video preview.
+    </string>
+
+    <string name="info_credits_header">Credits and Extras</string>
+    <string name="info_credits">
+        The app was developed for a school / university project by two high school students. This project is open
+        sourced and can be viewed at [github.com/schoomwastaken/signsense]. The app currently supports two UI
+        languages and only Russian dactyl, but we have plans of English dactyl and ASL.\n
+        You can reach out to us:\n
+        Ducky (App developer) - @duckybusiness (Discord)\n
+    </string>
+
     <!-- Item descriptions -->
     <string name="desc_flash_button">Toggle Flash</string>
     <string name="desc_flip_button">Flip Camera</string>

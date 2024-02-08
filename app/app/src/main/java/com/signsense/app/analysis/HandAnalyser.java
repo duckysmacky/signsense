@@ -1,6 +1,7 @@
 package com.signsense.app.analysis;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.util.Log;
 import org.pytorch.IValue;
 import org.pytorch.LiteModuleLoader;
@@ -12,9 +13,8 @@ import java.util.List;
 public class HandAnalyser {
     private static final String TAG = "HandAnalyser"; // Tag for debug log
     private final Context appContext;
-
     private Module module; // The model itself
-
+    private long signDelay = 0;
 
     public HandAnalyser(Context context) {
         Log.i(TAG, "Initialising Hand Analyser");
@@ -35,6 +35,7 @@ public class HandAnalyser {
     public int analyseHand(List<Float> landmarks) {
         int signId = 0;
         if (landmarks.size() > 0) {
+            signDelay = SystemClock.currentThreadTimeMillis();
             Log.i(TAG, "Analysing hand wth landmarks: \n" + landmarks);
 
             // Converting list of float (landmarks) to array (input data)
@@ -67,6 +68,14 @@ public class HandAnalyser {
             signId = maxScoreIdx + 1;
 
             Log.d(TAG, "SIGN CLASS: " + signId);
+        } else {
+            /* TODO:
+                - Add functionality for detecting breaks between words
+            */
+            if (SystemClock.currentThreadTimeMillis() - signDelay > 1000) {
+                signDelay = SystemClock.currentThreadTimeMillis();
+                Log.i(TAG, "Sign Delay");
+            }
         }
 
         return signId;
