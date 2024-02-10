@@ -35,16 +35,9 @@ class handDetector():
 		lmlist = []
 		if self.results.multi_hand_landmarks:
 			for handLms in self.results.multi_hand_landmarks:
-				lmlist.append(handLms.landmark[4].x)
-				lmlist.append(handLms.landmark[4].y)
-				lmlist.append(handLms.landmark[8].x)
-				lmlist.append(handLms.landmark[8].y)
-				lmlist.append(handLms.landmark[12].x)
-				lmlist.append(handLms.landmark[12].y)
-				lmlist.append(handLms.landmark[16].x)
-				lmlist.append(handLms.landmark[16].y)
-				lmlist.append(handLms.landmark[20].x)
-				lmlist.append(handLms.landmark[20].y)
+				for i in range(0, 21):
+					lmlist.append(handLms.landmark[i].x)
+					lmlist.append(handLms.landmark[i].y)
 				if draw:
 					self.mpDraw.draw_landmarks(img, handLms, self.mpHands.HAND_CONNECTIONS)
 		return img, lmlist
@@ -88,12 +81,11 @@ class handDetector():
 		return length, img, [x1, y1, x2, y2, cx, cy]
 
 def main():
-	model = torch.load("./alg/modelpart1.pt")
+	model = torch.jit.load("./alg/modelultracool3.pt")
 	detector = handDetector()
 	cap = cv2.VideoCapture(0)
 	while True:
 		_, img = cap.read()
-		img = cv2.flip(img, 1)
 		img, tips = detector.findHands(img)
 
 		if tips:
