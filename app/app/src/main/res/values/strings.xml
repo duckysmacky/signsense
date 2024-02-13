@@ -35,13 +35,16 @@
         (experimental for video selector) will show below the video preview.
     </string>
 
-    <string name="info_credits_header">Credits and Extras</string>
-    <string name="info_credits">
+    <string name="info_extras_header">Credits and Extras</string>
+    <string name="info_extras_text">
         The app was developed for a school / university project by two high school students. This project is open
-        sourced and can be viewed at [github.com/schoomwastaken/signsense]. The app currently supports two UI
-        languages and only Russian dactyl, but we have plans of English dactyl and ASL.\n
-        You can reach out to us:\n
-        Ducky (App developer) - @duckybusiness (Discord)\n
+        sourced and can be viewed at github.com/duckysmacky/signsense. The app currently supports two UI
+        languages and only Russian dactyl, but we have plans of English dactyl and ASL.
+    </string>
+    <string name="info_extras_credits">
+        Credits:\n
+        - Ducky (app dev)\n
+        - Shroom (model (ai) training)
     </string>
 
     <!-- Item descriptions -->
@@ -99,7 +102,7 @@
     <string name="pref_translator_language_desc">Sign language to translate</string>
     <array name="pref_translator_language_titles">
         <item>Русский</item>
-<!--        <item>English</item>-->
+        <!--        <item>English</item>-->
     </array>
     <array name="pref_translator_language_values">
         <item>ru</item>
