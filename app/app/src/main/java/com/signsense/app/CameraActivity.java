@@ -32,7 +32,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
     private ImageButton toggleFlash, flipCamera;
     private JavaCameraView cameraView;
-    private TextView translatedLetter, translatedWord, translationText;
+    private TextView translatedLetter, translatedWord, lastWords;
 
     private Mat greyFrame, rgbFrame;
 
@@ -55,6 +55,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
         translatedLetter = findViewById(R.id.text_camera_translation_letter_value);
         translatedWord = findViewById(R.id.text_camera_translation_word_value);
+        lastWords = findViewById(R.id.text_camera_translation_lastwords_value);
 
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(this, RunningMode.IMAGE);
@@ -124,6 +125,17 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 List<Float> landmarks = handDetector.detectFrame(bitmap);
 
                 translatedLetter.setText(handAnalyser.analyseHand(landmarks));
+                String word = handAnalyser.getWord();
+
+                if (word.length() > 0) {
+                    translatedWord.setText(word);
+                }
+                // TODO: Fix this shit
+//                } else {
+//                    String last = lastWords.getText().toString();
+//                    String newlast = last + handAnalyser.getLastWord() + "\n";
+//                    lastWords.setText(newlast);
+//                }
 
                 return handDetector.drawHand(rgbFrame, landmarks);
             }

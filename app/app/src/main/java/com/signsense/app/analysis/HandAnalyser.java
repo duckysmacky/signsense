@@ -16,14 +16,14 @@ import java.util.Map;
 public class HandAnalyser {
     private static final String TAG = "HandAnalyser"; // Tag for debug log
     private static final int MODEL_VERSION = 1;
+    private static final int COMPARE_LENGTH = 10;
 
     private final Context appContext;
     private Module module; // The model itself
-    private long signDelay = 0;
 
     private String[] signDict;
     private String[] signDict1 = {
-            "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
+            "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
             "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"
     };
     private String[] signDict2 = {
@@ -36,6 +36,9 @@ public class HandAnalyser {
     };
 
     private List<String> recentSigns = new ArrayList<>();
+    private String word = "";
+    private String lastWord = "";
+    private long signDelay = 0;
     private String topSign = "";
 
     public HandAnalyser(Context context) {
@@ -113,13 +116,15 @@ public class HandAnalyser {
             Log.d(TAG, "SIGN: " + sign);
             Log.d(TAG, "RECENT SIGNS: " + recentSigns.toString());
 
-            if (recentSigns.size() == 25) {
+            if (recentSigns.size() == COMPARE_LENGTH) {
                 topSign = mostCommonSign(recentSigns);
                 recentSigns.clear();
+                word += topSign;
                 Log.d(TAG, "TOP SIGN: " + topSign);
             } else {
                 recentSigns.add(sign);
             }
+
         } else {
             /* TODO:
                 - Add functionality for detecting breaks between words
@@ -127,11 +132,16 @@ public class HandAnalyser {
             if (SystemClock.currentThreadTimeMillis() - signDelay > 1000) {
                 signDelay = SystemClock.currentThreadTimeMillis();
                 Log.i(TAG, "Sign Delay");
+                lastWord = word;
+                word = "";
             }
         }
 
         return topSign;
     }
+
+    public String getWord() {return word;}
+    public String getLastWord() {return lastWord;}
 
     private String mostCommonSign(List<String> signs) {
         Map<String, Integer> occurences = new HashMap<String, Integer>();
