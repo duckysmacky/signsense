@@ -6,7 +6,7 @@
     <!-- Information -->
     <string name="info_header">Information</string>
     <string name="info_general">
-        Signsense is a translator app developed by two high school students
+        Signsense is an app developed by two high school students
         for translating sign language (dactyl) to spoken language
     </string>
 
@@ -19,32 +19,30 @@
 
     <string name="info_guide_header">How to use the app</string>
     <string name="info_guide_camera">
-        When using camera to translate, make sure to stand about 1 meter from the person for proper hand tracking and
-        have signer\'s hands visible within the frame, else the app will not be able to properly track hands. In case
-        of situations with low light levels, use the backlight function (press lighting icon to toggle).\n
-        After aiming the camera at the person, who is communicating via dactyl, the app will immediately start to find
-        and track hands. Once the hand sign will be recognised, it will be shown in the "letter" window and will be
-        added to the queue of "translated word" window.\n
-        Once the app will recognise a break between the showing of different signs, it will mark the word as completed,
-        clear the "translated word" window and add the word to the bottom of the screen, which shows all recently
-        translated words. Upon closing translator add words will be cleared.
+        When using camera to translate, make sure to stand about 1 meter from the signer for proper hand tracking and
+        have the signer\'s hands visible within the frame, or else the app will not be able to properly track their
+        hands. In case of situations with low light levels, use the flashlight (press lighting icon to toggle). After
+        aiming the camera at the signer, the app will immediately track their hands. Once the sign will be recognised,
+        it will be shown in the "letter" window and will be added to the queue of "translated word" window.\n
+        Once the app recognises a break between signs, it will mark the word as completed, clear the "translated word"
+        window and add the word to the bottom of the screen, which shows all recently translated words. Upon closing
+        the translator this list will be cleared.
     </string>
     <string name="info_guide_video">
-        The video selector works by uploading any video from the gallery in order for it to be translated (if the video
-        has usage of sign language in it). Like in the camera translator, the translated letters and words
-        (experimental for video selector) will show below the video preview.
+        For video translation just select a video from your gallery. Like in the camera translator, the translated
+        letters and words (experimental for video translation) will show below the video preview.
     </string>
 
     <string name="info_extras_header">Credits and Extras</string>
     <string name="info_extras_text">
-        The app was developed for a school / university project by two high school students. This project is open
-        sourced and can be viewed at github.com/duckysmacky/signsense. The app currently supports two UI
-        languages and only Russian dactyl, but we have plans of English dactyl and ASL.
+        The app was developed for a school project by two students. This project is open-source and can be viewed at
+        https://github.com/duckysmacky/signsense. The app currently supports two UI languages and only one language
+        for translation (Russian), but we have plans of adding support for English dactyl and ASL.
     </string>
     <string name="info_extras_credits">
         Credits:\n
-        - Ducky (app dev)\n
-        - Shroom (model (ai) training)
+        - Ducky (head / app dev)\n
+        - shroom (model (ai) training)
     </string>
 
     <!-- Item descriptions -->
