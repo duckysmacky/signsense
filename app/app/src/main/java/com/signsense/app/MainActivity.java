@@ -46,6 +46,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(activity);
     }
 
+    public void switchInfo(View view) {
+        Intent activity = new Intent(this, InfoActivity.class);
+        startActivity(activity);
+    }
+
     public void switchSettings(View view) { // Launch Settings
         Intent activity = new Intent(this, SettingsActivity.class);
         startActivity(activity);

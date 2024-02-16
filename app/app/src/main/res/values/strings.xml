@@ -5,45 +5,18 @@
 
     <!-- Information -->
     <string name="info_header">Information</string>
-    <string name="info_general">
-        Signsense is an app developed by two high school students
-        for translating sign language (dactyl) to spoken language
-    </string>
+    <string name="info_general">Signsense is an app developed by two high school students for translating sign language (dactyl) to spoken language.</string>
 
     <string name="info_nav_header">App navigation</string>
-    <string name="info_nav">
-        1. Camera translator - real-time hand recognition, analysis and translation.\n
-        2. Video selector - translation of prerecorded videos via upload.\n
-        3. Settings - set up app to your liking and configure hand detection options.\n
-    </string>
+    <string name="info_nav">1. Camera translator - real-time hand recognition, analysis and translation.\n\n2. Video selector - translation of prerecorded videos via upload.\n\n3. Settings - set up app to your liking and configure hand detection options.</string>
 
     <string name="info_guide_header">How to use the app</string>
-    <string name="info_guide_camera">
-        When using camera to translate, make sure to stand about 1 meter from the signer for proper hand tracking and
-        have the signer\'s hands visible within the frame, or else the app will not be able to properly track their
-        hands. In case of situations with low light levels, use the flashlight (press lighting icon to toggle). After
-        aiming the camera at the signer, the app will immediately track their hands. Once the sign will be recognised,
-        it will be shown in the "letter" window and will be added to the queue of "translated word" window.\n
-        Once the app recognises a break between signs, it will mark the word as completed, clear the "translated word"
-        window and add the word to the bottom of the screen, which shows all recently translated words. Upon closing
-        the translator this list will be cleared.
-    </string>
-    <string name="info_guide_video">
-        For video translation just select a video from your gallery. Like in the camera translator, the translated
-        letters and words (experimental for video translation) will show below the video preview.
-    </string>
+    <string name="info_guide_camera">When using camera to translate, make sure to stand about 1 meter from the signer for proper hand tracking andhave the signer\'s hands visible within the frame, or else the app will not be able to properly track their hands. In case of situations with low light levels, use the flashlight (press lighting icon to toggle). After aiming the camera at the signer, the app will immediately track their hands. Once the sign will be recognised, it will be shown in the "letter" window and will be added to the queue of "translated word" window.\n\nOnce the app recognises a break between signs, it will mark the word as completed, clear the "translated word" window and add the word to the bottom of the screen, which shows all recently translated words. Upon closing the translator this list will be cleared.</string>
+    <string name="info_guide_video">For video translation just select a video from your gallery. Like in the camera translator, the translated letters and words (experimental for video translation) will show below the video preview.</string>
 
     <string name="info_extras_header">Credits and Extras</string>
-    <string name="info_extras_text">
-        The app was developed for a school project by two students. This project is open-source and can be viewed at
-        https://github.com/duckysmacky/signsense. The app currently supports two UI languages and only one language
-        for translation (Russian), but we have plans of adding support for English dactyl and ASL.
-    </string>
-    <string name="info_extras_credits">
-        Credits:\n
-        - Ducky (head / app dev)\n
-        - shroom (model (ai) training)
-    </string>
+    <string name="info_extras_text">The app was developed for a school project by two students.\nThis project is open-source and can be viewed at https://github.com/duckysmacky/signsense.\nThe app currently supports two UI languages and only one language for translation (Russian), but we have plans of adding support for English dactyl and ASL.</string>
+    <string name="info_extras_credits">Credits:\n\n - Ducky (head / app dev)\n - shroom (model (ai) training)</string>
 
     <!-- Item descriptions -->
     <string name="desc_flash_button">Toggle Flash</string>
