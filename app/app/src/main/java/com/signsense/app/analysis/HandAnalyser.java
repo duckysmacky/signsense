@@ -39,7 +39,7 @@ public class HandAnalyser {
 
     private List<String> recentSigns = new ArrayList<>();
     private String word = "";
-    private String lastWord = "";
+    private List<String> recentWords = new ArrayList<>();
     private long signDelay = 0;
     private String topSign = "";
 
@@ -48,7 +48,7 @@ public class HandAnalyser {
         appContext = context.getApplicationContext();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
-        SIGN_DELAY = preferences.getInt("delay", 1) * 1000;
+        SIGN_DELAY = preferences.getInt("delay", 1) * 500;
         COMPARE_LENGTH = preferences.getInt("compareLen", 10);
         MODEL_VERSION = preferences.getInt("modelVer", 3);
 
@@ -133,13 +133,10 @@ public class HandAnalyser {
             }
 
         } else {
-            /* TODO:
-                - Add functionality for detecting breaks between words
-            */
             if (SystemClock.currentThreadTimeMillis() - signDelay > SIGN_DELAY) {
                 signDelay = SystemClock.currentThreadTimeMillis();
                 Log.i(TAG, "Sign Delay");
-                lastWord = word;
+                recentWords.add(word);
                 word = "";
             }
         }
@@ -148,7 +145,7 @@ public class HandAnalyser {
     }
 
     public String getWord() {return word;}
-    public String getLastWord() {return lastWord;}
+    public List<String> getRecentWords() {return recentWords;}
 
     private String mostCommonSign(List<String> signs) {
         Map<String, Integer> occurences = new HashMap<String, Integer>();

@@ -36,7 +36,7 @@
     <string name="pref_translation_model">Версия модели</string>
     <string name="pref_translation_model_desc">Версия модели, которая переводит жесты (некоторые версии могут быть более эффективными чем другие)</string>
     <string name="pref_translation_delay">Задержка между словами</string>
-    <string name="pref_translation_delay_desc">Промежуток времени между показами жестов в секундах, который определяет окончание слова</string>
+    <string name="pref_translation_delay_desc">Промежуток времени между показами жестов в (секунда / 2), который определяет окончание слова</string>
     <string name="pref_header_detection">Нахождение рук</string>
     <string name="pref_detection_draw">Визуализация</string>
     <string name="pref_detection_draw_desc">Отображение точек на пальцах руки</string>

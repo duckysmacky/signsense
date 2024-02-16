@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -60,7 +61,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(this, RunningMode.IMAGE);
 
-        //TODO: fix hand analyser model
         handAnalyser = new HandAnalyser(this);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -100,6 +100,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     }
 
     private void startCamera() {
+        int lastRecentWordsLen = 0;
+
         cameraView.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
 
             @Override
@@ -123,19 +125,23 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 Utils.matToBitmap(rgbFrame, bitmap);
 
                 List<Float> landmarks = handDetector.detectFrame(bitmap);
-
-                translatedLetter.setText(handAnalyser.analyseHand(landmarks));
                 String word = handAnalyser.getWord();
+                translatedLetter.setText(handAnalyser.analyseHand(landmarks));
 
                 if (word.length() > 0) {
                     translatedWord.setText(word);
+                } else {
+                    List<String> recentWords = handAnalyser.getRecentWords();
+                    if (recentWords.size() != lastRecentWordsLen) {
+                        String lastWordsText = "";
+                        for (String w : recentWords) {
+                            lastWordsText = w + " " + lastWordsText;
+                        }
+                        lastWords.setText(lastWordsText);
+                        // TODO: Fix the fucking "Only the original thread that created a view hierarchy can touch its views."
+                        // Otherwise it kinda works? good for now
+                    }
                 }
-                // TODO: Fix this shit
-//                } else {
-//                    String last = lastWords.getText().toString();
-//                    String newlast = last + handAnalyser.getLastWord() + "\n";
-//                    lastWords.setText(newlast);
-//                }
 
                 return handDetector.drawHand(rgbFrame, landmarks);
             }

@@ -35,10 +35,10 @@
         <SeekBarPreference
             android:title="@string/pref_translation_delay"
             android:summary="@string/pref_translation_delay_desc"
-            android:defaultValue="1"
+            android:defaultValue="2"
             android:key="delay"
-            android:max="5"
-            app:min="0"
+            android:max="10"
+            app:min="1"
             app:showSeekBarValue="true" />
         <SeekBarPreference
             android:title="@string/pref_translation_compare"
