@@ -1,8 +1,10 @@
 package com.signsense.app.analysis;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.util.Log;
+import androidx.preference.PreferenceManager;
 import org.pytorch.IValue;
 import org.pytorch.LiteModuleLoader;
 import org.pytorch.Module;
@@ -15,9 +17,9 @@ import java.util.Map;
 
 public class HandAnalyser {
     private static final String TAG = "HandAnalyser"; // Tag for debug log
-    private static final int MODEL_VERSION = 1;
-    private static final int COMPARE_LENGTH = 10;
-
+    final int SIGN_DELAY;
+    final int COMPARE_LENGTH;
+    final int MODEL_VERSION;
     private final Context appContext;
     private Module module; // The model itself
 
@@ -44,6 +46,11 @@ public class HandAnalyser {
     public HandAnalyser(Context context) {
         Log.i(TAG, "Initialising Hand Analyser");
         appContext = context.getApplicationContext();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        SIGN_DELAY = preferences.getInt("delay", 1) * 1000;
+        COMPARE_LENGTH = preferences.getInt("compareLen", 10);
+        MODEL_VERSION = preferences.getInt("modelVer", 3);
 
         String modelAssetName = "";
 
@@ -129,7 +136,7 @@ public class HandAnalyser {
             /* TODO:
                 - Add functionality for detecting breaks between words
             */
-            if (SystemClock.currentThreadTimeMillis() - signDelay > 1000) {
+            if (SystemClock.currentThreadTimeMillis() - signDelay > SIGN_DELAY) {
                 signDelay = SystemClock.currentThreadTimeMillis();
                 Log.i(TAG, "Sign Delay");
                 lastWord = word;

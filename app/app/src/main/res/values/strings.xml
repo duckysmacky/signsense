@@ -68,11 +68,9 @@
     <string name="title_activity_info">Information</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Preference Titles -->
-    <string name="pref_header_app">App</string>
-    <string name="pref_header_translator">Translator</string>
-
     <!-- App Preferences -->
+    <string name="pref_header_app">App</string>
+
     <string name="pref_app_theme">App Theme</string>
     <array name="pref_app_theme_titles">
         <item name="pref_app_theme_titles_sync">Sync with device</item>
@@ -87,32 +85,46 @@
 
     <string name="pref_app_language">App Language</string>
     <array name="pref_app_language_titles">
+        <item>Default</item>
         <item>English</item>
         <item>Русский</item>
     </array>
     <array name="pref_app_language_values">
+        <item>device</item>
         <item>en</item>
         <item>ru</item>
     </array>
 
-    <!-- Translator Preferences -->
-    <string name="pref_translator_language">Translation Language</string>
-    <string name="pref_translator_language_desc">Sign language to translate</string>
-    <array name="pref_translator_language_titles">
+    <!-- Translation Preferences -->
+    <string name="pref_header_translation">Sign Translation</string>
+
+    <string name="pref_translation_language">Translation Language</string>
+    <string name="pref_translation_language_desc">Sign language to translate</string>
+    <array name="pref_translation_language_titles">
         <item>Русский</item>
         <!--        <item>English</item>-->
     </array>
-    <array name="pref_translator_language_values">
+    <array name="pref_translation_language_values">
         <item>ru</item>
         <item>en</item>
     </array>
-    <string name="pref_translator_draw">Visualization</string>
-    <string name="pref_translator_draw_desc">Draw dots on fingertips</string>
-    <string name="pref_translator_hands">Hands</string>
-    <string name="pref_translator_hands_desc">Amount of max hands to be detected</string>
-    <string name="pref_translator_detectionCon" translatable="false">Detection Confidence %</string>
-    <string name="pref_translator_trackCon" translatable="false">Tracking Confidence %</string>
-    <string name="pref_translator_presenseCon" translatable="false">Presence Confidence %</string>
+    <string name="pref_translation_delay">Word Separation Delay</string>
+    <string name="pref_translation_delay_desc">Delay in sec between showing signs to mark as the end of a word</string>
+    <string name="pref_translation_compare">Sample size</string>
+    <string name="pref_translation_compare_desc">Compare from X last detected letters (higher values mean better results, but slower detection)</string>
+    <string name="pref_translation_model">Model Version</string>
+    <string name="pref_translation_model_desc">Version of translation model (some may perform better than other)</string>
+
+    <!-- Detection Preferences -->
+    <string name="pref_header_detection">Hand Detection</string>
+
+    <string name="pref_detection_draw">Visualization</string>
+    <string name="pref_detection_draw_desc">Draw dots on detected hand</string>
+    <string name="pref_detection_hands">Hands</string>
+    <string name="pref_detection_hands_desc">Amount of max hands to be detected</string>
+    <string name="pref_detection_detectionCon" translatable="false">Detection Confidence %</string>
+    <string name="pref_detection_trackCon" translatable="false">Tracking Confidence %</string>
+    <string name="pref_detection_presenseCon" translatable="false">Presence Confidence %</string>
 
     <!-- Translation -->
     <string name="translation_header">Translation</string>

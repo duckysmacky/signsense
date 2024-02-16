@@ -55,15 +55,20 @@
     <string name="title_activity_info">Информация</string>
     <string name="title_activity_settings">Настройки</string>
     <string name="pref_header_app">Приложение</string>
-    <string name="pref_header_translator">Переводчик</string>
     <string name="pref_app_theme">Тема приложения</string>
     <string name="pref_app_language">Язык приложения</string>
-    <string name="pref_translator_language">Язык перевода</string>
-    <string name="pref_translator_language_desc">С какого языка переводить жесты</string>
-    <string name="pref_translator_draw">Визуализация</string>
-    <string name="pref_translator_draw_desc">Отображение точек на кончиках палцев</string>
-    <string name="pref_translator_hands">Количество рук</string>
-    <string name="pref_translator_hands_desc">Количество рук для обнаружения</string>
+    <string name="pref_header_translation">Перевод жестов</string>
+    <string name="pref_translation_language">Язык перевода</string>
+    <string name="pref_translation_language_desc">Язык для перевода на</string>
+    <string name="pref_translation_model">Версия модели</string>
+    <string name="pref_translation_model_desc">Версия модели, которая переводит жесты (некоторые версии могут быть более эффективными чем другие)</string>
+    <string name="pref_translation_delay">Задержка между словами</string>
+    <string name="pref_translation_delay_desc">Промежуток времени между показами жестов в секундах, который определяет окончание слова</string>
+    <string name="pref_header_detection">Нахождение рук</string>
+    <string name="pref_detection_draw">Визуализация</string>
+    <string name="pref_detection_draw_desc">Отображение точек на пальцах руки</string>
+    <string name="pref_detection_hands">Руки</string>
+    <string name="pref_detection_hands_desc">Количество рук, которые нужно обнаружить</string>
     <string name="translation_header">Перевод</string>
     <string name="translation_letter_placeholder">[буква]</string>
     <string name="translation_word_placeholder">[переведенное слово]</string>
@@ -72,4 +77,6 @@
     <string name="translation_lastwords_header">Недавние слова:</string>
     <string name="translation_lastwords_value">[недавно переведенные слова]</string>
     <string name="app_desc">Приложение по переводу с дактиля на разговорный язык</string>
+    <string name="pref_translation_compare">Размер выборки</string>
+    <string name="pref_translation_compare_desc">Сравнивать с X последними переведенными буквами для выведения лучшего результата (более большие значения обеспечивают лучший результат, но делают перевод медленее)</string>
 </resources>

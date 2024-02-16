@@ -20,15 +20,8 @@
     <string name="title_activity_info">Information</string>
     <string name="title_activity_settings">Settings</string>
     <string name="pref_header_app">App</string>
-    <string name="pref_header_translator">Translator</string>
     <string name="pref_app_theme">App Theme</string>
     <string name="pref_app_language">App Language</string>
-    <string name="pref_translator_language">Translation Language</string>
-    <string name="pref_translator_language_desc">Sign language to translate</string>
-    <string name="pref_translator_draw">Visualization</string>
-    <string name="pref_translator_draw_desc">Draw dots on fingertips</string>
-    <string name="pref_translator_hands">Hands</string>
-    <string name="pref_translator_hands_desc">Amount of max hands to be detected</string>
     <string name="translation_header">Translation</string>
     <string name="translation_letter_header">Letter:</string>
     <string name="translation_letter_placeholder">[letter]</string>

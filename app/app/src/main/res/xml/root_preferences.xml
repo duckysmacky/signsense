@@ -2,44 +2,73 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
-            app:title="@string/pref_header_app">
+    <PreferenceCategory app:title="@string/pref_header_app">
 
         <ListPreference
-                android:defaultValue="sync"
-                android:title="@string/pref_app_theme"
-                android:entries="@array/pref_app_theme_titles"
-                android:entryValues="@array/pref_app_theme_values"
-                android:key="theme"
-                app:useSimpleSummaryProvider="true"/>
+            android:defaultValue="sync"
+            android:entries="@array/pref_app_theme_titles"
+            android:entryValues="@array/pref_app_theme_values"
+            android:key="theme"
+            android:title="@string/pref_app_theme"
+            app:useSimpleSummaryProvider="true" />
         <ListPreference
-                android:defaultValue="default"
-                android:title="@string/pref_app_language"
-                android:entries="@array/pref_app_language_titles"
-                android:entryValues="@array/pref_app_language_values"
-                android:key="appLanguage"
-                app:useSimpleSummaryProvider="true"/>
+            android:defaultValue="device"
+            android:entries="@array/pref_app_language_titles"
+            android:entryValues="@array/pref_app_language_values"
+            android:key="appLanguage"
+            android:title="@string/pref_app_language"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
+
     <PreferenceCategory
-            android:title="@string/pref_header_translator">
+            android:title="@string/pref_header_translation">
 
         <ListPreference
-                android:defaultValue="russian"
-                android:title="@string/pref_translator_language"
-                android:entries="@array/pref_translator_language_titles"
-                android:entryValues="@array/pref_translator_language_values"
-                android:key="translatorLanguage"
-                app:useSimpleSummaryProvider="true"
-                app:summary="@string/pref_translator_language_desc"/>
+            android:defaultValue="russian"
+            android:entries="@array/pref_translation_language_titles"
+            android:entryValues="@array/pref_translation_language_values"
+            android:key="translatorLanguage"
+            android:title="@string/pref_translation_language"
+            app:summary="@string/pref_translation_language_desc"
+            app:useSimpleSummaryProvider="true" />
+        <SeekBarPreference
+            android:title="@string/pref_translation_delay"
+            android:summary="@string/pref_translation_delay_desc"
+            android:defaultValue="1"
+            android:key="delay"
+            android:max="5"
+            app:min="0"
+            app:showSeekBarValue="true" />
+        <SeekBarPreference
+            android:title="@string/pref_translation_compare"
+            android:summary="@string/pref_translation_compare_desc"
+            android:defaultValue="10"
+            android:key="compareLen"
+            android:max="50"
+            app:min="1"
+            app:showSeekBarValue="true" />
+        <SeekBarPreference
+            android:title="@string/pref_translation_model"
+            android:summary="@string/pref_translation_model_desc"
+            android:defaultValue="3"
+            android:key="modelVer"
+            android:max="3"
+            app:min="1"
+            app:showSeekBarValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="@string/pref_header_translation">
+
         <SwitchPreference
             android:defaultValue="false"
             android:key="draw"
-            android:title="@string/pref_translator_draw"
-            app:summary="@string/pref_translator_draw_desc" />
+            android:title="@string/pref_detection_draw"
+            app:summary="@string/pref_detection_draw_desc" />
         <SeekBarPreference
-            android:title="@string/pref_translator_hands"
-            android:summary="@string/pref_translator_hands_desc"
+            android:title="@string/pref_detection_hands"
+            android:summary="@string/pref_detection_hands_desc"
             android:defaultValue="2"
             android:key="maxHands"
             android:max="2"
@@ -49,18 +78,18 @@
             android:defaultValue="50"
             android:key="detectionCon"
             android:max="100"
-            android:title="@string/pref_translator_detectionCon"
+            android:title="@string/pref_detection_detectionCon"
             app:min="1"
             app:showSeekBarValue="true" />
         <SeekBarPreference
-            android:title="@string/pref_translator_trackCon"
+            android:title="@string/pref_detection_trackCon"
             android:defaultValue="50"
             android:key="trackingCon"
             android:max="100"
             app:min="1"
             app:showSeekBarValue="true" />
         <SeekBarPreference
-            android:title="@string/pref_translator_presenseCon"
+            android:title="@string/pref_detection_presenseCon"
             android:defaultValue="50"
             android:key="presenceCon"
             android:max="100"

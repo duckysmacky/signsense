@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void switchCamera(View view) { // Launches the camera part
+        Toast.makeText(this, "Opening camera...", Toast.LENGTH_LONG).show();
         Intent activity = new Intent(this, CameraActivity.class);
         startActivity(activity);
     }

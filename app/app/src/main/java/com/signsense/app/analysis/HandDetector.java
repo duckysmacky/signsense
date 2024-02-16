@@ -45,10 +45,10 @@ public class HandDetector {
 
         // Loading from settings
         this.draw = preferences.getBoolean("draw", false);
-        int maxHands = preferences.getInt("maxHands", 2);
-        float detectionCon = (float) preferences.getInt("detectionCon", 50) / 100;
-        float trackingCon = (float) preferences.getInt("trackingCon", 50) / 100;
-        float presenceCon = (float) preferences.getInt("presenceCon", 50) / 100;
+        final int MAX_HANDS = preferences.getInt("maxHands", 2);
+        final float DETECTION_CON = (float) preferences.getInt("detectionCon", 50) / 100;
+        final float TRACKING_CON = (float) preferences.getInt("trackingCon", 50) / 100;
+        final float PRESENCE_CON = (float) preferences.getInt("presenceCon", 50) / 100;
 
         // Loading hand detection model
         BaseOptions baseOptions = BaseOptions.builder()
@@ -60,19 +60,19 @@ public class HandDetector {
         Log.i(TAG, "Successfully loaded Hand Detector Model");
         Log.i(TAG, "Hand Detector Configuration:");
         Log.i(TAG, "Draw: " + draw);
-        Log.i(TAG, "Max Hands: " + maxHands);
-        Log.i(TAG, "Detection Confidence: " + detectionCon);
-        Log.i(TAG, "Tracking Confidence: " + trackingCon);
-        Log.i(TAG, "Presence Confidence: " + presenceCon);
+        Log.i(TAG, "Max Hands: " + MAX_HANDS);
+        Log.i(TAG, "Detection Confidence: " + DETECTION_CON);
+        Log.i(TAG, "Tracking Confidence: " + TRACKING_CON);
+        Log.i(TAG, "Presence Confidence: " + PRESENCE_CON);
 
         // Setting up the Hand Landmarker
         handLandmarker = createFromOptions(appContext, HandLandmarkerOptions.builder()
                 .setBaseOptions(baseOptions)
                 .setRunningMode(mode)
-                .setNumHands(maxHands)
-                .setMinHandDetectionConfidence(detectionCon)
-                .setMinTrackingConfidence(trackingCon)
-                .setMinHandPresenceConfidence(presenceCon)
+                .setNumHands(MAX_HANDS)
+                .setMinHandDetectionConfidence(DETECTION_CON)
+                .setMinTrackingConfidence(TRACKING_CON)
+                .setMinHandPresenceConfidence(PRESENCE_CON)
                 .build()
         );
     }
