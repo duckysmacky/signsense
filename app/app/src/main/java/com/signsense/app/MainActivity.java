@@ -87,12 +87,20 @@ public class MainActivity extends AppCompatActivity {
         if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 103);
         }
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 104);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 103 && grantResults.length > 0) { // Check if the code is for askPermissions and availability to grant is there
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) { // If we haven't already granted this permission ask for it again
+                askPermissions();
+            }
+        }
+        if (requestCode == 104 && grantResults.length > 0) { // Check if the code is for askPermissions and availability to grant is there
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) { // If we haven't already granted this permission ask for it again
                 askPermissions();
             }
