@@ -81,7 +81,7 @@ class handDetector():
 		return length, img, [x1, y1, x2, y2, cx, cy]
 
 def main():
-	model = torch.jit.load("./alg/modelultracool3.pt")
+	model = torch.jit.load("./alg/modelultracool4.pt")
 	detector = handDetector()
 	cap = cv2.VideoCapture(0)
 	while True:
