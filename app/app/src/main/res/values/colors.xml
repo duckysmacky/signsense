@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#FFFEFEFE</color>
+    <color name="primary">#CCD0CF</color>
+    <color name="primary_bg">#D6DEDC</color>
+    <color name="primary_accent">#9BA8AB</color>
+    <color name="secondary">#11212D</color>
+    <color name="secondary_accent">#253745</color>
+    <color name="highlight">#4A5C6A</color>
+    <color name="highlight_accent">#6DA5C0</color>
+    <color name="darken">#2A3969</color>
+
+    <color name="button_text_color">#FFFFFFFF</color>
+</resources>

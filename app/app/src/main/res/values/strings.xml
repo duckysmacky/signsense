@@ -1,0 +1,115 @@
+<resources>
+    <!-- General -->
+    <string name="app_name" translatable="false">SignSense</string>
+    <string name="app_desc">A dactyl to spoken language translation app</string>
+
+    <!-- Information -->
+    <string name="info_header">Information</string>
+    <string name="info_general">Signsense is an app developed by two high school students for translating sign language (dactyl) to spoken language.</string>
+
+    <string name="info_nav_header">App navigation</string>
+    <string name="info_nav_camera">1. Camera translator - real-time hand recognition, analysis and translation</string>
+    <string name="info_nav_video">2. Video selector - translation of prerecorded videos via upload</string>
+    <string name="info_nav_settings">2. Settings - set up app to your liking and configure hand detection options</string>
+
+    <string name="info_guide_header">How to use the app</string>
+    <string name="info_guide_camera">When using camera to translate, make sure to stand about 1 meter from the signer for proper hand tracking andhave the signer\'s hands visible within the frame, or else the app will not be able to properly track their hands. In case of situations with low light levels, use the flashlight (press lighting icon to toggle). After aiming the camera at the signer, the app will immediately track their hands. Once the sign will be recognised, it will be shown in the "letter" window and will be added to the queue of "translated word" window.\n\nOnce the app recognises a break between signs, it will mark the word as completed, clear the "translated word" window and add the word to the bottom of the screen, which shows all recently translated words. Upon closing the translator this list will be cleared.</string>
+    <string name="info_guide_video">For video translation just select a video from your gallery. Like in the camera translator, the translated letters and words (experimental for video translation) will show below the video preview.</string>
+
+    <string name="info_extras_header">Credits and Extras</string>
+    <string name="info_extras_text">The app was developed for a school project by two students.\nThis project is open-source and can be viewed at https://github.com/duckysmacky/signsense.\nThe app currently supports two UI languages and only one language for translation (Russian), but we have plans of adding support for English dactyl and ASL.</string>
+    <string name="info_extras_credits">Credits:\n\n - Ducky (head / app dev)\n - shroom (model (ai) training)</string>
+
+    <!-- Item descriptions -->
+    <string name="desc_flash_button">Toggle Flash</string>
+    <string name="desc_flip_button">Flip Camera</string>
+    <string name="desc_openCamera_button">Open Camera</string>
+    <string name="desc_openSelector_button">Open Video Selector</string>
+    <string name="desc_openInfo_button">Open Information</string>
+    <string name="desc_openSettings_button">Open Settings</string>
+    <string name="desc_signsense_logo">SignSense Wide Logo</string>
+
+    <!-- Button Labels -->
+    <string name="label_openCamera_button">Translator</string>
+    <string name="label_openVideo_button">Video Selector</string>
+    <string name="label_openInfo_button">Info</string>
+    <string name="label_openSettings_button">Settings</string>
+    <string name="lavel_selectVideo_button">Select Video</string>
+
+    <!-- Activity and Fragment Titles -->
+    <string name="title_activity_main">Main Menu</string>
+    <string name="title_activity_translator">Translator</string>
+    <string name="title_activity_video">Video Selector</string>
+    <string name="title_activity_info">Information</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- App Preferences -->
+    <string name="pref_header_app">App</string>
+
+    <string name="pref_app_theme">App Theme</string>
+    <array name="pref_app_theme_titles">
+        <item name="pref_app_theme_titles_sync">Sync with device</item>
+        <item name="pref_app_theme_titles_light">Light Mode</item>
+        <item name="pref_app_theme_titles_dark">Dark Mode</item>
+    </array>
+    <array name="pref_app_theme_values">
+        <item>sync</item>
+        <item>light</item>
+        <item>dark</item>
+    </array>
+
+    <string name="pref_app_language">App Language</string>
+    <array name="pref_app_language_titles">
+        <item>Default</item>
+        <item>English</item>
+        <item>Русский</item>
+    </array>
+    <array name="pref_app_language_values">
+        <item>device</item>
+        <item>en</item>
+        <item>ru</item>
+    </array>
+
+    <!-- Translation Preferences -->
+    <string name="pref_header_translation">Sign Translation</string>
+
+    <string name="pref_translation_language">Translation Language</string>
+    <string name="pref_translation_language_desc">Sign language to translate</string>
+    <array name="pref_translation_language_titles">
+        <item>Русский</item>
+        <!--        <item>English</item>-->
+    </array>
+    <array name="pref_translation_language_values">
+        <item>ru</item>
+        <item>en</item>
+    </array>
+    <string name="pref_translation_delay">Word Separation Delay</string>
+    <string name="pref_translation_delay_desc">Delay in (sec / 2) between showing signs to mark as the end of a word</string>
+    <string name="pref_translation_compare">Sample size</string>
+    <string name="pref_translation_compare_desc">Compare from X last detected letters (higher values mean better results, but slower detection)</string>
+    <string name="pref_translation_model">Model Version</string>
+    <string name="pref_translation_model_desc">Version of translation model (some may perform better than other)</string>
+
+    <!-- Detection Preferences -->
+    <string name="pref_header_detection">Hand Detection</string>
+
+    <string name="pref_detection_draw">Visualization</string>
+    <string name="pref_detection_draw_desc">Draw dots on detected hand</string>
+    <string name="pref_detection_hands">Hands</string>
+    <string name="pref_detection_hands_desc">Amount of max hands to be detected</string>
+    <string name="pref_detection_detectionCon" translatable="false">Detection Confidence %</string>
+    <string name="pref_detection_trackCon" translatable="false">Tracking Confidence %</string>
+    <string name="pref_detection_presenseCon" translatable="false">Presence Confidence %</string>
+
+    <!-- Translation -->
+    <string name="translation_header">Translation</string>
+
+    <string name="translation_letter_header">Letter:</string>
+    <string name="translation_letter_placeholder">[letter]</string>
+
+    <string name="translation_word_header">Word:</string>
+    <string name="translation_word_placeholder">[translated word]</string>
+
+    <string name="translation_lastwords_header">Recent Words:</string>
+    <string name="translation_lastwords_value">[recently translated words]</string>
+</resources>
