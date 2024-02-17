@@ -60,7 +60,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(this, RunningMode.IMAGE);
-
         handAnalyser = new HandAnalyser(this);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -139,7 +138,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                         }
                         lastWords.setText(lastWordsText);
                         // TODO: Fix the fucking "Only the original thread that created a view hierarchy can touch its views."
-                        // Otherwise it kinda works? good for now
+                        // Otherwise, it kinda works? good for now
                     }
                 }
 

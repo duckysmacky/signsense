@@ -36,6 +36,10 @@ public class HandAnalyser {
             "а", "б", "в", "г", "д", "[е/ё]", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
             "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
     };
+    private String[] signDict4 = {
+            "а", "б", "в", "г", "д", "[е/ё]", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
+            "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
+    };
 
     private List<String> recentSigns = new ArrayList<>();
     private String word = "";
@@ -66,6 +70,10 @@ public class HandAnalyser {
             case 3:
                 modelAssetName = "sign_model_v3.pt";
                 signDict = signDict3;
+                break;
+            case 4:
+                modelAssetName = "sign_model_v4.pt";
+                signDict = signDict4;
                 break;
         }
 
