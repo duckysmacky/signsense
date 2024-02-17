@@ -8,7 +8,9 @@
     <string name="info_general">Signsense is an app developed by two high school students for translating sign language (dactyl) to spoken language.</string>
 
     <string name="info_nav_header">App navigation</string>
-    <string name="info_nav">1. Camera translator - real-time hand recognition, analysis and translation.\n\n2. Video selector - translation of prerecorded videos via upload.\n\n3. Settings - set up app to your liking and configure hand detection options.</string>
+    <string name="info_nav_camera">1. Camera translator - real-time hand recognition, analysis and translation</string>
+    <string name="info_nav_video">2. Video selector - translation of prerecorded videos via upload</string>
+    <string name="info_nav_settings">2. Settings - set up app to your liking and configure hand detection options</string>
 
     <string name="info_guide_header">How to use the app</string>
     <string name="info_guide_camera">When using camera to translate, make sure to stand about 1 meter from the signer for proper hand tracking andhave the signer\'s hands visible within the frame, or else the app will not be able to properly track their hands. In case of situations with low light levels, use the flashlight (press lighting icon to toggle). After aiming the camera at the signer, the app will immediately track their hands. Once the sign will be recognised, it will be shown in the "letter" window and will be added to the queue of "translated word" window.\n\nOnce the app recognises a break between signs, it will mark the word as completed, clear the "translated word" window and add the word to the bottom of the screen, which shows all recently translated words. Upon closing the translator this list will be cleared.</string>

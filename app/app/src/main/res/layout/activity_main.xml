@@ -121,7 +121,8 @@
                 android:textAlignment="center"
                 android:textColor="@color/button_text_color"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/button_switchInfo"

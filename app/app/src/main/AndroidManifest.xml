@@ -19,21 +19,19 @@
         tools:targetApi="31">
         <activity
             android:name=".InfoActivity"
+            android:label="@string/title_activity_info"
+            android:parentActivityName=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".VideoActivity"
             android:exported="false"
             android:label="@string/title_activity_video"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.SignSense.NoActionBar" />
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:theme="@style/Theme.SignSense.NoActionBar" />
-        <activity
-            android:name=".ImageSelectorActivity"
-            android:exported="false"
-            android:label="Image Selector"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.SignSense.NoActionBar" />
         <activity
