@@ -127,20 +127,23 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 String word = handAnalyser.getWord();
                 translatedLetter.setText(handAnalyser.analyseHand(landmarks));
 
-                if (word.length() > 0) {
-                    translatedWord.setText(word);
-                } else {
-                    List<String> recentWords = handAnalyser.getRecentWords();
-                    if (recentWords.size() != lastRecentWordsLen) {
-                        String lastWordsText = "";
-                        for (String w : recentWords) {
-                            lastWordsText = w + " " + lastWordsText;
+                // Run all the UI stuff on the background
+                runOnUiThread(() -> {
+                    if (word.length() > 0) {
+                        translatedWord.setText(word);
+                    } else {
+                        List<String> recentWords = handAnalyser.getRecentWords();
+                        if (recentWords.size() != lastRecentWordsLen) {
+                            String lastWordsText = "";
+                            for (String w : recentWords) {
+                                lastWordsText = w + " " + lastWordsText;
+                            }
+                            lastWords.setText(lastWordsText);
+                            // TODO: Fix the fucking "Only the original thread that created a view hierarchy can touch its views."
+                            // Otherwise, it kinda works? good for now
                         }
-                        lastWords.setText(lastWordsText);
-                        // TODO: Fix the fucking "Only the original thread that created a view hierarchy can touch its views."
-                        // Otherwise, it kinda works? good for now
                     }
-                }
+                });
 
                 return handDetector.drawHand(rgbFrame, landmarks);
             }
