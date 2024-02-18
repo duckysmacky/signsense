@@ -160,6 +160,7 @@ android {
             aidl.srcDirs = ['java/src']
             res.srcDirs = ['java/res']
             manifest.srcFile 'java/AndroidManifest.xml'
+            jni.srcDirs = ['native/jni', 'native/libs/']
         }
     }
 

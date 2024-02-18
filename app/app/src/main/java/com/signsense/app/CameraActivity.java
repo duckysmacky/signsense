@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.signsense.app.analysis.HandAnalyser;
@@ -39,7 +41,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     private JavaCameraView cameraView;
     private TextView translatedLetter, translatedWord, lastWords;
 
-    private Mat greyFrame, rgbFrame;
+    private Mat rgbFrame;
 
     private HandDetector handDetector;
     private HandAnalyser handAnalyser;
@@ -68,7 +70,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         handDetector = new HandDetector(this, RunningMode.IMAGE);
         handAnalyser = new HandAnalyser(this);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         toggleFlash.setOnClickListener(view -> {
             if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
@@ -91,11 +93,11 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
         askPermissions();
         loadSettings();
-        startCamera();
     }
 
     @Override
     protected List<? extends JavaCameraView> getCameraViewList() {
+        Log.i(TAG, "Called getCameraViewList");
         return Collections.singletonList(cameraView);
     }
 
@@ -103,49 +105,58 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i(TAG, "Camera resumed");
         cameraView.enableView();
     }
     @Override
     protected void onPause() {
         super.onPause();
+        Log.i(TAG, "Camera paused");
         cameraView.disableView();
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "Camera destroyed");
         cameraView.disableView();
     }
 
     private void startCamera() {
         Log.i(TAG, "Started camera");
         int lastRecentWordsLen = 0;
+        cameraView.enableView();
 
         cameraView.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
 
             @Override
             public void onCameraViewStarted(int width, int height) {
-                cameraView.setCameraPermissionGranted();
+                Log.i(TAG, "Camera view started");
+                cameraView.enableView();
                 rgbFrame = new Mat();
             }
 
             @Override
             public void onCameraViewStopped() {
+                Log.i(TAG, "Camera view stopped");
+                cameraView.disableView();
                 rgbFrame.release();
             }
 
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) { // On each new frame
+                Log.i(TAG, "Frame received");
                 rgbFrame = inputFrame.rgba();
+
+                Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(rgbFrame, bitmap);
+
+                List<Float> landmarks = handDetector.detectFrame(bitmap);
+                String word = handAnalyser.getWord();
+                translatedLetter.setText(handAnalyser.analyseHand(landmarks));
 
                 // Run all the UI stuff on the background
                 runOnUiThread(() -> {
-                    Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
-                    Utils.matToBitmap(rgbFrame, bitmap);
-
-                    List<Float> landmarks = handDetector.detectFrame(bitmap);
-                    String word = handAnalyser.getWord();
-                    translatedLetter.setText(handAnalyser.analyseHand(landmarks));
-
+                    Log.i(TAG, "Updating UI");
                     if (word.length() > 0) {
                         translatedWord.setText(word);
                     } else {
@@ -163,10 +174,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 return handDetector.drawHand(rgbFrame, landmarks);
             }
         });
-
-        if (OpenCVLoader.initLocal()) {
-            cameraView.enableView();
-        }
     }
 
     private void toggleFlashlight() {
@@ -176,10 +183,10 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             cameraView.turnOnTheFlash();
         }
         flashlight = !flashlight;
-        cameraView.enableView();
     }
 
     private void loadSettings() {
+        Log.i(TAG, "Loading settings");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         String appTheme = preferences.getString("theme", "");
@@ -207,19 +214,29 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
     // Permission asking
     private void askPermissions() {
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, CODE_REQUEST_CAMERA);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Permissions granted");
+            cameraView.setCameraPermissionGranted();
+            startCamera();
+        } else {
+            Log.d(TAG, "Permission prompt");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CODE_REQUEST_CAMERA);
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CODE_REQUEST_CAMERA && grantResults.length > 0) { // Check if the code is for askPermissions and availability to grant is there
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) { // If we haven't already granted this permission ask for it again
-                askPermissions();
-            } else {
+        if (requestCode == CODE_REQUEST_CAMERA) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Camera can be turned on
+                Log.i(TAG, "Camera permission granted");
                 cameraView.setCameraPermissionGranted();
+                startCamera();
+            } else {
+                // Camera will stay off
+                Log.i(TAG, "Camera permission denied");
+                askPermissions();
             }
         }
     }
