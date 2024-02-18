@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,17 +13,14 @@ import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
-import com.signsense.app.analysis.HandAnalyser;
 import com.signsense.app.analysis.HandDetector;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,20 +28,19 @@ public class VideoActivity extends AppCompatActivity {
     private static final String TAG = "VideoActivity";
     private static final int CODE_VIDEO = 400;
 
-    private Button selectVideo;
     private VideoView videoView;
     private TextView lastWords;
 
     private MediaController mediaController;
     private HandDetector handDetector;
-    private HandAnalyser handAnalyser;
+    //private HandAnalyser handAnalyser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
-        selectVideo = findViewById(R.id.button_selectVideo);
+        Button selectVideo1 = findViewById(R.id.button_selectVideo);
         videoView = findViewById(R.id.view_videoView);
 
         lastWords = findViewById(R.id.text_video_translation_lastwords_value);
@@ -59,9 +54,9 @@ public class VideoActivity extends AppCompatActivity {
 
         // Setup hand detector for video mode
         handDetector = new HandDetector(this, RunningMode.VIDEO);
-        handAnalyser = new HandAnalyser(this);
+        //handAnalyser = new HandAnalyser(this);
 
-        selectVideo.setOnClickListener(view -> {
+        selectVideo1.setOnClickListener(view -> {
             // On click, open new window for selecting videos
             Intent selectVideo = new Intent(Intent.ACTION_PICK);
             selectVideo.setType("video/*");

@@ -1,22 +1,23 @@
 package com.signsense.app;
 
+import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
-import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.signsense.app.analysis.HandAnalyser;
 import com.signsense.app.analysis.HandDetector;
+import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
@@ -30,8 +31,8 @@ import java.util.Locale;
 
 public class CameraActivity extends org.opencv.android.CameraActivity {
     private static final String TAG = "Camera"; // Tag for debug log
+    private static final int CODE_REQUEST_CAMERA = 103;
 
-    private ImageButton toggleFlash, flipCamera;
     private JavaCameraView cameraView;
     private TextView translatedLetter, translatedWord, lastWords;
 
@@ -40,9 +41,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     private HandDetector handDetector;
     private HandAnalyser handAnalyser;
 
-    private Camera mCamera;
-    private Camera.Parameters parameters;
-    private CameraManager camManager;
     private boolean flashlight = false;
 
     @Override
@@ -51,8 +49,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         setContentView(R.layout.activity_camera);
 
         cameraView = findViewById(R.id.cameraView);
-        toggleFlash = findViewById(R.id.button_toggleFlash);
-        flipCamera = findViewById(R.id.button_flipCamera);
+        ImageButton toggleFlash = findViewById(R.id.button_toggleFlash);
 
         translatedLetter = findViewById(R.id.text_camera_translation_letter_value);
         translatedWord = findViewById(R.id.text_camera_translation_word_value);
@@ -72,12 +69,13 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             }
         });
 
+        askPermissions();
         loadSettings();
         startCamera();
     }
 
     @Override
-    protected List<CameraBridgeViewBase> getCameraViewList() { // Returns our cameraView View (single one, in case we have many)
+    protected List<? extends JavaCameraView> getCameraViewList() {
         return Collections.singletonList(cameraView);
     }
 
@@ -99,12 +97,14 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     }
 
     private void startCamera() {
+        Log.i(TAG, "Started camera");
         int lastRecentWordsLen = 0;
 
         cameraView.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
 
             @Override
             public void onCameraViewStarted(int width, int height) {
+                cameraView.setCameraPermissionGranted();
                 greyFrame = new Mat();
                 rgbFrame = new Mat();
             }
@@ -158,6 +158,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             cameraView.turnOnTheFlash();
         }
         flashlight = !flashlight;
+        cameraView.enableView();
     }
 
     private void loadSettings() {
@@ -184,5 +185,24 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         Locale.setDefault(locale);
         resources.getConfiguration().setLocale(locale);
         resources.updateConfiguration(resources.getConfiguration(), resources.getDisplayMetrics());
+    }
+
+    // Permission asking
+    private void askPermissions() {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, CODE_REQUEST_CAMERA);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CODE_REQUEST_CAMERA && grantResults.length > 0) { // Check if the code is for askPermissions and availability to grant is there
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) { // If we haven't already granted this permission ask for it again
+                askPermissions();
+            } else {
+                cameraView.setCameraPermissionGranted();
+            }
+        }
     }
 }

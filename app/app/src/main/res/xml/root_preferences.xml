@@ -32,6 +32,11 @@
             android:defaultValue="russian"
             android:key="translatorLanguage"
             app:useSimpleSummaryProvider="true" />
+        <SwitchPreference
+            android:title="@string/pref_translation_flip"
+            app:summary="@string/pref_translation_flip_desc"
+            android:defaultValue="false"
+            android:key="flip" />
         <SeekBarPreference
             android:title="@string/pref_translation_delay"
             android:summary="@string/pref_translation_delay_desc"
@@ -59,7 +64,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-            android:title="@string/pref_header_translation">
+            android:title="@string/pref_header_detection">
 
         <SwitchPreference
             android:title="@string/pref_detection_draw"

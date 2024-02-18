@@ -5,14 +5,13 @@ plugins {
 android {
     namespace 'com.signsense.app'
     compileSdk 34
-    String appVersion = "1.0.0"
 
     defaultConfig {
         applicationId "com.signsense.app"
         minSdk 26
         targetSdk 34
         versionCode 1
-        versionName appVersion
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -21,12 +20,8 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            applicationIdSuffix 'signsense'
-            versionNameSuffix appVersion
         }
         debug {
-            applicationIdSuffix 'signsense'
-            versionNameSuffix appVersion
         }
     }
 

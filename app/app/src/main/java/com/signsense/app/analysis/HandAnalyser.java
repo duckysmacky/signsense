@@ -17,6 +17,7 @@ import java.util.Map;
 
 public class HandAnalyser {
     private static final String TAG = "HandAnalyser"; // Tag for debug log
+    final boolean SIGN_FLIP;
     final int SIGN_DELAY;
     final int COMPARE_LENGTH;
     final int MODEL_VERSION;
@@ -24,19 +25,19 @@ public class HandAnalyser {
     private Module module; // The model itself
 
     private String[] signDict;
-    private String[] signDict1 = {
+    private final String[] signDict1 = {
             "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
             "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"
     };
-    private String[] signDict2 = {
+    private final String[] signDict2 = {
             "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
             "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
     };
-    private String[] signDict3 = {
+    private final String[] signDict3 = {
             "а", "б", "в", "г", "д", "[е/ё]", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
             "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
     };
-    private String[] signDict4 = {
+    private final String[] signDict4 = {
             "а", "б", "в", "г", "д", "[е/ё]", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
             "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
     };
@@ -52,6 +53,7 @@ public class HandAnalyser {
         appContext = context.getApplicationContext();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
+        SIGN_FLIP = preferences.getBoolean("flip", false);
         SIGN_DELAY = preferences.getInt("delay", 1) * 500;
         COMPARE_LENGTH = preferences.getInt("compareLen", 10);
         MODEL_VERSION = preferences.getInt("modelVer", 3);
@@ -99,8 +101,12 @@ public class HandAnalyser {
             float[] data = new float[landmarks.size()];
             int j = 0;
             for (Float f : landmarks) {
-                if (j % 2 == 0) {
-                    data[j++] = f;
+                if (SIGN_FLIP) {
+                    if (j % 2 == 0) {
+                        data[j++] = 1 - f;
+                    } else {
+                        data[j++] = f;
+                    }
                 } else {
                     data[j++] = f;
                 }
@@ -156,21 +162,21 @@ public class HandAnalyser {
     public List<String> getRecentWords() {return recentWords;}
 
     private String mostCommonSign(List<String> signs) {
-        Map<String, Integer> occurences = new HashMap<String, Integer>();
+        Map<String, Integer> occurrences = new HashMap<String, Integer>();
         final String[] commonSign = new String[1];
 
         for (String sign : signs) {
-            if (occurences.containsKey(sign)) {
-                occurences.put(sign, occurences.get(sign) + 1);
+            if (occurrences.containsKey(sign)) {
+                occurrences.put(sign, occurrences.get(sign) + 1);
             } else {
-                occurences.putIfAbsent(sign, 1);
+                occurrences.putIfAbsent(sign, 1);
             }
         }
-        int maxOcc = occurences.values().stream()
+        int maxOcc = occurrences.values().stream()
                 .max(Integer::compare)
                 .get();
 
-        occurences.forEach((key, value) -> {
+        occurrences.forEach((key, value) -> {
             if (value == maxOcc) {
                 commonSign[0] = key;
             }

@@ -83,6 +83,8 @@
         <item>ru</item>
         <item>en</item>
     </array>
+    <string name="pref_translation_flip">Sign flip</string>
+    <string name="pref_translation_flip_desc">Flip the sign on the X axis</string>
     <string name="pref_translation_delay">Word Separation Delay</string>
     <string name="pref_translation_delay_desc">Delay in (sec / 2) between showing signs to mark as the end of a word</string>
     <string name="pref_translation_compare">Sample size</string>

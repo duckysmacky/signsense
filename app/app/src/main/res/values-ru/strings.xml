@@ -37,6 +37,8 @@
     <string name="pref_translation_language_desc">Язык для перевода на</string>
     <string name="pref_translation_model">Версия модели</string>
     <string name="pref_translation_model_desc">Версия модели, которая переводит жесты (некоторые версии могут быть более эффективными чем другие)</string>
+    <string name="pref_translation_flip">Перевернуть жест</string>
+    <string name="pref_translation_flip_desc">Перевернуть жест по оси X </string>
     <string name="pref_translation_delay">Задержка между словами</string>
     <string name="pref_translation_delay_desc">Промежуток времени между показами жестов в (секунда / 2), который определяет окончание слова</string>
     <string name="pref_header_detection">Нахождение рук</string>
