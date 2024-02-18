@@ -13,12 +13,13 @@
     <string name="info_extras_text">Это приложение было разработано для школьного проекта двумя учениками 10-го класса.\nУ этого проекта отрытый исходный код, который находится по ссылке https//github.com/duckysmacky/signsense.\nНа данный момент приложение поддерживает два языка интерфейса, но только один язык перевода (русский), но у нас есть планы добавить английскую жестовую азбуку и ASL.</string>
     <string name="info_extras_credits">Разработано:\n\n - Ducky (главные разработчик / приложения)\n - shroom (тренировка модель искусственного интеллекта)</string>
     <string name="desc_flash_button">Вспышка</string>
-    <string name="desc_flip_button">Перевернуть камеру</string>
+    <string name="desc_alphabet_button">Показать Русский алфавит дактиля</string>
     <string name="desc_openCamera_button">Открыть камеру</string>
     <string name="desc_openSelector_button">Открыть выбор видео</string>
     <string name="desc_openInfo_button">Открыть информацию</string>
     <string name="desc_openSettings_button">Открыть настройки</string>
     <string name="desc_signsense_logo">Логотип</string>
+    <string name="desc_alphabet_ru">Русский алфавит дактиля</string>
     <string name="label_openCamera_button">Переводчик</string>
     <string name="label_openVideo_button">Выбор видео</string>
     <string name="label_openInfo_button">Информация</string>
