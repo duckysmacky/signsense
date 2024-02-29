@@ -36,7 +36,7 @@ The app **might still crash** and **have several bugs** as this release was a bi
 
 ## Credits
 - [Ducky](github.com/duckysmacky) - lead dev and design
-- [Shoom](github.com/shroomwastaken) - model training and ai specialist
+- [shroom](github.com/shroomwastaken) - model training and ai specialist
 
 ---
 
