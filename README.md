@@ -2,6 +2,8 @@
 # SignSense
 #### Android app which translates sign language to English / Russian
 
+*because knowing sign language is pretty handy*
+
 ---
 
 Signsense is a dactyl-translator app developed by two high school students as a (school) project. The app currently supports two UI languages and only **one language for translation** (Russian Dactyl), but we have plans of adding support for English dactyl and ASL. This app is still very much **just a proof-of-concept project** and **currently put on hold**, but in case of visible intrest of the publuc we *could continue the development in the future*.
