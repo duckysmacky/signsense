@@ -46,4 +46,4 @@ The app **might still crash** and **have several bugs** as this release was a bi
 
 ### Because of the this big file size of the .apk file, Github doesn't really want to upload it here for some reason, so below there is a download link to the same .apk file from Mediafire. I will try to solve this issue as soon as possible.
 
-# [DOWNLOAD](https://www.mediafire.com/file/kgwu9z4oya2e4zr/signsense.apk/file)
+# [DOWNLOAD](bit.ly/signsense)
