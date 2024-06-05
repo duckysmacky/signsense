@@ -5,6 +5,7 @@
 
 /build
 /captures
+opencv
 
 /.idea/caches
 /.idea/libraries
