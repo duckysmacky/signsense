@@ -11,15 +11,27 @@ android {
         minSdk 26
         targetSdk 34
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        releaseDebug {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable true
+            jniDebuggable true
+        }
+
+        debug {
             debuggable true
             jniDebuggable true
         }
@@ -33,6 +45,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+
     packagingOptions {
         jniLibs {
             pickFirsts += ['lib/x86/libc++_shared.so', 'lib/x86_64/libc++_shared.so', 'lib/armeabi-v7a/libc++_shared.so', 'lib/arm64-v8a/libc++_shared.so']
@@ -44,18 +57,20 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation "androidx.startup:startup-runtime:1.1.1"
+
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1'
     implementation 'androidx.preference:preference:1.2.1'
 
     // Android Camera
-    implementation 'androidx.camera:camera-core:1.3.1'
-    implementation 'androidx.camera:camera-camera2:1.3.1'
-    implementation 'androidx.camera:camera-lifecycle:1.3.1'
-    implementation 'androidx.camera:camera-view:1.3.1'
+    implementation 'androidx.camera:camera-core:1.3.3'
+    implementation 'androidx.camera:camera-camera2:1.3.3'
+    implementation 'androidx.camera:camera-lifecycle:1.3.3'
+    implementation 'androidx.camera:camera-view:1.3.3'
 
     // OpenCV
     //implementation 'com.quickbirdstudios:opencv-contrib:4.5.3.0'
