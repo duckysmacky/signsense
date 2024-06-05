@@ -158,11 +158,15 @@ public class HandAnalyser {
         return topSign;
     }
 
-    public String getWord() {return word;}
-    public List<String> getRecentWords() {return recentWords;}
+    public String getWord() {
+        return word;
+    }
+    public List<String> getRecentWords() {
+        return recentWords;
+    }
 
     private String mostCommonSign(List<String> signs) {
-        Map<String, Integer> occurrences = new HashMap<String, Integer>();
+        Map<String, Integer> occurrences = new HashMap<>();
         final String[] commonSign = new String[1];
 
         for (String sign : signs) {
