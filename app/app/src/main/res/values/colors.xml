@@ -1,10 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Light theme -->
+    <color name="light.bg">#FFFEFEFE</color>
+    <color name="light.primary">#CCD0CF</color>
+    <color name="light.primary.bg">#D6DEDC</color>
+    <color name="light.primary.accent">#9BA8AB</color>
+    <color name="light.secondary">#11212D</color>
+    <color name="light.secondary.accent">#253745</color>
+    <color name="light.highlight">#4A5C6A</color>
+    <color name="light.highlight.accent">#6DA5C0</color>
+    <color name="light.darken">#2A3969</color>
+
+    <!-- Dark theme -->
+    <color name="dark.bg">#101010</color>
+    <color name="dark.primary">#05161A</color>
+    <color name="dark.primary.bg">#030D10</color>
+    <color name="dark.primary.accent">#072E33</color>
+    <color name="dark.secondary">#0C7075</color>
+    <color name="dark.secondary.accent">#0F969C</color>
+    <color name="dark.highlight">#294D61</color>
+    <color name="dark.highlight.accent">#6DA5C0</color>
+    <color name="dark.darken">#40499D</color>
+
+    <!-- Buttons -->
+    <color name="button.bg">#592896</color>
+    <color name="button.text">#FFFFFFFF</color>
+
 </resources>
