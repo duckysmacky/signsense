@@ -25,30 +25,30 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
         <activity
-            android:name=".InfoActivity"
+            android:name="com.signsense.app.InfoActivity"
             android:label="@string/title_activity_info"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.signsense.app.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".VideoActivity"
+            android:name="com.signsense.app.VideoActivity"
             android:exported="false"
             android:label="@string/title_activity_video"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.signsense.app.MainActivity"
             android:theme="@style/Theme.SignSense.NoActionBar" />
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.signsense.app.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.signsense.app.MainActivity"
             android:theme="@style/Theme.SignSense.NoActionBar" />
         <activity
-            android:name=".CameraActivity"
+            android:name="com.signsense.app.CameraActivity"
             android:exported="false"
             android:label="Camera"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.signsense.app.MainActivity"
             android:theme="@style/Theme.SignSense.NoActionBar" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.signsense.app.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SignSense.NoActionBar">
             <intent-filter>

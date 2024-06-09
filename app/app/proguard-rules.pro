@@ -22,8 +22,12 @@
 
 -keep class com.signsense.app.** { *; }
 
--keep class androidx.startup.AppInitializer
--keep class * extends androidx.startup.Initializer
+
+-keepnames class * extends androidx.startup.Initializer
+-keep class * extends androidx.startup.Initializer {
+    # Keep the public no-argument constructor while allowing other methods to be optimized.
+    <init>();
+}
 
 -dontwarn javax.annotation.processing.AbstractProcessor
 -dontwarn javax.annotation.processing.SupportedAnnotationTypes
