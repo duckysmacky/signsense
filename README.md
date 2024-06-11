@@ -1,19 +1,21 @@
-![Signsense_text_wide_trans](https://github.com/shroomwastaken/signsense/assets/94703516/b2b75b0a-a9a7-4c79-950a-10bebe58a6bb)
 # SignSense
-#### Android app which translates sign language to English / Russian
+![Signsense_text_wide_trans](https://github.com/shroomwastaken/signsense/assets/94703516/b2b75b0a-a9a7-4c79-950a-10bebe58a6bb)
+### An Android app for translating dactyl sign language into text
 
 *because knowing sign language is pretty handy*
 
----
+## About
 
-Signsense is a dactyl-translator app developed by two high school students as a (school) project. The app currently supports two UI languages and only **one language for translation** (Russian Dactyl), but we have plans of adding support for English dactyl and ASL. This app is still very much **just a proof-of-concept project** and **currently put on hold**, but in case of visible intrest of the publuc we *could continue the development in the future*.
+Signsense is a dactyl translator app developed by two high school students as a (school) project. The app currently supports **only one language for translation** (Russian Dactyl), but we have plans of adding support for English dactyl and ASL for both languages as well. This app is still very much **just a proof-of-concept project** and was recently again taken under development.
+
+Currently theres a goal of rewriting the whole app in order to optimise load times, improve detection, add support for ASL, enable simultanious detection with multiple models and just overall improve the app.
 
 ## Features
 Currently the app features:
 - 4 menus (Main menu, camera translator, information and settings)
-- Live Russian dactyl translation from rear camera
+- Live dactyl detection and translation from rear and front cameras
 - Information menu with proper guide and credits
-- Settings menu to configure app itself, detection and translation
+- Settings menu to configure detection, translation and app itself
 - 2 app themes (Light and Dark)
 - 2 interface languages (English and Russian)
 - 1 translation language (Only Russian *for now*)
