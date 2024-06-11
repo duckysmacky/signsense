@@ -13,6 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
+
 rootProject.name = "SignSense"
 include ':app'
 include ':opencv'

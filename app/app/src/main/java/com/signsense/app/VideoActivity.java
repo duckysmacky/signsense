@@ -103,7 +103,7 @@ public class VideoActivity extends AppCompatActivity {
 
         // Loop through each frame and add result to results list
         for (int i = 0; i < totalFrames; i++) {
-            long timeStamp = i * INTERVAL;
+            long timeStamp = (long) i * INTERVAL;
             Bitmap frame = retriever.getFrameAtTime(timeStamp, MediaMetadataRetriever.OPTION_CLOSEST);
 
             Log.i(TAG, "Analysing at timestamp: " + timeStamp);
@@ -119,7 +119,7 @@ public class VideoActivity extends AppCompatActivity {
             landmarksList.add(landmarks);
         }
 
-        Log.i(TAG, "Total landmarks found: " + landmarksList.toString());
+        Log.i(TAG, "Total landmarks found: " + landmarksList);
     }
 
     private void analyseVideo(Uri videoUri) {

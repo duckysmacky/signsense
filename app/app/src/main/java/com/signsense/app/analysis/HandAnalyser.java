@@ -42,9 +42,9 @@ public class HandAnalyser {
             "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
     };
 
-    private List<String> recentSigns = new ArrayList<>();
+    private final List<String> recentSigns = new ArrayList<>();
     private String word = "";
-    private List<String> recentWords = new ArrayList<>();
+    private final List<String> recentWords = new ArrayList<>();
     private long signDelay = 0;
     private String topSign = "";
 

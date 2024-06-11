@@ -21,13 +21,16 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class com.signsense.app.** { *; }
+-keep class com.signsense.app.analysis.** { *; }
 
+#-keep class com.google.mediapipe.** { *; }
+-keep class com.google.mediapipe.proto.** { *; }
+-keep class com.google.mediapipe.calculator.proto.** { *; }
+-keep class com.google.mediapipe.tasks.core.proto.** { *; }
+-keep class com.google.mediapipe.tasks.vision.handdetector.** { *; }
+-keep class com.google.mediapipe.tasks.vision.handlandmarker.** { *; }
 
--keepnames class * extends androidx.startup.Initializer
--keep class * extends androidx.startup.Initializer {
-    # Keep the public no-argument constructor while allowing other methods to be optimized.
-    <init>();
-}
+-keep class com.google.protobuf.Any
 
 -dontwarn javax.annotation.processing.AbstractProcessor
 -dontwarn javax.annotation.processing.SupportedAnnotationTypes
@@ -38,3 +41,6 @@
 -dontwarn javax.lang.model.type.TypeMirror
 -dontwarn javax.lang.model.type.TypeVisitor
 -dontwarn javax.lang.model.util.SimpleTypeVisitor8
+
+-dontwarn com.google.mediapipe.proto.CalculatorProfileProto$CalculatorProfile
+-dontwarn com.google.mediapipe.proto.GraphTemplateProto$CalculatorGraphTemplate

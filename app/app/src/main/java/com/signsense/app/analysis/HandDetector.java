@@ -35,9 +35,9 @@ public class HandDetector {
 
     private final int[] landmarkIds = new int[21]; // IDs for finger landmarks
 
-    private HandLandmarker handLandmarker;
-    private Context appContext;
-    private boolean draw;
+    private final HandLandmarker handLandmarker;
+    private final Context appContext;
+    private final boolean draw;
 
     public HandDetector(Context context, RunningMode mode) {
         this.appContext = context.getApplicationContext();
@@ -166,7 +166,7 @@ public class HandDetector {
 
         retriever.release();
 
-        Log.i(TAG, "Total landmarks found: " + landmarksList.toString());
+        Log.i(TAG, "Total landmarks found: " + landmarksList);
 
         return landmarksList;
     }
