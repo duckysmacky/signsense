@@ -11,7 +11,8 @@ Signsense is a dactyl translator app developed by two high school students as a 
 Currently theres a goal of rewriting the whole app in order to optimise load times, improve detection, add support for ASL, enable simultanious detection with multiple models and just overall improve the app.
 
 ## Features
-Currently the app features:
+
+Current features:
 - 4 menus (Main menu, camera translator, information and settings)
 - Live dactyl detection and translation from rear and front cameras
 - Information menu with proper guide and credits
@@ -20,7 +21,12 @@ Currently the app features:
 - 2 interface languages (English and Russian)
 - 1 translation language (Only Russian *for now*)
 
+Upcoming features:
+- English dactyl support
+- Russian and English sign language support
+
 ## Usage
+
 - When using camera translator, make sure to stand about 1 meter from the signer for proper hand tracking and have the signer's hands visible within the frame, or else the app will not be able to properly track their hands.
 - In case of situations with low light levels, use the flashlight function (press lighting icon to toggle).
 - After aiming the camera at the signer, the app will immediately track their hands.
@@ -29,23 +35,20 @@ Currently the app features:
 - Upon closing the translator this list will be cleared.
 
 ## Installation
-### The app was tested on Android versions **8, 9, 10, 11 and 12**, minimum supported version is **Android 8**.
-To install the app and try it out yourself:
-1. Download the APK file below (**if your browser is blocking you from downloading, enable [download from unknown sources](https://www.applivery.com/docs/mobile-app-distribution/android-unknown-sources/) feature in settings**)
-2. Click on the file, press *install*
-3. Wait for the installation to finish and you are done!
+
+### Notice: The app was tested on Android versions **8, 9, 10, 11 and 12**, minimum supported version is **Android 8**.
+
+1. Download the APK file from [here](bit.ly/signsense) or from [releases](https://github.com/duckysmacky/signsense/releases)
+2. Open and **install** the apk file
+3. Done! The app is now installed on your phone
+
+**If your browser is blocking you from downloading the APK file on mobile:** enable [download from unknown sources](https://www.applivery.com/docs/mobile-app-distribution/android-unknown-sources/) feature in settings
 
 ## Bugs and feature requests
+
 The app **might still crash** and **have several bugs** as this release was a bit rushed because of our project presentation. Make sure to submit all bugs to [issues](https://github.com/duckysmacky/signsense/issues), I will try to fix them as soon as possible. Any other feature requests can also be submited there.
 
 ## Credits
-- [Ducky](github.com/duckysmacky) - lead dev and design
+
+- [Ducky](github.com/duckysmacky) - lead developer, backend and frontend
 - [shroom](github.com/shroomwastaken) - model training and ai specialist
-
----
-
-*The app itself is pretty big (around 450mb) because of different libraries (such as OpenCV, Mediapipe and PyTorch) used in the project*
-
-### Because of the this big file size of the .apk file, Github doesn't really want to upload it here for some reason, so below there is a download link to the same .apk file from Mediafire. I will try to solve this issue as soon as possible.
-
-# [DOWNLOAD](bit.ly/signsense)
