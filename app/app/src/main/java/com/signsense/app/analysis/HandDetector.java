@@ -91,7 +91,7 @@ public class HandDetector {
         HandLandmarkerResult result = handLandmarker.detect(image);
 
         // Adding tip x and y coordinates to list of landmarks
-        if (result.landmarks().size() > 0) {
+        if (!result.landmarks().isEmpty()) {
             for (List<NormalizedLandmark> landmark : result.landmarks()) {
                 for (int id : landmarkIds) { // Getting x and y for every tip
                     float x = landmark.get(id).x();

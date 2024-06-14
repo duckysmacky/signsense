@@ -1,5 +1,12 @@
 package org.opencv.android;
 
+import java.util.List;
+
+import org.opencv.BuildConfig;
+import org.opencv.R;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -7,18 +14,11 @@ import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import org.opencv.R;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
-
-import java.util.List;
 
 /**
  * This is a basic class, implementing the interaction with Camera and OpenCV library.
@@ -137,7 +137,7 @@ public abstract class CameraBridgeViewBase extends SurfaceView implements Surfac
         public Mat onCameraFrame(CvCameraViewFrame inputFrame);
     };
 
-    public static class CvCameraViewListenerAdapter implements CvCameraViewListener2  {
+    protected class CvCameraViewListenerAdapter implements CvCameraViewListener2  {
         public CvCameraViewListenerAdapter(CvCameraViewListener oldStypeListener) {
             mOldStyleListener = oldStypeListener;
         }
@@ -426,8 +426,8 @@ public abstract class CameraBridgeViewBase extends SurfaceView implements Surfac
             Canvas canvas = getHolder().lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR);
-//                if (BuildConfig.DEBUG)
-//                    Log.d(TAG, "mStretch value: " + mScale);
+                if (BuildConfig.DEBUG)
+                    Log.d(TAG, "mStretch value: " + mScale);
 
                 if (mScale != 0) {
                     canvas.drawBitmap(mCacheBitmap, new Rect(0,0,mCacheBitmap.getWidth(), mCacheBitmap.getHeight()),
@@ -442,14 +442,6 @@ public abstract class CameraBridgeViewBase extends SurfaceView implements Surfac
                          (canvas.getWidth() - mCacheBitmap.getWidth()) / 2 + mCacheBitmap.getWidth(),
                          (canvas.getHeight() - mCacheBitmap.getHeight()) / 2 + mCacheBitmap.getHeight()), null);
                 }
-
-                // Start of the fix
-                Matrix matrix = new Matrix();
-                matrix.preTranslate( ( canvas.getWidth() - mCacheBitmap.getWidth() ) / 2f, ( canvas.getHeight() - mCacheBitmap.getHeight() ) / 2f );
-                matrix.postRotate( 90f, ( canvas.getWidth()) / 2f, canvas.getHeight() / 2f );
-                float scale = (float) canvas.getWidth() / (float) mCacheBitmap.getHeight();
-                matrix.postScale(scale, scale, canvas.getWidth() / 2f , canvas.getHeight() / 2f );
-                canvas.drawBitmap( mCacheBitmap, matrix, null );
 
                 if (mFpsMeter != null) {
                     mFpsMeter.measure();

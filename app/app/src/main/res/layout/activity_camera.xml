@@ -20,30 +20,6 @@
         app:layout_constraintVertical_bias="0.0">
 
         <ImageButton
-            android:id="@+id/button_toggleFlash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/desc_flash_button"
-            android:elevation="50dp"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/baseline_flash_on_24"
-            android:tint="@color/white"
-            android:translationZ="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            tools:ignore="UseAppTint" />
-
-        <ImageButton
             android:id="@+id/button_toggleAlphabet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,14 +39,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_toggleFlash"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
             tools:ignore="UseAppTint" />
 
-        <org.opencv.android.JavaCameraView
+        <org.opencv.android.JavaCamera2View
             android:id="@+id/cameraView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -133,7 +109,8 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -273,7 +250,8 @@
             android:cropToPadding="true"
             android:elevation="10dp"
             android:scaleType="fitXY"
-            android:src="@drawable/dactyl_alphabet_ru" />
+            android:src="@drawable/dactyl_alphabet_ru"
+            android:contentDescription="@string/desc_alphabet_ru" />
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
