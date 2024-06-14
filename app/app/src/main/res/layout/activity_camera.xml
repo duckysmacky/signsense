@@ -11,13 +11,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_camera"
         android:layout_width="0dp"
-        android:layout_height="360dp"
+        android:layout_height="425dp"
+        android:layout_marginBottom="8dp"
         android:background="@color/primary_accent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/card_cameraTranslation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
             android:id="@+id/button_toggleAlphabet"
@@ -58,10 +58,11 @@
         android:id="@+id/card_cameraTranslation"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="visible"
         app:cardBackgroundColor="@color/primary_accent"
         app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -226,8 +227,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:visibility="invisible"
         app:cardBackgroundColor="@color/highlight"
         app:cardCornerRadius="10dp"
@@ -235,8 +237,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_cameraTranslation"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintTop_toBottomOf="@+id/layout_camera">
 
         <ImageView
             android:id="@+id/imageView"
@@ -247,11 +248,11 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/desc_alphabet_ru"
             android:cropToPadding="true"
             android:elevation="10dp"
             android:scaleType="fitXY"
-            android:src="@drawable/dactyl_alphabet_ru"
-            android:contentDescription="@string/desc_alphabet_ru" />
+            android:src="@drawable/dactyl_alphabet_ru" />
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

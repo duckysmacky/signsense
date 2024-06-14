@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-
 public class CameraActivity extends org.opencv.android.CameraActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
     private static final String TAG = "Camera"; // Tag for debug log
 
@@ -152,7 +151,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Log.i(TAG, "Frame received");
         rgbFrame = inputFrame.rgba();
 
         // Rotate 90 clockwise
@@ -167,7 +165,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
 
         // Run all the UI stuff on the background
         runOnUiThread(() -> {
-            Log.i(TAG, "Updating UI");
             if (!word.isEmpty()) {
                 translatedWord.setText(word);
             } else {
