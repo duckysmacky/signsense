@@ -61,6 +61,14 @@
             android:max="4"
             app:min="1"
             app:showSeekBarValue="true" />
+        <SeekBarPreference
+            android:title="@string/pref_translation_recognitionThreshold"
+            android:summary="@string/pref_translation_recognitionThreshold_desc"
+            android:defaultValue="20"
+            android:key="recognitionThreshold"
+            android:max="100"
+            app:min="0"
+            app:showSeekBarValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory

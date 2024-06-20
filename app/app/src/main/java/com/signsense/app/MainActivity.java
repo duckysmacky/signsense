@@ -43,11 +43,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(activity);
     }
 
-    public void switchImageSelector(View view) { // Launch Image selector
-        Intent activity = new Intent(this, VideoActivity.class);
-        startActivity(activity);
-    }
-
     public void switchInfo(View view) {
         Intent activity = new Intent(this, InfoActivity.class);
         startActivity(activity);

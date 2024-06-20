@@ -24,7 +24,7 @@
     <string name="label_openVideo_button">Выбор видео</string>
     <string name="label_openInfo_button">Информация</string>
     <string name="label_openSettings_button">Настройки</string>
-    <string name="lavel_selectVideo_button">Выбрать видео</string>
+    <string name="label_selectVideo_button">Выбрать видео</string>
     <string name="title_activity_main">Главное меню</string>
     <string name="title_activity_translator">Переводчик</string>
     <string name="title_activity_video">Выбор видео</string>

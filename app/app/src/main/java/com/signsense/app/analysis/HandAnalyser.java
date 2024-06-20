@@ -11,42 +11,26 @@ import org.pytorch.Module;
 import org.pytorch.Tensor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HandAnalyser {
-    private static final String TAG = "HandAnalyser"; // Tag for debug log
+    static final String TAG = "HandAnalyser"; // Tag for debug log
     final boolean SIGN_FLIP;
     final int SIGN_DELAY;
     final int COMPARE_LENGTH;
     final int MODEL_VERSION;
+    final int RECOGNITION_THRESHOLD;
+
     private final Context appContext;
+    private final String[] signDict;
+    private final List<String> recentWords = new ArrayList<>();
+
     private Module module; // The model itself
 
-    private String[] signDict;
-    private final String[] signDict1 = {
-            "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
-            "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"
-    };
-    private final String[] signDict2 = {
-            "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
-            "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
-    };
-    private final String[] signDict3 = {
-            "а", "б", "в", "г", "д", "[е/ё]", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
-            "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
-    };
-    private final String[] signDict4 = {
-            "а", "б", "в", "г", "д", "[е/ё]", "ж", "з", "[и/й]", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф",
-            "х", "ц", "ч", "[ш/щ]", "ъ", "ы", "ь", "э", "ю", "я"
-    };
-
-    private final List<String> recentSigns = new ArrayList<>();
-    private String word = "";
-    private final List<String> recentWords = new ArrayList<>();
+    private String recognisedLetter = "";
+    private String lastLetter = "";
+    private String currentWord = "";
     private long signDelay = 0;
-    private String topSign = "";
 
     public HandAnalyser(Context context) {
         Log.i(TAG, "Initialising Hand Analyser");
@@ -57,62 +41,39 @@ public class HandAnalyser {
         SIGN_DELAY = preferences.getInt("delay", 1) * 500;
         COMPARE_LENGTH = preferences.getInt("compareLen", 10);
         MODEL_VERSION = preferences.getInt("modelVer", 3);
+        RECOGNITION_THRESHOLD = preferences.getInt("recognitionThreshold", 20);
 
-        String modelAssetName = "";
+        String modelAssetName = "models/dactyl_v" + MODEL_VERSION + ".pt";
+        signDict = SignDictionary.RU_DACTYL[MODEL_VERSION - 1];
 
-        switch (MODEL_VERSION) {
-            case 1:
-                modelAssetName = "sign_model_v1.pt";
-                signDict = signDict1;
-                break;
-            case 2:
-                modelAssetName = "sign_model_v2.pt";
-                signDict = signDict2;
-                break;
-            case 3:
-                modelAssetName = "sign_model_v3.pt";
-                signDict = signDict3;
-                break;
-            case 4:
-                modelAssetName = "sign_model_v4.pt";
-                signDict = signDict4;
-                break;
-        }
-
-        // Loading model from .pt file (must be optimised for mobile + lite)
+        // Loading model from .pt file (MUST be optimised for mobile + lite)
         try {
-            module = LiteModuleLoader.loadModuleFromAsset(
-                    appContext.getAssets(),
-                    modelAssetName
-            );
+            module = LiteModuleLoader.loadModuleFromAsset(appContext.getAssets(), modelAssetName);
         } catch (Exception e) {
-            Log.e(TAG, "Error loading model!");
+            Log.e(TAG, "Error loading model");
         }
-        Log.i(TAG, "Loaded sign analysis model!");
+        Log.i(TAG, "Loaded sign analysis model version " + MODEL_VERSION);
     }
 
     public String analyseHand(List<Float> landmarks) {
-        String sign = "";
-        if (landmarks.size() > 0) {
+        if (!landmarks.isEmpty()) {
             signDelay = SystemClock.currentThreadTimeMillis();
             Log.i(TAG, "Analysing hand wth landmarks: \n" + landmarks);
 
             // Converting list of float (landmarks) to array (input data)
             float[] data = new float[landmarks.size()];
-            int j = 0;
-            for (Float f : landmarks) {
+            int i = 0;
+            for (Float landmark : landmarks) {
                 if (SIGN_FLIP) {
-                    if (j % 2 == 0) {
-                        data[j++] = 1 - f;
-                    } else {
-                        data[j++] = f;
-                    }
+                    // Only flip the X axis (every 2nd)
+                    data[i++] = i % 2 == 0 ? 1 - landmark : landmark;
                 } else {
-                    data[j++] = f;
+                    data[i++] = landmark;
                 }
             }
+
             // Setting the size for tensor (one dimension, with length of data)
-            long[] size = new long[]{1, data.length};
+            long[] size = new long[] {1, data.length};
 
             // Creating the input tensor with data and size
             // Take in an array of float of x and y, 1-dimensional
@@ -124,68 +85,39 @@ public class HandAnalyser {
             // Getting tensor scores
             float[] scores = outputTensor.getDataAsFloatArray();
 
-            // Searching for the index with maximum score
-            float maxScore = -Float.MAX_VALUE;
-            int maxScoreIdx = -1;
-            for (int i = 0; i < scores.length; i++) {
-                if (scores[i] > maxScore) {
-                    maxScore = scores[i];
-                    maxScoreIdx = i;
-                }
-            }
-            sign = signDict[maxScoreIdx];
-            Log.d(TAG, "SIGN: " + sign);
-            Log.d(TAG, "RECENT SIGNS: " + recentSigns.toString());
+            ScoreManager sm = new ScoreManager(signDict, scores);
+            float score = sm.getBiggestScore();
+            String foundLetter = sm.getLetter();
+            boolean valid = score > RECOGNITION_THRESHOLD;
 
-            if (recentSigns.size() == COMPARE_LENGTH) {
-                topSign = mostCommonSign(recentSigns);
-                recentSigns.clear();
-                word += topSign;
-                Log.d(TAG, "TOP SIGN: " + topSign);
+            Log.d(TAG, "ALL SCORES: " + sm.getScores());
+            Log.d(TAG, String.format("FOUND LETTER: %s (%f)", foundLetter, score));
+            Log.d(TAG, "LAST LETTER: " + lastLetter);
+
+            if (valid && !foundLetter.equals(lastLetter)) {
+                Log.d(TAG, String.format("NEW RECOGNISED LETTER: %s (%f)", foundLetter, score));
+                recognisedLetter = foundLetter;
+                lastLetter = foundLetter;
+                currentWord += foundLetter;
             } else {
-                recentSigns.add(sign);
+                recognisedLetter = "";
             }
 
-        } else {
-            if (SystemClock.currentThreadTimeMillis() - signDelay > SIGN_DELAY) {
-                signDelay = SystemClock.currentThreadTimeMillis();
-                Log.i(TAG, "Sign Delay");
-                recentWords.add(word);
-                word = "";
-            }
+        } else if (SystemClock.currentThreadTimeMillis() - signDelay > SIGN_DELAY) {
+            signDelay = SystemClock.currentThreadTimeMillis();
+            Log.i(TAG, "Sign Delay");
+            recentWords.add(currentWord);
+            currentWord = "";
         }
 
-        return topSign;
+        return lastLetter;
     }
 
     public String getWord() {
-        return word;
+        return currentWord;
     }
+
     public List<String> getRecentWords() {
         return recentWords;
-    }
-
-    private String mostCommonSign(List<String> signs) {
-        Map<String, Integer> occurrences = new HashMap<>();
-        final String[] commonSign = new String[1];
-
-        for (String sign : signs) {
-            if (occurrences.containsKey(sign)) {
-                occurrences.put(sign, occurrences.get(sign) + 1);
-            } else {
-                occurrences.putIfAbsent(sign, 1);
-            }
-        }
-        int maxOcc = occurrences.values().stream()
-                .max(Integer::compare)
-                .get();
-
-        occurrences.forEach((key, value) -> {
-            if (value == maxOcc) {
-                commonSign[0] = key;
-            }
-        });
-
-        return commonSign[0];
     }
 }

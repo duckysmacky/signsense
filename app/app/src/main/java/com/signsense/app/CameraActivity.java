@@ -39,8 +39,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
 
     private boolean alphabet = false;
 
-    private int lastRecentWordsLen = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,7 +167,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
                 translatedWord.setText(word);
             } else {
                 List<String> recentWords = handAnalyser.getRecentWords();
-                if (recentWords.size() != lastRecentWordsLen) {
+                if (!recentWords.isEmpty()) {
                     StringBuilder lastWordsText = new StringBuilder();
                     for (String w : recentWords) {
                         lastWordsText.insert(0, w + " ");
@@ -179,6 +177,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
             }
         });
 
-        return handDetector.drawHand(rgbFrame, landmarks);
+        return handDetector.drawHand(rgbFrame, landmarks, false);
     }
 }

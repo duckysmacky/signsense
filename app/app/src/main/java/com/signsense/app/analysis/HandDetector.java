@@ -44,7 +44,7 @@ public class HandDetector {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
         // Assign Ids for landmarks from 0 to 20
-        for (int i = 0; i < landmarkIds.length; i++) { landmarkIds[i] = i; }
+        for (int i = 0; i < landmarkIds.length; i++) landmarkIds[i] = i;
 
         // Loading from settings
         this.draw = preferences.getBoolean("draw", false);
@@ -106,8 +106,11 @@ public class HandDetector {
         return landmarks;
     }
 
-    public Mat drawHand(Mat frame, List<Float> landmarks) {
+    public Mat drawHand(Mat frame, List<Float> landmarks, boolean found) {
         if (!draw) return frame;
+
+        // If found Green, else Red
+        Scalar color = found ? new Scalar(0, 255, 0, 255) : new Scalar(255, 0, 0, 255);
 
         for (int i = 0; i < landmarks.size() - 1; i += 2) {
             float x = landmarks.get(i);
@@ -119,7 +122,7 @@ public class HandDetector {
                     frame,
                     new Point(frame.width() * x, frame.height() * y),
                     5,
-                    new Scalar(0, 255, 0, 255),
+                    color,
                     10
             );
         }

@@ -12,7 +12,7 @@
     <string name="label_openVideo_button">Video Selector</string>
     <string name="label_openInfo_button">Info</string>
     <string name="label_openSettings_button">Settings</string>
-    <string name="lavel_selectVideo_button">Select Video</string>
+    <string name="label_selectVideo_button">Select Video</string>
     <string name="title_activity_main">Main Menu</string>
     <string name="title_activity_translator">Translator</string>
     <string name="title_activity_video">Video Selector</string>

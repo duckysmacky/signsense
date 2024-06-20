@@ -35,7 +35,7 @@
     <string name="label_openVideo_button">Video Selector</string>
     <string name="label_openInfo_button">Info</string>
     <string name="label_openSettings_button">Settings</string>
-    <string name="lavel_selectVideo_button">Select Video</string>
+    <string name="label_selectVideo_button">Select Video</string>
 
     <!-- Activity and Fragment Titles -->
     <string name="title_activity_main">Main Menu</string>
@@ -92,6 +92,8 @@
     <string name="pref_translation_compare_desc">Compare from X last detected letters (higher values mean better results, but slower detection)</string>
     <string name="pref_translation_model">Model Version</string>
     <string name="pref_translation_model_desc">Version of translation model (some may perform better than other)</string>
+    <string name="pref_translation_recognitionThreshold">Recognition Threshold %</string>
+    <string name="pref_translation_recognitionThreshold_desc">Minimum sign match in % to be translated</string>
 
     <!-- Detection Preferences -->
     <string name="pref_header_detection">Hand Detection</string>
