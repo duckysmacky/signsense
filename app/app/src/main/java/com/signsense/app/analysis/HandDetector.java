@@ -106,75 +106,8 @@ public class HandDetector {
         return landmarks;
     }
 
-    // Function for detecting hand when the video is uploaded (breaks it down into multiple frames)
-    public List<List<Float>> detectVideo(Uri videoUri, long interval) throws IOException {
-        List<List<Float>> landmarksList = new ArrayList<>();
-
-        // Setup retriever to get video data
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(appContext, videoUri);
-
-        // Set video length and start time
-        long videoLength = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-
-        // Get the total frames we need to analyse based on interval (in ms) between them
-        int totalFrames = (int) (videoLength / interval);
-
-        Log.i(TAG, "Total video length: " + videoLength);
-        Log.i(TAG, "Total video frames to analyse: " + totalFrames);
-
-        // Loop through each frame and add result to results list
-        for (int i = 0; i < totalFrames; i++) {
-            List<Float> landmarks = new ArrayList<>();
-            long timeStamp = i * interval;
-            Bitmap frame = retriever.getFrameAtTime(timeStamp, MediaMetadataRetriever.OPTION_CLOSEST);
-
-            Log.i(TAG, "Analysing at timestamp: " + timeStamp);
-
-            //Convert frame to ARGB_8888 (required by damn mediapipe)
-            Bitmap aFrame = frame.copy(Bitmap.Config.ARGB_8888, false);
-
-            // Convert ARGB_8888 frame to MPImage
-            MPImage image = new BitmapImageBuilder(aFrame).build();
-
-            Log.i(TAG, "MPImage size: " + image.getHeight() + " | " + image.getWidth());
-
-            HandLandmarkerResult result = handLandmarker.detectForVideo(image, timeStamp);
-
-            Log.i(TAG, "Result: " + result.toString());
-            Log.i(TAG, "Found landmarks: " + result.landmarks().toString());
-
-            // Adding tip coordinates to list of landmark
-            if (result.landmarks().size() > 0) {
-                for (List<NormalizedLandmark> landmark : result.landmarks()) {
-                    for (int id : landmarkIds) { // Getting X and Y for every tip
-                        float x = landmark.get(id).x();
-                        float y = landmark.get(id).y();
-                        landmarks.add(x);
-                        landmarks.add(y);
-
-                        Log.i(TAG, "Landmark " + id + ":" + x + " | " + y);
-                    }
-                }
-
-                Log.i(TAG, landmarks.toString());
-            }
-
-            // Add to the list of results
-            landmarksList.add(landmarks);
-        }
-
-        retriever.release();
-
-        Log.i(TAG, "Total landmarks found: " + landmarksList);
-
-        return landmarksList;
-    }
-
     public Mat drawHand(Mat frame, List<Float> landmarks) {
-        if (!draw) {
-            return frame;
-        }
+        if (!draw) return frame;
 
         for (int i = 0; i < landmarks.size() - 1; i += 2) {
             float x = landmarks.get(i);

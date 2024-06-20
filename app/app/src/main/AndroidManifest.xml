@@ -27,12 +27,6 @@
             android:parentActivityName="com.signsense.app.MainActivity"
             android:exported="false" />
         <activity
-            android:name="com.signsense.app.VideoActivity"
-            android:exported="false"
-            android:label="@string/title_activity_video"
-            android:parentActivityName="com.signsense.app.MainActivity"
-            android:theme="@style/Theme.SignSense.NoActionBar" />
-        <activity
             android:name="com.signsense.app.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"

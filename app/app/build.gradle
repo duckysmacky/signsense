@@ -21,7 +21,6 @@ android {
     }
 
     buildTypes {
-        // TODO fix release build camera not working
         release {
             minifyEnabled false
             shrinkResources false
