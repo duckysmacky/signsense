@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import androidx.preference.PreferenceManager;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.signsense.app.analysis.HandAnalyser;
+import com.signsense.app.analysis.SignTranslator;
 import com.signsense.app.analysis.HandDetector;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCamera2View;
@@ -32,11 +33,11 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
     private JavaCamera2View camera;
     private TextView translatedLetter, translatedWord, lastWords;
 
-    private Mat rgbFrame;
 
     private HandDetector handDetector;
-    private HandAnalyser handAnalyser;
+    private SignTranslator signTranslator;
 
+    private Mat rgbFrame;
     private String lastLetter = "";
     private boolean alphabet = false;
 
@@ -59,7 +60,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
 
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(this, RunningMode.IMAGE);
-        handAnalyser = new HandAnalyser(this);
+        signTranslator = new SignTranslator(this);
 
         // Dactyl alphabet popup button
         toggleAlphabet.setOnClickListener(view -> {
@@ -78,6 +79,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
         camera.setCameraPermissionGranted();
         camera.setVisibility(SurfaceView.VISIBLE);
         camera.setCvCameraViewListener(this);
+//        camera.enableFpsMeter();
         Log.i(TAG, "Started camera");
     }
 
@@ -100,33 +102,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
         super.onDestroy();
         Log.i(TAG, "Camera destroyed");
         if (camera != null) camera.disableView();
-    }
-
-    private void loadSettings() {
-        Log.i(TAG, "Loading settings");
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        String appTheme = preferences.getString("theme", "");
-        String appLanguage = preferences.getString("appLanguage", "");
-
-        switch (appTheme) {
-            case "sync":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-            case "light":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case "dark":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-        }
-
-        Locale locale = new Locale(appLanguage);
-        Resources resources = this.getResources();
-
-        Locale.setDefault(locale);
-        resources.getConfiguration().setLocale(locale);
-        resources.updateConfiguration(resources.getConfiguration(), resources.getDisplayMetrics());
     }
 
     @Override
@@ -155,27 +130,22 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
         // Rotate 90 clockwise
         Core.flip(rgbFrame.t(), rgbFrame, 1);
 
-        Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(rgbFrame, bitmap);
+        HandAnalyser handAnalyser = new HandAnalyser(handDetector, signTranslator, rgbFrame, lastLetter);
+        Thread analyserThread = new Thread(handAnalyser);
+        analyserThread.start();
 
-        // TODO - run on separate threads
-        List<Float> landmarks = handDetector.detectFrame(bitmap);
-        String recognisedLetter = handAnalyser.analyseHand(landmarks);
-        String currentWord = handAnalyser.getCurrentWord();
-
-        HandAnalyser.DetectionState state;
-        if (recognisedLetter.isEmpty()) {
-            state = HandAnalyser.DetectionState.UNKNOWN;
-        } else if (!recognisedLetter.equals(lastLetter)) {
-            state = HandAnalyser.DetectionState.RECOGNISED;
-        } else {
-            state = HandAnalyser.DetectionState.FOUND;
+        try {
+            analyserThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
-        // TODO - run on separate thread
-        Mat handFrame = handDetector.drawHand(rgbFrame, landmarks, state);
+        String recognisedLetter = handAnalyser.getRecognisedLetter();
+        String currentWord = handAnalyser.getCurrentWord();
+        HandAnalyser.Status analysisStatus = handAnalyser.getAnalysisStatus();
+        Mat handFrame = handAnalyser.getHandFrame();
 
-        if (state == HandAnalyser.DetectionState.RECOGNISED) {
+        if (analysisStatus == HandAnalyser.Status.RECOGNISED) {
             lastLetter = recognisedLetter;
             translatedLetter.setText(recognisedLetter);
         }
@@ -185,7 +155,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
             if (!currentWord.isEmpty()) {
                 translatedWord.setText(currentWord);
             } else {
-                List<String> recentWords = handAnalyser.getRecentWords();
+                List<String> recentWords = signTranslator.getRecentWords();
                 if (!recentWords.isEmpty()) {
                     StringBuilder lastWordsText = new StringBuilder();
                     for (String w : recentWords) {
@@ -196,6 +166,33 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
             }
         });
 
-        return handFrame;
+        return rgbFrame;
+    }
+
+    private void loadSettings() {
+        Log.i(TAG, "Loading settings");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String appTheme = preferences.getString("theme", "");
+        String appLanguage = preferences.getString("appLanguage", "");
+
+        switch (appTheme) {
+            case "sync":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+        }
+
+        Locale locale = new Locale(appLanguage);
+        Resources resources = this.getResources();
+
+        Locale.setDefault(locale);
+        resources.getConfiguration().setLocale(locale);
+        resources.updateConfiguration(resources.getConfiguration(), resources.getDisplayMetrics());
     }
 }

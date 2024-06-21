@@ -20,7 +20,6 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.HandLandmarkerOptions;
 import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.createFromOptions;
@@ -101,12 +100,12 @@ public class HandDetector {
         return landmarks;
     }
 
-    public Mat drawHand(Mat frame, List<Float> landmarks, HandAnalyser.DetectionState state) {
+    public Mat drawHand(Mat frame, List<Float> landmarks, HandAnalyser.Status status) {
         if (!draw) return frame;
 
         // If found Green, else Red
         Scalar color = null;
-        switch (state) {
+        switch (status) {
             case UNKNOWN: color = new Scalar(255, 0, 0, 255); break; // red
             case FOUND: color = new Scalar(0, 255, 0, 255); break; // green
             case RECOGNISED: color = new Scalar(0, 0, 255, 255); break; // blue
