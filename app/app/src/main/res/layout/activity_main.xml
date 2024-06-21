@@ -106,25 +106,6 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/button_switchSelector"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="@color/highlight"
-                android:drawableLeft="@drawable/ic_menu_slideshow"
-                android:drawablePadding="2dp"
-                android:drawableTint="@color/button_text_color"
-                android:onClick="switchImageSelector"
-                android:text="@string/label_openVideo_button"
-                android:textAlignment="center"
-                android:textColor="@color/button_text_color"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <Button
                 android:id="@+id/button_switchInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.front.autofocus" android:required="false"/>
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
@@ -25,12 +26,6 @@
             android:label="@string/title_activity_info"
             android:parentActivityName="com.signsense.app.MainActivity"
             android:exported="false" />
-        <activity
-            android:name="com.signsense.app.VideoActivity"
-            android:exported="false"
-            android:label="@string/title_activity_video"
-            android:parentActivityName="com.signsense.app.MainActivity"
-            android:theme="@style/Theme.SignSense.NoActionBar" />
         <activity
             android:name="com.signsense.app.SettingsActivity"
             android:exported="false"

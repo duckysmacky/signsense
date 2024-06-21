@@ -1,85 +1,66 @@
 package com.signsense.app;
 
-import android.Manifest;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.signsense.app.analysis.HandAnalyser;
+import com.signsense.app.analysis.SignTranslator;
 import com.signsense.app.analysis.HandDetector;
-import org.jetbrains.annotations.NotNull;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.JavaCameraView;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
+import org.opencv.android.JavaCamera2View;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-
-public class CameraActivity extends org.opencv.android.CameraActivity {
+public class CameraActivity extends org.opencv.android.CameraActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
     private static final String TAG = "Camera"; // Tag for debug log
-    private static final int CODE_REQUEST_CAMERA = 103;
 
-    private JavaCameraView cameraView;
+    private JavaCamera2View camera;
     private TextView translatedLetter, translatedWord, lastWords;
 
-    private Mat rgbFrame;
-
     private HandDetector handDetector;
-    private HandAnalyser handAnalyser;
+    private SignTranslator signTranslator;
 
-    private boolean flashlight = false;
+    private Mat rgbFrame;
+    private String lastLetter = "";
     private boolean alphabet = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        cameraView = findViewById(R.id.cameraView);
+        final boolean SHOW_FPS = preferences.getBoolean("showFps", false);
 
-        CardView cameraTranslationCard = findViewById(R.id.card_cameraTranslation);
-        CardView alphabetCard = findViewById(R.id.card_alphabet);
-
-        ImageButton toggleAlphabet = findViewById(R.id.button_toggleAlphabet);
-        ImageButton toggleFlash = findViewById(R.id.button_toggleFlash);
-
+        camera = findViewById(R.id.cameraView);
         translatedLetter = findViewById(R.id.text_camera_translation_letter_value);
         translatedWord = findViewById(R.id.text_camera_translation_word_value);
         lastWords = findViewById(R.id.text_camera_translation_lastwords_value);
 
+        CardView cameraTranslationCard = findViewById(R.id.card_cameraTranslation);
+        CardView alphabetCard = findViewById(R.id.card_alphabet);
+        ImageButton toggleAlphabet = findViewById(R.id.button_toggleAlphabet);
+
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(this, RunningMode.IMAGE);
-        handAnalyser = new HandAnalyser(this);
+        signTranslator = new SignTranslator(this);
 
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        toggleFlash.setOnClickListener(view -> {
-            if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
-                toggleFlashlight();
-            } else {
-                Toast.makeText(this, "Flashlight is not available", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        // Dactyl alphabet popup button
         toggleAlphabet.setOnClickListener(view -> {
             if (!alphabet) {
                 cameraTranslationCard.setVisibility(View.INVISIBLE);
@@ -91,98 +72,99 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
             alphabet = !alphabet;
         });
 
-        askPermissions();
         loadSettings();
+
+        camera.setCameraPermissionGranted();
+        camera.setVisibility(SurfaceView.VISIBLE);
+        camera.setCvCameraViewListener(this);
+        if (SHOW_FPS) camera.enableFpsMeter();
+        Log.i(TAG, "Started camera");
     }
 
-    @Override
-    protected List<? extends JavaCameraView> getCameraViewList() {
-        Log.i(TAG, "Called getCameraViewList");
-        return Collections.singletonList(cameraView);
-    }
-
-    // Enabling / Disabling camera based on app state
     @Override
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "Camera resumed");
-        cameraView.enableView();
+        if (camera != null) camera.enableView();
     }
+
     @Override
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "Camera paused");
-        cameraView.disableView();
+        if (camera != null) camera.disableView();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.i(TAG, "Camera destroyed");
-        cameraView.disableView();
+        if (camera != null) camera.disableView();
     }
 
-    private void startCamera() {
-        Log.i(TAG, "Started camera");
-        int lastRecentWordsLen = 0;
-        cameraView.enableView();
+    @Override
+    protected List<? extends CameraBridgeViewBase> getCameraViewList() {
+        return Collections.singletonList(camera);
+    }
 
-        cameraView.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
+    @Override
+    public void onCameraViewStarted(int width, int height) {
+        Log.i(TAG, "Camera view started");
+        camera.enableView();
+        rgbFrame = new Mat();
+    }
 
-            @Override
-            public void onCameraViewStarted(int width, int height) {
-                Log.i(TAG, "Camera view started");
-                cameraView.enableView();
-                rgbFrame = new Mat();
-            }
+    @Override
+    public void onCameraViewStopped() {
+        Log.i(TAG, "Camera view stopped");
+        camera.disableView();
+        rgbFrame.release();
+    }
 
-            @Override
-            public void onCameraViewStopped() {
-                Log.i(TAG, "Camera view stopped");
-                cameraView.disableView();
-                rgbFrame.release();
-            }
+    @Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        rgbFrame = inputFrame.rgba();
 
-            @Override
-            public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) { // On each new frame
-                Log.i(TAG, "Frame received");
-                rgbFrame = inputFrame.rgba();
+        // Rotate 90 clockwise
+        Core.flip(rgbFrame.t(), rgbFrame, 1);
 
-                Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(rgbFrame, bitmap);
+        HandAnalyser handAnalyser = new HandAnalyser(handDetector, signTranslator, rgbFrame, lastLetter);
+        Thread analyserThread = new Thread(handAnalyser);
+        analyserThread.start();
 
-                List<Float> landmarks = handDetector.detectFrame(bitmap);
-                String word = handAnalyser.getWord();
-                translatedLetter.setText(handAnalyser.analyseHand(landmarks));
+        try {
+            analyserThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
-                // Run all the UI stuff on the background
-                runOnUiThread(() -> {
-                    Log.i(TAG, "Updating UI");
-                    if (word.length() > 0) {
-                        translatedWord.setText(word);
-                    } else {
-                        List<String> recentWords = handAnalyser.getRecentWords();
-                        if (recentWords.size() != lastRecentWordsLen) {
-                            String lastWordsText = "";
-                            for (String w : recentWords) {
-                                lastWordsText = w + " " + lastWordsText;
-                            }
-                            lastWords.setText(lastWordsText);
-                        }
+        String recognisedLetter = handAnalyser.getRecognisedLetter();
+        String currentWord = handAnalyser.getCurrentWord();
+        HandAnalyser.Status analysisStatus = handAnalyser.getAnalysisStatus();
+        Mat handFrame = handAnalyser.getHandFrame();
+
+        if (analysisStatus == HandAnalyser.Status.RECOGNISED) {
+            lastLetter = recognisedLetter;
+            translatedLetter.setText(recognisedLetter);
+        }
+
+        // Run all the UI stuff on the background
+        runOnUiThread(() -> {
+            if (!currentWord.isEmpty()) {
+                translatedWord.setText(currentWord);
+            } else {
+                List<String> recentWords = signTranslator.getRecentWords();
+                if (!recentWords.isEmpty()) {
+                    StringBuilder lastWordsText = new StringBuilder();
+                    for (String w : recentWords) {
+                        lastWordsText.insert(0, w + " ");
                     }
-                });
-
-                return handDetector.drawHand(rgbFrame, landmarks);
+                    lastWords.setText(lastWordsText.toString());
+                }
             }
         });
-    }
 
-    private void toggleFlashlight() {
-        if (flashlight) {
-            cameraView.turnOffTheFlash();
-        } else {
-            cameraView.turnOnTheFlash();
-        }
-        flashlight = !flashlight;
+        return handFrame;
     }
 
     private void loadSettings() {
@@ -210,34 +192,5 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         Locale.setDefault(locale);
         resources.getConfiguration().setLocale(locale);
         resources.updateConfiguration(resources.getConfiguration(), resources.getDisplayMetrics());
-    }
-
-    // Permission asking
-    private void askPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Permissions granted");
-            cameraView.setCameraPermissionGranted();
-            startCamera();
-        } else {
-            Log.d(TAG, "Permission prompt");
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CODE_REQUEST_CAMERA);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CODE_REQUEST_CAMERA) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Camera can be turned on
-                Log.i(TAG, "Camera permission granted");
-                cameraView.setCameraPermissionGranted();
-                startCamera();
-            } else {
-                // Camera will stay off
-                Log.i(TAG, "Camera permission denied");
-                askPermissions();
-            }
-        }
     }
 }
