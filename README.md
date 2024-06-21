@@ -38,7 +38,7 @@ Upcoming features:
 
 ### Notice: The app was tested on Android versions **8, 9, 10, 11 and 12**, minimum supported version is **Android 8**.
 
-1. Download the APK file from [here](bit.ly/signsense) or from [releases](https://github.com/duckysmacky/signsense/releases)
+1. Download the APK file from [here](https://www.bit.ly/signsense) or from [releases](https://github.com/duckysmacky/signsense/releases)
 2. Open and **install** the apk file
 3. Done! The app is now installed on your phone
 
