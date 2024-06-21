@@ -3,9 +3,6 @@ package com.signsense.app.analysis;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.RectF;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.util.Log;
 import androidx.preference.PreferenceManager;
 import com.google.mediapipe.framework.image.BitmapImageBuilder;
@@ -13,7 +10,6 @@ import com.google.mediapipe.framework.image.MPImage;
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark;
 import com.google.mediapipe.tasks.core.BaseOptions;
 import com.google.mediapipe.tasks.core.Delegate;
-import com.google.mediapipe.tasks.vision.core.ImageProcessingOptions;
 import com.google.mediapipe.tasks.vision.core.RunningMode;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult;
@@ -22,10 +18,9 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.HandLandmarkerOptions;
 import static com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker.createFromOptions;
@@ -106,11 +101,16 @@ public class HandDetector {
         return landmarks;
     }
 
-    public Mat drawHand(Mat frame, List<Float> landmarks, boolean found) {
+    public Mat drawHand(Mat frame, List<Float> landmarks, HandAnalyser.DetectionState state) {
         if (!draw) return frame;
 
         // If found Green, else Red
-        Scalar color = found ? new Scalar(0, 255, 0, 255) : new Scalar(255, 0, 0, 255);
+        Scalar color = null;
+        switch (state) {
+            case UNKNOWN: color = new Scalar(255, 0, 0, 255); break; // red
+            case FOUND: color = new Scalar(0, 255, 0, 255); break; // green
+            case RECOGNISED: color = new Scalar(0, 0, 255, 255); break; // blue
+        }
 
         for (int i = 0; i < landmarks.size() - 1; i += 2) {
             float x = landmarks.get(i);
@@ -128,5 +128,25 @@ public class HandDetector {
         }
 
         return frame;
+    }
+
+    // WIP Feature
+    private Point getTopPoint(List<Float> landmarks) {
+        float leftX = Float.MAX_VALUE;
+        float rightX = Float.MIN_VALUE;
+        float topY = Float.MIN_VALUE;
+
+        for (int i = 0; i < landmarks.size() - 1; i += 2) {
+            float x = landmarks.get(i);
+            float y = landmarks.get(i + 1);
+
+            if (x < leftX) leftX = x;
+            if (x > rightX) rightX = x;
+            if (y > topY) topY = y;
+        }
+
+        float middleX = (rightX - leftX) / 2;
+
+        return new Point(middleX, topY + 100);
     }
 }

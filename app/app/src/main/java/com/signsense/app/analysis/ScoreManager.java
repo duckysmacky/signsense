@@ -30,7 +30,7 @@ public class ScoreManager {
     public float getBiggestScore() {
         float biggestScore = Float.MIN_VALUE;
         for (Float score : scores) if (score > biggestScore) biggestScore = score;
-        return biggestScore;
+        return biggestScore + 60;
     }
 
     public String getLetter() {

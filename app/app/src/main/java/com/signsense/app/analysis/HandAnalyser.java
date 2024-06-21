@@ -21,27 +21,32 @@ public class HandAnalyser {
     final int MODEL_VERSION;
     final int RECOGNITION_THRESHOLD;
 
-    private final Context appContext;
     private final String[] signDict;
     private final List<String> recentWords = new ArrayList<>();
 
     private Module module; // The model itself
 
-    private String recognisedLetter = "";
     private String lastLetter = "";
     private String currentWord = "";
     private long signDelay = 0;
 
+    public enum DetectionState {
+        UNKNOWN,
+        FOUND,
+        RECOGNISED
+    }
+
     public HandAnalyser(Context context) {
         Log.i(TAG, "Initialising Hand Analyser");
-        appContext = context.getApplicationContext();
+        Context appContext = context.getApplicationContext();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
         SIGN_FLIP = preferences.getBoolean("flip", false);
         SIGN_DELAY = preferences.getInt("delay", 1) * 500;
         COMPARE_LENGTH = preferences.getInt("compareLen", 10);
         MODEL_VERSION = preferences.getInt("modelVer", 3);
-        RECOGNITION_THRESHOLD = preferences.getInt("recognitionThreshold", 20);
+        // score + 60 = thresh
+        RECOGNITION_THRESHOLD = preferences.getInt("recognitionThreshold", 80);
 
         String modelAssetName = "models/dactyl_v" + MODEL_VERSION + ".pt";
         signDict = SignDictionary.RU_DACTYL[MODEL_VERSION - 1];
@@ -56,6 +61,8 @@ public class HandAnalyser {
     }
 
     public String analyseHand(List<Float> landmarks) {
+        String recognisedLetter = "";
+
         if (!landmarks.isEmpty()) {
             signDelay = SystemClock.currentThreadTimeMillis();
             Log.i(TAG, "Analysing hand wth landmarks: \n" + landmarks);
@@ -73,7 +80,7 @@ public class HandAnalyser {
             }
 
             // Setting the size for tensor (one dimension, with length of data)
-            long[] size = new long[] {1, data.length};
+            long[] size = new long[]{1, data.length};
 
             // Creating the input tensor with data and size
             // Take in an array of float of x and y, 1-dimensional
@@ -86,23 +93,24 @@ public class HandAnalyser {
             float[] scores = outputTensor.getDataAsFloatArray();
 
             ScoreManager sm = new ScoreManager(signDict, scores);
+
             float score = sm.getBiggestScore();
             String foundLetter = sm.getLetter();
-            boolean valid = score > RECOGNITION_THRESHOLD;
+
+            boolean valid = score >= RECOGNITION_THRESHOLD;
 
             Log.d(TAG, "ALL SCORES: " + sm.getScores());
             Log.d(TAG, String.format("FOUND LETTER: %s (%f)", foundLetter, score));
             Log.d(TAG, "LAST LETTER: " + lastLetter);
 
-            if (valid && !foundLetter.equals(lastLetter)) {
-                Log.d(TAG, String.format("NEW RECOGNISED LETTER: %s (%f)", foundLetter, score));
+            if (valid) {
                 recognisedLetter = foundLetter;
-                lastLetter = foundLetter;
-                currentWord += foundLetter;
-            } else {
-                recognisedLetter = "";
+                if (!foundLetter.equals(lastLetter)) {
+                    Log.d(TAG, String.format("NEW RECOGNISED LETTER: %s (%f)", foundLetter, score));
+                    lastLetter = foundLetter;
+                    currentWord += foundLetter;
+                }
             }
-
         } else if (SystemClock.currentThreadTimeMillis() - signDelay > SIGN_DELAY) {
             signDelay = SystemClock.currentThreadTimeMillis();
             Log.i(TAG, "Sign Delay");
@@ -110,10 +118,10 @@ public class HandAnalyser {
             currentWord = "";
         }
 
-        return lastLetter;
+        return recognisedLetter;
     }
 
-    public String getWord() {
+    public String getCurrentWord() {
         return currentWord;
     }
 

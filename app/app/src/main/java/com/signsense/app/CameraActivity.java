@@ -37,6 +37,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
     private HandDetector handDetector;
     private HandAnalyser handAnalyser;
 
+    private String lastLetter = "";
     private boolean alphabet = false;
 
     @Override
@@ -157,14 +158,32 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
         Bitmap bitmap = Bitmap.createBitmap(rgbFrame.cols(), rgbFrame.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(rgbFrame, bitmap);
 
+        // TODO - run on separate threads
         List<Float> landmarks = handDetector.detectFrame(bitmap);
-        String word = handAnalyser.getWord();
-        translatedLetter.setText(handAnalyser.analyseHand(landmarks));
+        String recognisedLetter = handAnalyser.analyseHand(landmarks);
+        String currentWord = handAnalyser.getCurrentWord();
+
+        HandAnalyser.DetectionState state;
+        if (recognisedLetter.isEmpty()) {
+            state = HandAnalyser.DetectionState.UNKNOWN;
+        } else if (!recognisedLetter.equals(lastLetter)) {
+            state = HandAnalyser.DetectionState.RECOGNISED;
+        } else {
+            state = HandAnalyser.DetectionState.FOUND;
+        }
+
+        // TODO - run on separate thread
+        Mat handFrame = handDetector.drawHand(rgbFrame, landmarks, state);
+
+        if (state == HandAnalyser.DetectionState.RECOGNISED) {
+            lastLetter = recognisedLetter;
+            translatedLetter.setText(recognisedLetter);
+        }
 
         // Run all the UI stuff on the background
         runOnUiThread(() -> {
-            if (!word.isEmpty()) {
-                translatedWord.setText(word);
+            if (!currentWord.isEmpty()) {
+                translatedWord.setText(currentWord);
             } else {
                 List<String> recentWords = handAnalyser.getRecentWords();
                 if (!recentWords.isEmpty()) {
@@ -177,6 +196,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
             }
         });
 
-        return handDetector.drawHand(rgbFrame, landmarks, false);
+        return handFrame;
     }
 }
