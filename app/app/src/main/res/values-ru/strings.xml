@@ -57,4 +57,8 @@
     <string name="app_desc">Приложение по переводу с дактиля на разговорный язык</string>
     <string name="pref_translation_compare">Размер выборки</string>
     <string name="pref_translation_compare_desc">Сравнивать с X последними переведенными буквами для выведения лучшего результата (более большие значения обеспечивают лучший результат, но делают перевод медленее)</string>
+    <string name="pref_translation_recognitionThreshold">Порог распознования %</string>
+    <string name="pref_translation_recognitionThreshold_desc">Минимальный порог для совпадения жеста в % для его считывания</string>
+    <string name="pref_header_debug">Откладка</string>
+    <string name="pref_debug_fps">Показывать кол-во кадров в секунду (FPS)</string>
 </resources>

@@ -13,7 +13,7 @@ import org.pytorch.Tensor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SignTranslator implements Runnable {
+public class SignTranslator {
     private static final String TAG = "HandAnalyser"; // Tag for debug log
 
     private final boolean SIGN_FLIP;
@@ -53,11 +53,6 @@ public class SignTranslator implements Runnable {
             Log.e(TAG, "Error loading model");
         }
         Log.i(TAG, "Loaded sign analysis model version " + MODEL_VERSION);
-    }
-
-    @Override
-    public void run() {
-
     }
 
     public String analyseHand(List<Float> landmarks) {

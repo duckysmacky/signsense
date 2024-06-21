@@ -2,7 +2,6 @@ package com.signsense.app;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -19,7 +18,6 @@ import com.signsense.app.analysis.SignTranslator;
 import com.signsense.app.analysis.HandDetector;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCamera2View;
-import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
@@ -33,7 +31,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
     private JavaCamera2View camera;
     private TextView translatedLetter, translatedWord, lastWords;
 
-
     private HandDetector handDetector;
     private SignTranslator signTranslator;
 
@@ -46,17 +43,18 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        final boolean SHOW_FPS = preferences.getBoolean("showFps", false);
 
         camera = findViewById(R.id.cameraView);
-
-        CardView cameraTranslationCard = findViewById(R.id.card_cameraTranslation);
-        CardView alphabetCard = findViewById(R.id.card_alphabet);
-
-        ImageButton toggleAlphabet = findViewById(R.id.button_toggleAlphabet);
-
         translatedLetter = findViewById(R.id.text_camera_translation_letter_value);
         translatedWord = findViewById(R.id.text_camera_translation_word_value);
         lastWords = findViewById(R.id.text_camera_translation_lastwords_value);
+
+        CardView cameraTranslationCard = findViewById(R.id.card_cameraTranslation);
+        CardView alphabetCard = findViewById(R.id.card_alphabet);
+        ImageButton toggleAlphabet = findViewById(R.id.button_toggleAlphabet);
 
         // Setup hand detection for frame (image) mode
         handDetector = new HandDetector(this, RunningMode.IMAGE);
@@ -79,7 +77,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
         camera.setCameraPermissionGranted();
         camera.setVisibility(SurfaceView.VISIBLE);
         camera.setCvCameraViewListener(this);
-//        camera.enableFpsMeter();
+        if (SHOW_FPS) camera.enableFpsMeter();
         Log.i(TAG, "Started camera");
     }
 
@@ -166,7 +164,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity implements
             }
         });
 
-        return rgbFrame;
+        return handFrame;
     }
 
     private void loadSettings() {

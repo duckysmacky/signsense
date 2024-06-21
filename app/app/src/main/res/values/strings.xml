@@ -106,6 +106,10 @@
     <string name="pref_detection_trackCon" translatable="false">Tracking Confidence %</string>
     <string name="pref_detection_presenseCon" translatable="false">Presence Confidence %</string>
 
+    <!-- Debug Preferences -->
+    <string name="pref_header_debug">Debug</string>
+    <string name="pref_debug_fps">Show Fps</string>
+
     <!-- Translation -->
     <string name="translation_header">Translation</string>
 

@@ -79,14 +79,14 @@
             app:summary="@string/pref_detection_draw_desc"
             android:defaultValue="false"
             android:key="draw" />
-        <SeekBarPreference
-            android:title="@string/pref_detection_hands"
-            android:summary="@string/pref_detection_hands_desc"
-            android:defaultValue="1"
-            android:key="maxHands"
-            android:max="2"
-            app:min="1"
-            app:showSeekBarValue="true" />
+<!--        <SeekBarPreference-->
+<!--            android:title="@string/pref_detection_hands"-->
+<!--            android:summary="@string/pref_detection_hands_desc"-->
+<!--            android:defaultValue="1"-->
+<!--            android:key="maxHands"-->
+<!--            android:max="2"-->
+<!--            app:min="1"-->
+<!--            app:showSeekBarValue="true" />-->
         <SeekBarPreference
             android:title="@string/pref_detection_detectionCon"
             android:defaultValue="50"
@@ -108,6 +108,15 @@
             android:max="100"
             app:min="1"
             app:showSeekBarValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_debug">
+
+        <SwitchPreference
+            android:title="@string/pref_debug_fps"
+            android:defaultValue="false"
+            android:key="showFps" />
     </PreferenceCategory>
 
 </PreferenceScreen>
