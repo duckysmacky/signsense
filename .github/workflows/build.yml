@@ -8,8 +8,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./app
 
     steps:
     - uses: actions/checkout@v4
@@ -22,7 +25,7 @@ jobs:
         cache: gradle
 
     - name: Grant execute permission for gradlew
-      run: chmod +x app/gradlew
+      run: chmod +x gradlew
       
     - name: Build with Gradle
-      run: ./app/gradlew build
+      run: ./gradlew build
