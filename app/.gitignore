@@ -17,3 +17,5 @@ opencv
 /local.properties
 local.properties
 *.iml
+
+key.jks
