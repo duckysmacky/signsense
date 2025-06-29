@@ -1,14 +1,18 @@
 # SignSense
+
 ![Signsense_text_wide_trans](https://github.com/shroomwastaken/signsense/assets/94703516/b2b75b0a-a9a7-4c79-950a-10bebe58a6bb)
-### An Android app for translating dactyl sign language into text
+
+> An Android app for translating dactyl sign language into text
 
 *because knowing sign language is pretty handy*
 
 ## About
 
-Signsense is a dactyl translator app developed by two high school students as a (school) project. The app currently supports **only one language for translation** (Russian Dactyl), but we have plans of adding support for English dactyl and ASL for both languages as well. This app is still very much **just a proof-of-concept project** and was recently again taken under development.
+Signsense is a mobile application that translates finger spelling sign language (dactyl). It utilizes a custom trained model to recognize dactyl symbols using phone's rear camera. Identified symbols are later translated into plain text by the app and presented to the user.
 
-Currently theres a goal of rewriting the whole app in order to optimise load times, improve detection, add support for ASL, enable simultanious detection with multiple models and just overall improve the app.
+It was originally developed as a school project and is very much just a proof-of-concept project and there are currently no plans to continue its development. Right now it supports only one language for translation (Russian Dactyl).
+
+There is still a goal of rewriting the whole app in order to optimise load times, improve detection, add support for ASL, enable simultanious detection with multiple models and just overall improve the app.
 
 ## Features
 
@@ -19,11 +23,7 @@ Current features:
 - Settings menu to configure detection, translation and app itself
 - 2 app themes (Light and Dark)
 - 2 interface languages (English and Russian)
-- 1 translation language (Only Russian *for now*)
-
-Upcoming features:
-- English dactyl support
-- Russian and English sign language support
+- 1 translation language (Only Russian)
 
 ## Usage
 
@@ -36,7 +36,8 @@ Upcoming features:
 
 ## Installation
 
-### Notice: The app was tested on Android versions **8, 9, 10, 11 and 12**, minimum supported version is **Android 8**.
+> [!NOTE]
+> The app was only tested on Android versions 8-12, **minimum** supported version is Android 8.
 
 1. Download the APK file from [here](https://www.bit.ly/signsense) or from [releases](https://github.com/duckysmacky/signsense/releases)
 2. Open and **install** the apk file
