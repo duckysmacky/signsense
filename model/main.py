@@ -3,6 +3,8 @@ import mediapipe as mp
 import math
 import torch
 
+print("hello")
+
 class SignLanguageNet(torch.nn.Module):
     def __init__(self, in_features, hidden_layer1, hidden_layer2, out_features):
         super().__init__()
