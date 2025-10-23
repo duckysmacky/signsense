@@ -3,7 +3,6 @@ import mediapipe as mp
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import numpy as np
 
 class Preprocess:
 
@@ -22,7 +21,7 @@ class Preprocess:
     attachment = []
 
     # Popular video formats
-    video_formats = ('.mp4')
+    video_formats = ('.mp4', '.avi', '.mov', '.mkv', '.webm')
 
     for root, _, files in os.walk(video_path):
       for file in files:
@@ -30,13 +29,7 @@ class Preprocess:
           continue
         attachment.append(file)
 
-        landmarks_video = []
-
         cap = cv2.VideoCapture(os.path.join(root, file))
-        if not cap.isOpened():
-          print(f"❌ Не удалось открыть: {file}")
-          continue
-        
         fps = cap.get(cv2.CAP_PROP_FPS)
         frame_interval = max(1, int(fps * 0.1))
         frame_count = 0
@@ -66,9 +59,9 @@ class Preprocess:
                 })
               frame_landmarks.append(hand_data)
           
-          landmarks_video.append(frame_landmarks)
+          landmarks_data.append(frame_landmarks)
           frame_count += 1
-        landmarks_data.append(landmarks_video)
+        
         cap.release()
   
     return landmarks_data, attachment
@@ -76,16 +69,16 @@ class Preprocess:
   @staticmethod
   def train_test_split(landmarks, attachment, target_path:str):
 
-    csv_file = pd.read_csv(target_path, sep='\t')
+    csv_file = pd.read_csv(target_path)
     old_target = csv_file['text']
     attachment_id = csv_file['attachment_id']
-    optional = csv_file[['height','width', 'length', 'begin', 'end']]
+    optional = csv_file[['height','width', 'lenght', 'begin', 'end']]
 
     target = []
     for filename in attachment:
       found = False
       for key, value in zip(attachment_id, old_target):
-        if filename == key+'.mp4':
+        if filename == key:
           target.append(value)
           found = True
           break
@@ -110,33 +103,3 @@ class Make_model:
   @staticmethod
   def model_1():
     pass
-
-#path_train = '/Users/iaroslav/Downloads/train_slovo'
-path_train = '/Users/iaroslav/Desktop/test_python'
-path_test = '/Users/iaroslav/Downloads/test_slovo.csv'
-    
-landmarks_data, attachment = Preprocess.extract_hand_landmarks(path_train)
-try:
-  video_train, video_test, target_train, target_test = Preprocess.train_test_split(
-  landmarks_data, attachment, path_test)
-
-  if (video_train is None or video_test is None or 
-    target_train is None or target_test is None):
-    raise ValueError("Метод train_test_split вернул None")
-
-
-  files_data = {
-      'video_train.npy': video_train, 
-      'video_test.npy': video_test,
-      'target_train.npy': target_train,
-      'target_test.npy': target_test
-  }
-
-  for filename, data in files_data.items():
-      np.save(filename, data)
-      print(f"✅ Сохранен: {filename}")
-
-  print("🎯 Все данные сохранены в .npy файлы!")
-except Exception as e:
-  np.save('error_landmarks.npy', landmarks_data)
-  np.save('error_attachment.npy', attachment)

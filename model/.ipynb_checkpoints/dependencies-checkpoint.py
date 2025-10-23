@@ -6,10 +6,10 @@ required_libraries = { #add something if u need
     "pandas": "pandas", 
     "matplotlib": "matplotlib",
     "sklearn": "scikit-learn",
-    #"tensorflow": "tensorflow",
+    "tensorflow": "tensorflow",
+    "torch": "torch",
     "cv2": "opencv-python",
-    "mediapipe": "mediapipe",
-    #"torch": "torch",
+    "mediapipe": "mediapipe"
 }
 
 def check_and_install():
