@@ -26,6 +26,9 @@ def extract_hand_landmarks(video_path):
             attachment.append(file)
             landmarks_video = []
 
+            # Инициализация предыдущих координат
+            prev_x, prev_y, prev_z, prev_visibility = [0.0] * 4
+
             cap = cv2.VideoCapture(os.path.join(root, file))
             if not cap.isOpened():
                 print(f"❌ Не удалось открыть: {file}")
@@ -43,15 +46,38 @@ def extract_hand_landmarks(video_path):
                     hand_landmarks = results.multi_hand_landmarks[0]
                     frame_landmarks = []
                     for landmark in hand_landmarks.landmark:
-                        frame_landmarks.append([ #возможно стоит поменять на extend
+                        # Вычисляем изменения координат
+                        dx = landmark.x - prev_x
+                        dy = landmark.y - prev_y
+                        dz = landmark.z - prev_z
+                        d_visibility = landmark.visibility - prev_visibility
+                        
+                        # Сохраняем текущие + изменения
+                        frame_landmarks.extend([
+                            landmark.x,
+                            landmark.y, 
+                            landmark.z,
+                            landmark.visibility,
+                            dx,
+                            dy,
+                            dz,
+                            d_visibility
+                        ])
+                        
+                        # Обновляем предыдущие значения
+                        prev_x, prev_y, prev_z, prev_visibility = [
                             landmark.x,
                             landmark.y, 
                             landmark.z,
                             landmark.visibility
-                        ])
+                        ]
+                        
                     landmarks_video.append(frame_landmarks)
                 else:
-                    landmarks_video.append([0.0]*(21*4))
+                    # Заполняем нулями: 21 landmarks × 8 признаков
+                    landmarks_video.append([0.0]*(21*8))
+                    # Сбрасываем предыдущие координаты при потере руки
+                    prev_x, prev_y, prev_z, prev_visibility = [0.0] * 4
             
             landmarks_data.append(landmarks_video)
             cap.release()
@@ -98,7 +124,7 @@ if __name__ == "__main__":
     }
     np.save('landmarks.npy', data_to_save, allow_pickle=True)
 
-    print("🎯 Все данные сохранены в .npy файлы!")
+    print("🎯 Все данные сохранены в landmarks.npy!")
 
     # ДЛЯ ЗАПУСКА В ТЕРМИНАЛЕ СО СВОИМИ ФАЙЛАМ - ПЕРЕЙДИТЕ В ТЕКУЩУЮ ДИРЕКТОРИЮ
     # ЗАТЕМ ВВЕДИТЕ СЛЕДУЮЩУЮ КОМАНДУ:
