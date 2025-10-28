@@ -26,7 +26,6 @@ def extract_hand_landmarks(video_path):
             attachment.append(file)
             landmarks_video = []
 
-            # Инициализация предыдущих координат
             prev_x, prev_y, prev_z, prev_visibility = [0.0] * 4
 
             cap = cv2.VideoCapture(os.path.join(root, file))
@@ -46,7 +45,7 @@ def extract_hand_landmarks(video_path):
                     hand_landmarks = results.multi_hand_landmarks[0]
                     frame_landmarks = []
                     for landmark in hand_landmarks.landmark:
-                        # Вычисляем изменения координат
+
                         dx = landmark.x - prev_x
                         dy = landmark.y - prev_y
                         dz = landmark.z - prev_z
@@ -63,7 +62,7 @@ def extract_hand_landmarks(video_path):
                             dz,
                             d_visibility
                         ])
-                        
+
                         # Обновляем предыдущие значения
                         prev_x, prev_y, prev_z, prev_visibility = [
                             landmark.x,
