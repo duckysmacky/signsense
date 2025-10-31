@@ -1,21 +1,21 @@
 import cv2
 import mediapipe as mp
-import keras
-from google.protobuf.json_format import MessageToDict
+import keras #from tensorflow import keras
+from google.protobuf.json_format import MessageToDict #может конфликтовать с keras проверь версию
 import sys
-import asyncio
+import asyncio #нет смысла - cv2 работает синхронно
 
 class ModelTestApp:
 
     def __init__(self, camId: int = 0, model_path: str = "", model: keras.Model = None):
-        self.__mpHands = mp.solutions.hands
+        self.__mpHands = mp.solutions.hands # зачем везде инкапсуляция..
         self.__mpDraw = mp.solutions.drawing_utils
         self.__hands = self.__mpHands.Hands(
                     static_image_mode=False,
                     model_complexity=1,
-                    min_detection_confidence=0.75,
-                    min_tracking_confidence=0.75,
-                    max_num_hands=2)
+                    min_detection_confidence=0.75, #0.5 в моей модели нужно че то решить будет
+                    min_tracking_confidence=0.75, #0.5 в моей модели нужно че то решить будет
+                    max_num_hands=2) #1 рука только нужна
         
         self.__cap = cv2.VideoCapture(camId)
     
@@ -35,24 +35,22 @@ class ModelTestApp:
         pass
 
 
-    async def show_window(self):
-        while True:
-            self.__success, self.__img = self.__cap.read()
+    async def show_window(self): 
+        while True: #зачем записывать переменные как параметры класса?
+            self.__success, self.__img = self.__cap.read() #success, img = self.__cap.read()
 
             self.__img = cv2.flip(self.__img, 1)
         
-            # Convert BGR image to RGB image
             imgRGB = cv2.cvtColor(self.__img, cv2.COLOR_BGR2RGB)
 
-            # Process the RGB image
             results = self.__hands.process(imgRGB)
         
             await asyncio.create_task(self.__show_landmarks(results))
             prediction = await asyncio.create_task(self.__predict())
-            # Display Video and when 'q' is entered, destroy the window
+
             cv2.imshow('Image', self.__img)
             if cv2.waitKey(1) & 0xff == ord('q'):
-                break
+                break # освободи ресурсы в конце
 
 if __name__ == "__main__":
     async def main():
