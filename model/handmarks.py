@@ -11,8 +11,8 @@ def extract_hand_landmarks(video_path):
     hands = mp_hands.Hands(
         static_image_mode=False,
         max_num_hands=1,
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5
+        min_detection_confidence=0.6,
+        min_tracking_confidence=0.35
     )
     
     landmarks_data = []
