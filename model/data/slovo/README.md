@@ -1,4 +1,4 @@
-# The "slovo" dataset
+# Slovo dataset
 
 In this directory is stored the dataset which is used for finding hand landmarks. The actual videos used to train the model are located in `train/`.
 
