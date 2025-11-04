@@ -115,7 +115,7 @@ def find_targets(landmarks: list, attachment: list, target_path: str):
 
 def main():
     """
-    Usage: python handmarks.py "<path_to_videos>" "<path_to_csv>"
+    Usage: python get_landmarks.py "<path_to_videos>" "<path_to_csv>"
     """
 
     parser = argparse.ArgumentParser(description="Extract hand landmarks from sign language videos.")
@@ -126,6 +126,8 @@ def main():
     args = parser.parse_args()
 
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
+    
+    print("🔎 Обработка видео в " + args.videos)
 
     landmarks, attachment = extract_hand_landmarks(args.videos)
     landmarks, target = find_targets(landmarks, attachment, args.labels)
@@ -137,6 +139,6 @@ def main():
     }
     np.save(args.output, data_to_save, allow_pickle=True)
 
-    print("🎯 Все данные сохранены в landmarks.npy!")
+    print("🎯 Все данные сохранены в " + args.output)
 
 if __name__ == "__main__": main()
