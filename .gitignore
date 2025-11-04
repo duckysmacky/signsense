@@ -3,7 +3,3 @@
 
 __pycache__/
 .venv
-
-*.npy
-*.pt
-*.pkl
