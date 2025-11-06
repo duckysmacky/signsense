@@ -29,7 +29,8 @@ def extract_hand_landmarks(video_path: str):
     video_formats = ('.mp4')
 
     for root, _, files in os.walk(video_path):
-        for file in files:
+        total_files = len(files)
+        for i, file in enumerate(files):
             if not file.endswith(video_formats):
                 continue
             attachment.append(file)
@@ -89,7 +90,7 @@ def extract_hand_landmarks(video_path: str):
             
             landmarks_data.append(landmarks_video)
             cap.release()
-            print(f"✅ {file}: {len(landmarks_video)} кадров")
+            print(f"✅ {file}: {len(landmarks_video)} кадров ({i + 1} / {total_files})")
 
     hands.close()
     return landmarks_data, attachment
