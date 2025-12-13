@@ -5,3 +5,4 @@
 __pycache__/
 .venv/
 .venvmodel/data/slovo_mediapipe.json
+.ipynb_checkpoints/
